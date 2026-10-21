@@ -156,7 +156,7 @@ jobs:
 
       - name: Setup Android SDK
         if: steps.check_version.outputs.changed == 'true'
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       - name: Decode Keystore
         if: steps.check_version.outputs.changed == 'true'
