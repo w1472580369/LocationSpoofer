@@ -13,6 +13,9 @@ permissions:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -146,14 +149,21 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17' # Gradle 需要 Java 17 进行编译
-          cache: 'gradle'
+
+      - name: Setup Gradle
+        if: steps.check_version.outputs.changed == 'true'
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Setup Android SDK
+        if: steps.check_version.outputs.changed == 'true'
+        uses: android-actions/setup-android@v3
 
       - name: Decode Keystore
         if: steps.check_version.outputs.changed == 'true'
         env:
           ENCODED_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
-          echo $ENCODED_KEYSTORE | base64 -d > $RUNNER_TEMP/keystore.jks
+          echo "$ENCODED_KEYSTORE" | base64 -d > "$RUNNER_TEMP/keystore.jks"
 
       - name: Build Release APK
         if: steps.check_version.outputs.changed == 'true'
@@ -167,8 +177,12 @@ jobs:
           # 两个模拟方案变体：scoped（非全局，Hook 目标 App 进程）与 global（全局，Hook 系统进程）。
           # 必须分两次调用：同一次调用里并行打包多个变体 × ABI 拆分时，AGP 的 ApkFlinger 签名摘要任务
           # 会和打包写文件任务抢占 ForkJoinPool 公共线程池而互相死锁（构建永久挂起、CPU 空闲）。
-          ./gradlew --no-daemon :app:assembleScopedRelease
-          ./gradlew --no-daemon :app:assembleGlobalRelease
+          ./gradlew --no-daemon --stacktrace \
+            -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" \
+            :app:assembleScopedRelease
+          ./gradlew --no-daemon --stacktrace \
+            -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" \
+            :app:assembleGlobalRelease
 
           # 统一重命名为 LocationSpoofer-<scheme>-<abi>-<tag>.apk 收集到 dist 目录。
           # App 内更新检查（UpdateViewModel.isAssetForCurrentScheme）依赖文件名里的 -<scheme>- 标记挑选对应方案的安装包。
