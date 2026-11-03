@@ -1,6 +1,8 @@
 # 代码级编译验证 CI，在每次 push / PR 时构建全部模块并运行单元/集成测试。
-# 修正: 使用与历史成功版本相同的 SDK 配置 (android-actions/setup-android@v4)，
+# 修正: 使用 android-actions/setup-android@v4 安装 SDK（含平台与 build-tools）
 #       旧的手动下载路径 commandlinetools-linux-12081478_latest.zip 已 404。
+#       需显式安装 platforms;android-37 + build-tools;35.0.0，否则 assembleDebug 因
+#       compileSdk 37 无法解析而失败。
 
 name: Build
 
@@ -39,7 +41,16 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Setup Android SDK (SDK version from gradle)
+        # 安装平台与 build-tools，避免 assembleDebug 因 compileSdk 37 无法解析而失败
         uses: android-actions/setup-android@v4
+        with:
+          packages: "platform-tools,platforms;android-37,build-tools;35.0.0"
+
+      - name: Verify Android SDK install
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms" "$ANDROID_HOME/build-tools" 2>&1
+          sdkmanager --list --sdk_root="$ANDROID_HOME" 2>&1 | grep -E "platforms;android-37|build-tools;35.0.0|cmdline-tools"
 
       - name: Build all modules
         run: |
