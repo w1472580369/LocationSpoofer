@@ -163,9 +163,14 @@ jobs:
         env:
           ENCODED_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
+          # 诊断：输出 Secret 原始字节数 / 字符数 / 非法字符位置（不影响实际解码）
+          echo "secret raw bytes: $(printf '%s' "$ENCODED_KEYSTORE" | wc -c)"
+          echo "valid base64 chars: $(printf '%s' "$ENCODED_KEYSTORE" | sed 's/[^A-Za-z0-9+\/=]//g' | wc -c)"
+          echo "invalid chars:      $(printf '%s' "$ENCODED_KEYSTORE" | sed 's/[A-Za-z0-9+\/=]//g' | sed 's/[a-z]//g' | tr -d '\n\r \t' | od -c | head -5)"
           # 过滤掉粘贴到 Secret 时可能引入的空白/换行/杂质字符，再 base64 解码
           echo "$ENCODED_KEYSTORE" | tr -d '\n\r \t' | base64 -d > "$RUNNER_TEMP/keystore.jks"
           chmod 600 "$RUNNER_TEMP/keystore.jks"
+          echo "decoded: $(du -h "$RUNNER_TEMP/keystore.jks" | cut -f1)"
 
       - name: Build Release APK
         if: steps.check_version.outputs.changed == 'true'
