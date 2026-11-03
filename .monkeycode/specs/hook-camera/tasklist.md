@@ -17,7 +17,7 @@ Date: 2026-11-03
 - [x] 2.1 创建 `CameraHooker.kt` — 拦截相机 API
 - [x] 2.2 在 `LocationHooker.kt` 注册钩子（应用 Hook）
 - [ ] 2.3 在 system_server 注册相机 Hook（可选全局拦截，按需启用）
-- [x] 2.4 写 `CameraHookerTest.kt` 单元测试
+- [x] 2.4 写 `CameraHookerTest.kt` 单元测试（已修复为 JUnit 4 断言，匹配模块的 `libs.junit` 依赖）
 - [ ] 2.5 验证 `replacePhotoBytes` / `modifyActivityResult` / `hasTargetPackage` 逻辑
 
 ## 任务 3: App UI 设置页
@@ -35,6 +35,6 @@ Date: 2026-11-03
 
 ## 任务 5: 编译与测试
 
-- [ ] 5.1 构建 `app` 模块验证编译通过（确保 `app-ui` 依赖拉取完整）
+- [ ] 5.1 构建 `app` 模块验证编译通过（确保 `app-ui` 依赖拉取完整）——已修复 CI workflow（`android-actions/setup-android@v4` + `gradle/actions/setup-gradle@v4`）
 - [ ] 5.2 运行 `xposed` 模块单元测试
 - [ ] 5.3 灰度运行，确认无 StackOverflowError / 循环 Hook

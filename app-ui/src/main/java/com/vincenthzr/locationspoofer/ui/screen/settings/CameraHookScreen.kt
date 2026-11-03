@@ -222,7 +222,7 @@ fun CameraHookScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                Icons.Rounded.Cameraswitch,
+                                Icons.Rounded.Camera,
                                 contentDescription = null,
                                 tint = if (uiState.cameraHookEnabled) AccentBlue else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 modifier = Modifier.size(20.dp)
