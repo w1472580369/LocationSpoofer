@@ -163,7 +163,9 @@ jobs:
         env:
           ENCODED_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
-          echo "$ENCODED_KEYSTORE" | base64 -d > "$RUNNER_TEMP/keystore.jks"
+          # 过滤掉粘贴到 Secret 时可能引入的空白/换行/杂质字符，再 base64 解码
+          echo "$ENCODED_KEYSTORE" | tr -d '\n\r \t' | base64 -d > "$RUNNER_TEMP/keystore.jks"
+          chmod 600 "$RUNNER_TEMP/keystore.jks"
 
       - name: Build Release APK
         if: steps.check_version.outputs.changed == 'true'
