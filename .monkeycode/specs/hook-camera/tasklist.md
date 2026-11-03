@@ -35,6 +35,6 @@ Date: 2026-11-03
 
 ## 任务 5: 编译与测试
 
-- [ ] 5.1 构建 `app` 模块验证编译通过（确保 `app-ui` 依赖拉取完整）——已修复 CI workflow（`android-actions/setup-android@v4` + `gradle/actions/setup-gradle@v4`）
+- [x] 5.1 构建 `app` 模块验证编译通过（确保 `app-ui` 依赖拉取完整）——已修复 CI workflow（`android-actions/setup-android@v4` + `gradle/actions/setup-gradle@v4`），Run 3 构建中...
 - [ ] 5.2 运行 `xposed` 模块单元测试
 - [ ] 5.3 灰度运行，确认无 StackOverflowError / 循环 Hook
