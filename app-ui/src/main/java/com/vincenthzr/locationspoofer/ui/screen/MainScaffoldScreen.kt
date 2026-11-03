@@ -74,7 +74,8 @@ enum class MainSubScreen {
     MotionRealism,
     BackgroundKeepAlive,
     EnvTokens,
-    SystemHookApps
+    SystemHookApps,
+    CameraHook
 }
 
 @Composable
@@ -321,7 +322,8 @@ fun MainScaffoldScreen(
                             },
                             onNavigateToScanner = { currentSubScreen = MainSubScreen.ScannerMap },
                             onNavigateToManageData = { currentSubScreen = MainSubScreen.ManageData },
-                            onNavigateToSystemHookApps = { currentSubScreen = MainSubScreen.SystemHookApps }
+                            onNavigateToSystemHookApps = { currentSubScreen = MainSubScreen.SystemHookApps },
+                            onNavigateToCameraHook = { currentSubScreen = MainSubScreen.CameraHook }
                         )
 
                         BottomTab.Info.ordinal -> com.vincenthzr.locationspoofer.ui.screen.tabs.InfoTab(
@@ -337,7 +339,8 @@ fun MainScaffoldScreen(
                             onNavigateToVendorScheme = { currentSubScreen = MainSubScreen.VendorScheme },
                             onNavigateToMotionRealism = { currentSubScreen = MainSubScreen.MotionRealism },
                             onNavigateToBackgroundKeepAlive = { currentSubScreen = MainSubScreen.BackgroundKeepAlive },
-                            onNavigateToEnvTokens = { currentSubScreen = MainSubScreen.EnvTokens }
+                            onNavigateToEnvTokens = { currentSubScreen = MainSubScreen.EnvTokens },
+                            onNavigateToCameraHook = { currentSubScreen = MainSubScreen.CameraHook }
                         )
                     }
                 }
@@ -450,6 +453,13 @@ fun MainScaffoldScreen(
                         viewModel = viewModel,
                         uiState = uiState,
                         onBack = { currentSubScreen = MainSubScreen.None }
+                    )
+
+                    MainSubScreen.CameraHook -> com.vincenthzr.locationspoofer.ui.screen.settings.CameraHookScreen(
+                        viewModel = viewModel,
+                        uiState = uiState,
+                        isDark = isDark,
+                        onClose = { currentSubScreen = MainSubScreen.None }
                     )
 
                     MainSubScreen.None -> Unit

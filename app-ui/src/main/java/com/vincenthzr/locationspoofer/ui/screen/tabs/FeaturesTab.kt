@@ -34,6 +34,7 @@ import com.vincenthzr.locationspoofer.ui.screen.ImportExportDataCard
 import com.vincenthzr.locationspoofer.ui.screen.ManageDataCard
 import com.vincenthzr.locationspoofer.ui.screen.ScannerMapCard
 import com.vincenthzr.locationspoofer.ui.screen.SystemHookAppsConfigCard
+import com.vincenthzr.locationspoofer.ui.screen.CameraHookConfigCard
 import com.vincenthzr.locationspoofer.ui.components.ImportExportSelectionDialog
 import com.vincenthzr.locationspoofer.data.model.ImportExportCounts
 import com.vincenthzr.locationspoofer.data.model.ImportExportSelection
@@ -53,7 +54,8 @@ fun FeaturesTab(
     onNavigateToCoordinate: () -> Unit,
     onNavigateToScanner: () -> Unit,
     onNavigateToManageData: () -> Unit,
-    onNavigateToSystemHookApps: () -> Unit
+    onNavigateToSystemHookApps: () -> Unit,
+    onNavigateToCameraHook: () -> Unit
 ) {
     val isDark = isSystemInDarkTheme()
     val context = LocalContext.current
@@ -215,6 +217,15 @@ fun FeaturesTab(
                             onClick = onNavigateToSystemHookApps
                         )
                     }
+                }
+
+                // 相机 Hook：拦截目标应用的相机 API 并返回用户自定义照片
+                item {
+                    CameraHookConfigCard(
+                        uiState = uiState,
+                        isDark = isDark,
+                        onClick = onNavigateToCameraHook
+                    )
                 }
 
                 // 5. 导入与导出数据

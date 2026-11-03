@@ -131,6 +131,14 @@
 ### 8. 用户界面
 * 基于 Jetpack Compose 构建，采用现代毛玻璃质感、内阴影与阻尼手势拖拽设计，实现完全模块化与解耦的组件架构。
 
+### 9. 相机 Hook（打卡 / 角色扮演防检测）
+* **相机拍照替换**：在目标 App 调用相机 API 拍照时，返回通过 App 界面选定的照片（支持 JPEG/PNG），让拍照结果与真实环境一致 —— 适用于需要"本人/场景"认证的打卡与角色扮演类应用。
+* **双渠道回调保险**：同时拦截 Camera1 的 `takePicture` 拍前 Callback（把 `byte[]` JPEG 数据替换为用户照片）与 `Activity.onActivityResult` 拍后数据（把系统相机回传的 `data` extra 替换为用户照片），任一渠道命中即完成替换。
+* **开关控制**：在"功能 → 相机 Hook"页面支持全局总开关 + 逐个目标应用开关，仅对已选应用生效；也可通过"全选用户应用"按钮快速勾选。
+* **照片源管理**：支持从相册/文件管理器选取照片，超过框架 BASE64 容量（约 96 KB）时自动存入本地文件通道，由 Xposed 模块在目标进程内读取。
+
+* 相机 Hook（拍前 `takePicture` Callback + 拍后 `onActivityResult` 双渠道保险）
+
 ---
 
 ## 系统架构
@@ -180,6 +188,7 @@
 │  │  • 地图 SDK：AMapHooker / BaiduMapHooker / TencentMapHooker       │  │
 │  │  • hooks/network/：Wifi* / Cellular* / Bluetooth*Hooker 等        │  │
 │  │  • SensorStepHooker（计步）/ AntiDetectionHooker（反检测）        │  │
+│  │  • CameraHooker（相机拍照数据替换）                  │  │
 │  └───────────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────┘
 ```

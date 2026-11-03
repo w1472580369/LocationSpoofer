@@ -385,6 +385,10 @@ class LocationHooker : XposedModule() {
         hookBluetoothLE(classLoader)
         SensorStepHooker.hookSensorStepSimulation(classLoader)
 
+        // 相机 Hook：拍照前（Camera1 takePicture pictureCallback）+ 拍照后（Activity.onActivityResult
+        // 的 PhotoIntent "data"）双保险拦截，拍照数据统一被替换为用户设定的照片
+        hookCamera(classLoader, pkg)
+
         readConfig()
     }
 

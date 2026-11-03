@@ -171,6 +171,37 @@ class SettingsManager(context: Context) {
         get() = prefs.getString("satellite_count", "10") ?: "10"
         set(value) = prefs.edit().putString("satellite_count", value).apply()
 
+    /**
+     * 相机 Hook 总开关：开启后，在目标 App 进程内拦截相机 API 并返回用户自定义的照片。
+     * 仅在用户明确选择了照片（camera_photo）与目标应用时才实际生效，避免空开关的误导。
+     */
+    var cameraHookEnabled: Boolean
+        get() = prefs.getBoolean("camera_hook_enabled", false)
+        set(value) = prefs.edit().putBoolean("camera_hook_enabled", value).apply()
+
+    /**
+     * camera_hook_enabled 开关指示的"目标 App 包名集合"，跨应用参与相机 Hook。
+     * 不存在任何目标 App 时，发送到这些进程进程的 Hook 不会修改任何相机数据。
+     */
+    var cameraHookPackages: Set<String>
+        get() = getCameraHookPackages()
+        set(value) = setCameraHookPackages(value)
+
+    /**
+     * 用户通过 App 界面选定的相机照片，以 BASE64 简章存入，由相机 Hook 在目标进程中回写。
+     * 注意：超过 96 KB 的图片必须使用 camera_photo_path（见框架配置的远程文件读取通道）。
+     */
+    var cameraPhoto: String
+        get() = prefs.getString("camera_photo", "") ?: ""
+        set(value) = prefs.edit().putString("camera_photo", value).apply()
+
+    /**
+     * 用户照片在 App 内部存储的绝对路径（Base64 合不下的大图走这条通道）
+     */
+    var cameraPhotoPath: String
+        get() = prefs.getString("camera_photo_path", "") ?: ""
+        set(value) = prefs.edit().putString("camera_photo_path", value).apply()
+
     fun getSavedLocations(): List<SavedLocation> {
         val jsonString = prefs.getString("saved_locations", "[]") ?: "[]"
         val list = mutableListOf<SavedLocation>()
@@ -330,6 +361,27 @@ class SettingsManager(context: Context) {
         val jsonArray = JSONArray()
         packages.forEach { jsonArray.put(it) }
         prefs.edit().putString("system_hook_packages", jsonArray.toString()).apply()
+    }
+
+    /** 用户通过 App 界面选定的、需要被 Hook 相机 API 的目标应用包名集合 */
+    fun getCameraHookPackages(): Set<String> {
+        val jsonString = prefs.getString("camera_hook_packages", "[]") ?: "[]"
+        val set = mutableSetOf<String>()
+        try {
+            val jsonArray = JSONArray(jsonString)
+            for (i in 0 until jsonArray.length()) {
+                set.add(jsonArray.getString(i))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return set
+    }
+
+    fun setCameraHookPackages(packages: Set<String>) {
+        val jsonArray = JSONArray()
+        packages.forEach { jsonArray.put(it) }
+        prefs.edit().putString("camera_hook_packages", jsonArray.toString()).apply()
     }
 
     /** 是否开启全局模拟模式（除本应用与系统基础核心外对所有应用生效） */

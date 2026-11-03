@@ -231,4 +231,31 @@ class SettingsRepository(private val settingsManager: SettingsManager) {
         set(value) {
             settingsManager.checkBetaUpdates = value
         }
+
+    /** 相机 Hook 总开关：开启后，在目标 App 进程内拦截相机 API 并返回用户自定义的照片 */
+    var cameraHookEnabled: Boolean
+        get() = settingsManager.cameraHookEnabled
+        set(value) {
+            settingsManager.cameraHookEnabled = value
+        }
+
+    /** 被相机 Hook 作用的目标 App 包名集合 */
+    fun getCameraHookPackages(): Set<String> = settingsManager.getCameraHookPackages()
+
+    fun setCameraHookPackages(packages: Set<String>) =
+        settingsManager.setCameraHookPackages(packages)
+
+    /** 用户通过 App 界面选定的相机照片（BASE64，跨进程共享给 Xposed 模块回写） */
+    var cameraPhoto: String
+        get() = settingsManager.cameraPhoto
+        set(value) {
+            settingsManager.cameraPhoto = value
+        }
+
+    /** 用户照片在本机内部存储中的绝对路径（BASE64 不合下的大图通过此通道与 Xposed 共享） */
+    var cameraPhotoPath: String
+        get() = settingsManager.cameraPhotoPath
+        set(value) {
+            settingsManager.cameraPhotoPath = value
+        }
 }

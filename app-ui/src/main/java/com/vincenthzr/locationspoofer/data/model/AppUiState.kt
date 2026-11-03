@@ -144,6 +144,14 @@ data class AppState(
     val hookedApps: List<AppInfoItem> = emptyList(),
     /** system_server 级定位 Hook 勾选生效的目标 App 包名集合 */
     val systemHookPackages: Set<String> = emptySet(),
+    /** 相机 Hook 开关：开启后在目标 App 中拦截相机 API 并返回用户自定义的照片 */
+    val cameraHookEnabled: Boolean = false,
+    /** 相机 Hook 作用的目标 App 包名集合 */
+    val cameraHookPackages: Set<String> = emptySet(),
+    /** 用户选定的相机照片 BASE64（空串表示未选择照片） */
+    val cameraPhoto: String = "",
+    /** 用户选定的相机照片在本机内部存储的绝对路径（BASE64 合不下的大图） */
+    val cameraPhotoPath: String = "",
     /** 是否开启全局模拟模式（除自身与系统核心组件外对全设备所有应用生效） */
     val isSystemHookGlobalMode: Boolean = false,
     val forceLocationEnabled: Boolean = false,

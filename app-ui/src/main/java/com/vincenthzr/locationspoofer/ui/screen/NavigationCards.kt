@@ -153,6 +153,64 @@ fun SystemHookAppsConfigCard(uiState: com.vincenthzr.locationspoofer.data.model.
     }
 }
 
+/** 相机 Hook 入口卡片：开关 + 已选目标与应用 + 照片源 */
+@Composable
+fun CameraHookConfigCard(uiState: com.vincenthzr.locationspoofer.data.model.AppState, isDark: Boolean, onClick: () -> Unit) {
+    MiuixCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .noRippleClickable { onClick() },
+        cornerRadius = 16.dp,
+        insideMargin = PaddingValues(horizontal = 16.dp, vertical = 14.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(RoundedCornerShape(11.dp))
+                    .background(AccentBlue.copy(alpha = 0.12f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Rounded.Camera,
+                    null,
+                    tint = AccentBlue,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(Modifier.width(14.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    stringResource(R.string.camera_hook_title),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(Modifier.height(2.dp))
+                val statusText = if (uiState.cameraHookEnabled) {
+                    stringResource(R.string.camera_hook_target_apps_count, uiState.cameraHookPackages.size)
+                } else {
+                    stringResource(R.string.camera_hook_card_disabled)
+                }
+                Text(
+                    statusText,
+                    color = if (uiState.cameraHookEnabled) AccentBlue else AppColors.textSecondary(isDark),
+                    fontSize = 12.sp
+                )
+            }
+            Icon(
+                Icons.Rounded.ChevronRight,
+                null,
+                tint = AppColors.textSecondary(isDark).copy(alpha = 0.7f),
+                modifier = Modifier.size(18.dp)
+            )
+        }
+    }
+}
+
 @Composable
 fun ScannerMapCard(
     isDark: Boolean,

@@ -126,6 +126,12 @@ Real GPS receivers naturally output coordinates with Gaussian white noise caused
 ### 8. User Interface
 * Built with Jetpack Compose, featuring frosted glass translucency, inner shadows, and damped drag interactions with a decoupled modular architecture.
 
+### 9. Camera Hook (Attendance/Roleplay Anti-Detection)
+* **Photo Replacement**: When a target App captures a photo, the camera API returns a user-selected photo (JPEG/PNG) so the result matches your own snapshot — useful for attendance / roleplay apps that require scene evidence.
+* **Double Insurance Callback**: Intercepts both the Camera1 `takePicture` pre-capture callback (replaces the `byte[]` JPEG data with the photo) and the `Activity.onActivityResult` post-capture data (replaces the system camera's `data` extra with the photo), one hit is enough to complete the replacement.
+* **Switch Control**: In the "Features → Camera Hook" page, a global master switch plus per-app switches apply only to selected apps; use "Select All User Apps" to quickly hook batch apps.
+* **Photo Source Management**: Pick a photo from the gallery / file manager. Photos exceeding the framework BASE64 capacity (~96 KB) are automatically saved to the local file channel and read by the Xposed module in the target process.
+
 ---
 
 ## System Architecture
@@ -174,7 +180,8 @@ Both variants deliver JSON through libxposed remote configuration; hooks read an
 │  │  - Location/GNSS: BaseLocationHooker, GnssStatusHooker, etc.      │  │
 │  │  - Map SDKs: AMapHooker / BaiduMapHooker / TencentMapHooker       │  │
 │  │  - hooks/network/: Wifi* / Cellular* / Bluetooth*Hooker etc.      │  │
-│  │  - SensorStepHooker (steps) / AntiDetectionHooker (anti-detect)   │  │
+│  │  - SensorStepHooker (steps) / AntiDetectionHooker (anti-detect)
+│  │  - CameraHooker (photo replacement in target camera API)   │  │
 │  └───────────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────┘
 ```

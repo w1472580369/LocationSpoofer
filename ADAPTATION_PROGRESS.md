@@ -81,6 +81,14 @@
 | TIM | ✅ | ❔ | |
 | 淘宝 / 闲鱼 | ⚠️ | ❔ | 位置已正确模拟，但淘宝发送位置时仍提示"定位失败"，怀疑是服务端 IP 归属地校验，待确认 |
 
+### 相机 Hook
+
+| 系统 / 相机方案 | 状态 | 备注 |
+|---|---|---|
+| Camera1 `takePicture`（JPEG byte[]） | ❔ | 拍前 Callback 层替换，待实机验证 |
+| Camera2 `ImageReader`（`acquireLatestImage`） | ❔ | 预留扩展点，Xposed 层暂时无法创建新的 `android.media.Image` |
+| CameraX（`onActivityResult` `data` extra） | ❔ | 拍后回调层替换，待实机验证 |
+
 ---
 
 ## 如何更新本文件

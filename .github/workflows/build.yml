@@ -1,0 +1,57 @@
+# 代码级编译验证 CI，在每次 push / PR 时构建全部模块并运行单元/集成测试。
+
+name: Build
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+env:
+  ANDROID_HOME: ${{ github.workspace }}/android-sdk
+  GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+  GRADLE_OPTS: -Xmx6g
+
+jobs:
+  verify-compile:
+    name: Compile All Modules (Java ${{ matrix.java-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [17]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Download Android SDK command-line tools
+        run: |
+          mkdir -p $ANDROID_HOME
+          curl -sSL -o /tmp/cmdline-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-12081478_latest.zip"
+          mkdir -p /tmp/cmdline
+          unzip -qo /tmp/cmdline-tools.zip -d /tmp/cmdline
+          mv /tmp/cmdline/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          echo "command-line tools installed at $ANDROID_HOME/cmdline-tools/latest"
+
+      - name: Accept SDK licenses and install packages
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "build-tools;35.0.0" "platforms;android-37" "platform-tools"
+
+      - name: Build all modules
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon assembleDebug
+
+      - name: Run unit tests
+        run: |
+          ./gradlew --no-daemon :app-ui:testDebugUnitTest :xposed:testDebugUnitTest

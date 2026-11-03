@@ -176,6 +176,15 @@ class ConfigManager(private val context: Context, private val rootManager: RootM
         json.put("speed_fluctuation_pct", SpoofingState.speedFluctuationPct.takeIf { it >= 0 } ?: settingsManager.speedFluctuationPct)
         json.put("gait_template", if (settingsManager.useGaitTemplate) settingsManager.gaitTemplate else "")
         json.put("altitude_variation_m", settingsManager.altitudeVariationM)
+
+        // ---- 相机 Hook 常驻设置 ----
+        // 注意：远换相机定绕过所有目标 App（包括系统服务内的相机进程）。
+        val cameraHookPackagesArr = JSONArray()
+        settingsManager.cameraHookPackages.forEach { cameraHookPackagesArr.put(it) }
+        json.put("camera_hook_packages", cameraHookPackagesArr)
+        json.put("camera_hook_enabled", settingsManager.cameraHookEnabled)
+        json.put("camera_photo", settingsManager.cameraPhoto.takeIf { it.isNotBlank() } ?: "")
+        json.put("camera_photo_path", settingsManager.cameraPhotoPath.takeIf { it.isNotBlank() } ?: "")
     }
 
     private fun refreshGeocodeIfMoved(lat: Double, lng: Double) {

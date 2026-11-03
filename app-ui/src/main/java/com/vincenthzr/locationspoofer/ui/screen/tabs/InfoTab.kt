@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.DirectionsWalk
 import androidx.compose.material.icons.rounded.BatteryChargingFull
+import androidx.compose.material.icons.rounded.Camera
 import androidx.compose.material.icons.rounded.Devices
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Language
@@ -71,7 +72,8 @@ fun InfoTab(
     onNavigateToVendorScheme: () -> Unit = {},
     onNavigateToMotionRealism: () -> Unit = {},
     onNavigateToBackgroundKeepAlive: () -> Unit = {},
-    onNavigateToEnvTokens: () -> Unit = {}
+    onNavigateToEnvTokens: () -> Unit = {},
+    onNavigateToCameraHook: () -> Unit = {}
 ) {
     val isDark = isSystemInDarkTheme()
 
@@ -276,6 +278,13 @@ fun InfoTab(
                             tint = AccentOrange,
                             title = stringResource(R.string.background_keep_alive_title),
                             onClick = onNavigateToBackgroundKeepAlive
+                        )
+                        SettingsEntryDivider()
+                        SettingsEntryRow(
+                            icon = Icons.Rounded.Camera,
+                            tint = AccentBlue,
+                            title = stringResource(R.string.camera_hook_title),
+                            onClick = onNavigateToCameraHook
                         )
                         SettingsEntryDivider()
                         SettingsEntryRow(

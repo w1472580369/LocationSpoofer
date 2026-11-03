@@ -586,17 +586,68 @@ internal fun MainViewModel.clearAllSystemHookApps() {
     }
 }
 
-internal fun MainViewModel.setSystemHookPackageEnabled(pkg: String, enabled: Boolean) {
-    val currentSet = _uiState.value.systemHookPackages.toMutableSet()
-    if (enabled) currentSet.add(pkg) else currentSet.remove(pkg)
-    settingsRepository.setSystemHookPackages(currentSet)
-    _uiState.update { it.copy(systemHookPackages = currentSet) }
+/** 一键把全部用户应用勾选为相机 Hook 目标（仅用于相机 Hook 列表） */
+internal fun MainViewModel.selectAllUserAppsForCameraHook() {
+    val userAppPkgs = _uiState.value.installedAppsForSystemHook
+        .filter { !it.isSystem }
+        .map { it.packageName }
+        .toSet()
+    val newSet = _uiState.value.cameraHookPackages + userAppPkgs
+    settingsRepository.setCameraHookPackages(newSet)
+    _uiState.update { it.copy(cameraHookPackages = newSet) }
+    refreshCameraHookConfig()
+}
 
-    // 如果模拟处于开启状态，立即刷新配置文件让新的 system_hook_packages 生效
+internal fun MainViewModel.clearAllCameraHookApps() {
+    val emptySet = emptySet<String>()
+    settingsRepository.setCameraHookPackages(emptySet)
+    _uiState.update { it.copy(cameraHookPackages = emptySet) }
+    refreshCameraHookConfig()
+}
+
+/**
+ * 相机 Hook 总开关。
+ * 常驻设置项在每次 patchConfig/saveConfig 时刷新为最新值，将 camera_hook_* 合入框架配置并推送到目标 App 进程。
+ */
+internal fun MainViewModel.setCameraHookEnabled(enabled: Boolean) {
+    settingsRepository.cameraHookEnabled = enabled
+    _uiState.update { it.copy(cameraHookEnabled = enabled) }
+    refreshCameraHookConfig()
+}
+
+/**
+ * 为相机 Hook 设置 App 级开关：勾选的目标 App 在每次安装相机 Hook 时（handleLoadPackage）接受
+ * camera_hook_packages 检查，拒绝时不修改相机的取图逻辑。
+ */
+internal fun MainViewModel.setCameraHookPackageEnabled(pkg: String, enabled: Boolean) {
+    val currentSet = _uiState.value.cameraHookPackages.toMutableSet()
+    if (enabled) currentSet.add(pkg) else currentSet.remove(pkg)
+    settingsRepository.setCameraHookPackages(currentSet)
+    _uiState.update { it.copy(cameraHookPackages = currentSet) }
+    refreshCameraHookConfig()
+}
+
+/**
+ * 从相册/文件管理器选取照片后，将照片的 BASE64 合入框架配置，使 Xposed 层能在目标 App 进程内
+ * 读到照片数据并回写。
+ */
+internal fun MainViewModel.setCameraPhotoBase64(base64: String) {
+    settingsRepository.cameraPhoto = base64
+    _uiState.update { it.copy(cameraPhoto = base64) }
+    refreshCameraHookConfig()
+}
+
+internal fun MainViewModel.setCameraPhotoPath(path: String) {
+    settingsRepository.cameraPhotoPath = path
+    _uiState.update { it.copy(cameraPhotoPath = path) }
+    refreshCameraHookConfig()
+}
+
+private fun MainViewModel.refreshCameraHookConfig() {
     if (_uiState.value.isSpoofingActive) {
         viewModelScope.launch {
-            // 只刷新坐标系映射与常驻设置字段（系统级模拟目标等由 patchConfig 自动刷新），不动位置与路线状态
-            locationRepository.patchConfig { it.put("app_coordinate_systems", org.json.JSONObject(_uiState.value.appCoordinateSystems)) }
+            // 常驻设置项在每次 patchConfig 时自动刷新为最新值
+            locationRepository.patchConfig { }
         }
     }
 }
