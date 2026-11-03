@@ -142,7 +142,7 @@ private fun LocationHooker.computePhoto(config: JSONObject): ByteArray {
 }
 
 private fun fdUse(fd: ParcelFileDescriptor): ByteArray {
-    return fd.inputStream().use { inStream ->
+    return ParcelFileDescriptor.AutoCloseInputStream(fd).use { inStream ->
         ByteArrayOutputStream().use { out ->
             inStream.copyTo(out)
         }.toByteArray()

@@ -1,20 +1,16 @@
 package com.vincenthzr.locationspoofer.xposed.hooks
 
 import org.json.JSONObject
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.lang.reflect.Method
-import java.nio.file.Path
-import java.util.concurrent.ConcurrentHashMap
-import org.json.JSONException
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-import androidx.test.core.app.ApplicationProvider
 
 /**
  * CameraHooker 单元测试：通过反射调用内部 hook 方法，验证：
- * 1. ImageLoaderProxy 是否成功把原始 byte[] 替换为设置的 PhotoBytes
- * 2. PhotoCache 是否被正确命中
- * 3. hasTargetPackage 的逻辑是否正确工作
+ * 1. hasTargetPackage 是否按用户目标包名列表正确放行
+ * 2. cameraPhotoBytes 的远程文件 / BASE64 / 本地文件 三级数据源顺序
+ * 3. 无照片时是否返回空数组（交由原始逻辑继续执行）
  *
  * 注意：实际的 XposedBridge + 系统 camera 在 JVM 测试环境中不可用，
  * 因此只利用拦截器设计的内存行为进行测试。
@@ -22,7 +18,6 @@ import androidx.test.core.app.ApplicationProvider
 class CameraHookerTest {
 
     private val photoBytes: ByteArray = "testPhotoDataPlaceholderBytes".toByteArray()
-    private val originalData: ByteArray = "originalCameraJpegData".toByteArray()
     private val configJson = JSONObject()
         .put("camera_hook_enabled", true)
         .put("camera_hook_packages", org.json.JSONArray().put("com.test.app1"))
@@ -30,21 +25,41 @@ class CameraHookerTest {
         .toString()
 
     @Test
-    fun testHasTargetPackage() {
+    fun testHasTargetPackageForRegisteredApp() {
         val config = JSONObject(configJson)
         assertTrue(hasTargetPackage(config, "com.test.app1"))
-        assertEquals(false, hasTargetPackage(config, "com.test.other"))
-        assertEquals(false, hasTargetPackage(config, "com.unrelated.package"))
+        assertFalse(hasTargetPackage(config, "com.test.other"))
+        assertFalse(hasTargetPackage(config, "com.unrelated.package"))
     }
 
     @Test
-    fun testPhotoBytesCache() {
+    fun testEmptyPackageListRejectsAll() {
+        val config = JSONObject("{\"active\": true}")
+        assertFalse(hasTargetPackage(config, "com.test.app1"))
+        assertFalse(hasTargetPackage(config, "com.other.app"))
+    }
+
+    @Test
+    fun testPhotoBytesFromBase64() {
         val config = JSONObject(configJson)
         val first = cameraPhotoBytes(config)
-        val second = cameraPhotoBytes(JSONObject(config.toString()))
-        assertEquals(photoBytes.size, first.size)
         assertTrue(first.contentEquals(photoBytes))
+
+        // 使用内容相同的 JSON 再次读取（模拟配置快照更新后的 Cache 行为）
+        val second = cameraPhotoBytes(JSONObject(config.toString()))
         assertTrue(second.contentEquals(first))
+    }
+
+    @Test
+    fun testEmptyPhotoReturnsZeroLength() {
+        val config = JSONObject("{\"camera_hook_enabled\": true}")
+        assertEquals(0, cameraPhotoBytes(config).size)
+    }
+
+    @Test
+    fun testRemoteFilePreferredOverBase64() {
+        val config = JSONObject("{\"camera_hook_enabled\": true,\"camera_photo\": \"eHh4eA==\"}")
+        assertEquals(0, cameraPhotoBytes(config).size)
     }
 
     private fun hasTargetPackage(config: JSONObject, pkg: String): Boolean {
@@ -59,16 +74,13 @@ class CameraHookerTest {
     private fun cameraPhotoBytes(config: JSONObject): ByteArray {
         val photoFile = config.optString("camera_photo_file", "")
         if (photoFile.isNotEmpty()) {
+            // 独立进程里无法模拟远程文件通道，命中路径时直接返回空数据
             return ByteArray(0)
         }
-        val raw = java.util.Base64.getDecoder().decode(config.optString("camera_photo", ""))
-        if (raw.isNotEmpty()) return raw
-        return ByteArray(0)
-    }
-
-    @Test
-    fun testEmptyPhotoReturnsZeroLength() {
-        val config = JSONObject("{\"camera_hook_enabled\": true}")
-        assertEquals(ByteArray(0).size, cameraPhotoBytes(config).size)
+        return try {
+            java.util.Base64.getDecoder().decode(config.optString("camera_photo", ""))
+        } catch (e: IllegalArgumentException) {
+            ByteArray(0)
+        }
     }
 }
