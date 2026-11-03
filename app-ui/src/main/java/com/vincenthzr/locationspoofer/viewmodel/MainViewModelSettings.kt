@@ -586,6 +586,18 @@ internal fun MainViewModel.clearAllSystemHookApps() {
     }
 }
 
+/**
+ * 系统级模拟目标 App 的单项勾选开关。
+ * 选中的包名加入 `system_hook_packages`，每次 patchConfig/saveConfig 时合入框架配置。
+ */
+internal fun MainViewModel.setSystemHookPackageEnabled(pkg: String, enabled: Boolean) {
+    val currentSet = _uiState.value.systemHookPackages.toMutableSet()
+    if (enabled) currentSet.add(pkg) else currentSet.remove(pkg)
+    settingsRepository.setSystemHookPackages(currentSet)
+    _uiState.update { it.copy(systemHookPackages = currentSet) }
+    refreshSystemHookConfig()
+}
+
 /** 一键把全部用户应用勾选为相机 Hook 目标（仅用于相机 Hook 列表） */
 internal fun MainViewModel.selectAllUserAppsForCameraHook() {
     val userAppPkgs = _uiState.value.installedAppsForSystemHook

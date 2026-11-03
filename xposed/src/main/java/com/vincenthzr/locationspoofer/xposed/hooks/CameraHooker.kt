@@ -17,6 +17,7 @@ package com.vincenthzr.locationspoofer.xposed.hooks
 import com.vincenthzr.locationspoofer.xposed.LocationHooker
 import com.vincenthzr.locationspoofer.xposed.utils.*
 import io.github.libxposed.api.*
+import io.github.libxposed.api.XposedInterface.Chain
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -142,11 +143,11 @@ private fun LocationHooker.computePhoto(config: JSONObject): ByteArray {
 }
 
 private fun fdUse(fd: ParcelFileDescriptor): ByteArray {
-    return ParcelFileDescriptor.AutoCloseInputStream(fd).use { inStream ->
-        ByteArrayOutputStream().use { out ->
-            inStream.copyTo(out)
-        }.toByteArray()
+    val out = ByteArrayOutputStream()
+    ParcelFileDescriptor.AutoCloseInputStream(fd).use { inStream ->
+        inStream.copyTo(out)
     }
+    return out.toByteArray()
 }
 
 /**
@@ -201,7 +202,7 @@ private fun LocationHooker.wrapPictureCallback(callback: Any, photoBytes: ByteAr
         val proxyLoader = callbackClass.classLoader ?: ClassLoader.getSystemClassLoader()
         return java.lang.reflect.Proxy.newProxyInstance(
             proxyLoader,
-            interfaces.toTypedArray(),
+            arrayOf(*interfaces),
             Camera1PhotoProxyHandler(photoBytes, callback)
         )
     } catch (e: Throwable) {
@@ -216,7 +217,7 @@ private fun LocationHooker.wrapPictureCallback(callback: Any, photoBytes: ByteAr
  */
 private class Camera1PhotoProxyHandler(private val photoBytes: ByteArray, private val original: Any) :
     java.lang.reflect.InvocationHandler {
-    override fun invoke(proxy: Any, method: java.lang.reflect.Method, args: Array<out Any>?): Any {
+    override fun invoke(proxy: Any, method: java.lang.reflect.Method, args: Array<out Any>?): Any? {
         try {
             return if (method.name == "onPictureTaken") {
                 // 把原始照片数据字节替换为用户照片后再转交给原来的回调
@@ -306,7 +307,7 @@ private fun ByteArray.toBitmap(): android.graphics.Bitmap {
     } catch (e: Throwable) {
         XposedBridge.log("[CameraHook] decode bitmap failed: $e")
     }
-    return android.graphics.Bitmap.createBitmap(1, 1, android.graphics.Bitmap.Config.RGBA_8888)
+    return android.graphics.Bitmap.createBitmap(1, 1, android.graphics.Bitmap.Config.ARGB_8888)
 }
 
 /**

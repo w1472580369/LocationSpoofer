@@ -58,7 +58,8 @@ class CameraHookerTest {
 
     @Test
     fun testRemoteFilePreferredOverBase64() {
-        val config = JSONObject("{\"camera_hook_enabled\": true,\"camera_photo\": \"eHh4eA==\"}")
+        // 远程文件在测试环境中不可读（优先数据源），按测试约定直接返回空数据
+        val config = JSONObject("{\"camera_hook_enabled\": true,\"camera_photo_file\": \"/data/local/tmp/photo.bin\",\"camera_photo\": \"eHh4eA==\"}")
         assertEquals(0, cameraPhotoBytes(config).size)
     }
 

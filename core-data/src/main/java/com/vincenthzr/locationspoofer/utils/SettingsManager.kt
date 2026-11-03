@@ -184,8 +184,21 @@ class SettingsManager(context: Context) {
      * 不存在任何目标 App 时，发送到这些进程进程的 Hook 不会修改任何相机数据。
      */
     var cameraHookPackages: Set<String>
-        get() = getCameraHookPackages()
-        set(value) = setCameraHookPackages(value)
+        get() = prefs.getString("camera_hook_packages", "[]")?.let {
+            val set = mutableSetOf<String>()
+            try {
+                val jsonArray = JSONArray(it)
+                for (i in 0 until jsonArray.length()) set.add(jsonArray.getString(i))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            set
+        } ?: emptySet()
+        set(value) {
+            val jsonArray = JSONArray()
+            value.forEach { jsonArray.put(it) }
+            prefs.edit().putString("camera_hook_packages", jsonArray.toString()).apply()
+        }
 
     /**
      * 用户通过 App 界面选定的相机照片，以 BASE64 简章存入，由相机 Hook 在目标进程中回写。
@@ -361,27 +374,6 @@ class SettingsManager(context: Context) {
         val jsonArray = JSONArray()
         packages.forEach { jsonArray.put(it) }
         prefs.edit().putString("system_hook_packages", jsonArray.toString()).apply()
-    }
-
-    /** 用户通过 App 界面选定的、需要被 Hook 相机 API 的目标应用包名集合 */
-    fun getCameraHookPackages(): Set<String> {
-        val jsonString = prefs.getString("camera_hook_packages", "[]") ?: "[]"
-        val set = mutableSetOf<String>()
-        try {
-            val jsonArray = JSONArray(jsonString)
-            for (i in 0 until jsonArray.length()) {
-                set.add(jsonArray.getString(i))
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return set
-    }
-
-    fun setCameraHookPackages(packages: Set<String>) {
-        val jsonArray = JSONArray()
-        packages.forEach { jsonArray.put(it) }
-        prefs.edit().putString("camera_hook_packages", jsonArray.toString()).apply()
     }
 
     /** 是否开启全局模拟模式（除本应用与系统基础核心外对所有应用生效） */

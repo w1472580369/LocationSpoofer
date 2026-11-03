@@ -1,0 +1,51 @@
+# User Instruction Memory
+
+This file records user instructions, preferences, and teachings for reference in future interactions.
+
+## Format
+
+### User Instruction Entry
+User instruction entries should follow this format:
+
+[User Instruction Summary]
+- Date: [YYYY-MM-DD]
+- Context: [Mentioned scenario or time]
+- Instructions:
+  - [Content of user teaching or instruction, described line by line]
+
+### Project Knowledge Entry
+Entries discovered by the Agent during task execution should follow this format:
+
+[Project Knowledge Summary]
+- Date: [YYYY-MM-DD]
+- Context: Discovered by Agent while performing [specific task description]
+- Category: [Operations & Deployment|Build Methods|Testing Methods|Troubleshooting & Debugging|Workflow & Collaboration|Environment Configuration]
+- Instructions:
+  - [Specific knowledge points, described line by line]
+
+## Deduplication Strategy
+- Before adding a new entry, check for similar or identical instructions.
+- If a duplicate is found, skip the new entry or merge it with the existing one.
+- When merging, update the context or date information.
+- This helps avoid redundant entries and keeps the memory file tidy.
+
+## Entries
+
+[Project Knowledge Summary]
+- Date: 2026-11-03
+- Context: Discovered by Agent while fixing blocking compile errors in app-ui: VerticalScroll and VerticalScroll of Compose (BOM 2026.06.01) import location
+- Category: Build Methods
+- Instructions:
+  - 1. `androidx.compose.foundation.verticalScroll` 和 `rememberScrollState` 在 Compose BOM 2026.06.01 下属于 `androidx.compose.foundation` 包，不是 `androidx.compose.foundation.layout`（旧版 / 文档中常见 layout 旁通的写法不适用）
+  - 2. `isSystemInDarkTheme()` 是 Composable，不能写成参数的默认值（`isDark: Boolean = isSystemInDarkTheme()`），否则报 Unresolved reference；改为必须显式传参
+  - 3. 修复规则：先 `javap` / `unzip -l` 查 jar 包里实际的方法候选，再决定 import，不要凭印象写
+
+[Project Knowledge Summary]
+- Date: 2026-11-03
+- Context: Discovered by Agent while reproducing CI-equivalent test runs for a multi-flavor Android project
+- Category: Build Methods
+- Instructions:
+  - 1. 同时有两个 flavor dimension 的模块（app-ui / core-data），测试 task 名字是 flavor 限定的，不能直接写 `:app-ui:testDebugUnitTest`，会报 "Ambiguous matches"；用 `testGlobalDebugUnitTest` 和 `testScopedDebugUnitTest`
+  - 2. `core-data` 里 `var cameraHookPackages: Set<String>` 的 getter/setter 体引用了同名的 `fun getCameraHookPackages()`/`fun setCameraHookPackages()`，Kotlin 会在 JVM 层面生成一对同签名方法，导致 "Platform declaration clash"；修法是去掉外部显式函数，把读写逻辑直接写进属性 getter/setter，让 repository 层面改调属性
+  - 3. 项目 pre-existing 的 compiler failure 可能在基线 commit 上就得复现，排查前先 `git stash` 确认 scope，避免改错模块
+  - 4. `xposed` 模块的 `:xposed:test` 能同时跑 global + scoped flavor，但 app-ui 的 `testDebugUnitTest` 不被识别为两者，只会在 flavor 显式切分下存在
