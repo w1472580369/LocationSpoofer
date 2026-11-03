@@ -240,10 +240,11 @@ class SettingsRepository(private val settingsManager: SettingsManager) {
         }
 
     /** 被相机 Hook 作用的目标 App 包名集合 */
-    fun getCameraHookPackages(): Set<String> = settingsManager.getCameraHookPackages()
+    fun getCameraHookPackages(): Set<String> = settingsManager.cameraHookPackages
 
-    fun setCameraHookPackages(packages: Set<String>) =
-        settingsManager.setCameraHookPackages(packages)
+    fun setCameraHookPackages(packages: Set<String>) {
+        settingsManager.cameraHookPackages = packages
+    }
 
     /** 用户通过 App 界面选定的相机照片（BASE64，跨进程共享给 Xposed 模块回写） */
     var cameraPhoto: String
