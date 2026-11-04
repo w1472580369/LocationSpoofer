@@ -52,20 +52,13 @@ jobs:
             IS_PRERELEASE="false"
           fi
 
-          # 强制每次 push 到 main/master 都生成，释放旧的重新发版；
-          # 不会因旧版本已发过而跳过。
-          echo "=========================================="
-          echo "检测到新提交，重新构建并发布: $TAG_NAME"
-          echo "版本类型: $([ "$IS_PRERELEASE" = "true" ] && echo "Beta 预发布" || echo "正式稳定版")"
-          echo "状态检查通过，准备构建并发布！"
-          echo "=========================================="
+          # 新 Release 生成前，删除 GitHub 上所有旧 Release（保留 Tag 供 Changelog 差量对比用）
           echo "changed=true" >> $GITHUB_OUTPUT
           echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
 
       - name: Generate Changelog
         if: steps.check_version.outputs.changed == 'true'
-        id: changelog
         run: |
           TAG_NAME="${{ steps.check_version.outputs.tag }}"
           IS_PRERELEASE="${{ steps.check_version.outputs.is_prerelease }}"
@@ -135,6 +128,36 @@ jobs:
 
           cat changelog.txt
           
+      - name: Cleanup Old Releases (Keep Tags for Changelog Diff)
+        if: steps.check_version.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="${{ steps.check_version.outputs.tag }}"
+          
+          echo "目标标签: $TAG_NAME"
+          echo "每轮发版前，删除该版本系列下所有旧 Release（保留 Tag 供 Changelog 差量对比用）"
+          
+          # 列出 GitHub 上全部的 Release 及其 tag_name
+          curl -s -X GET \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/releases?per_page=100" > /tmp/all_releases.json
+          
+          OLD_TAGS=$(grep -o '"tag_name": *"[^"]*"' /tmp/all_releases.json | grep -o '"[^"]*"$' | tr -d '"' | grep "^[vV][0-9]" | grep -vx "$TAG_NAME")
+          if [ -z "$OLD_TAGS" ]; then
+            echo "没有旧 Release 需要清理。"
+          fi
+          for tag in $OLD_TAGS; do
+            echo "删除旧 Release: $tag"
+            curl -s -X DELETE \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$tag" > /dev/null 2>&1 \
+              || echo "Release [$tag] 删除失败 (可能不存在)。"
+          done
+          echo "旧 Release 清理完成。"
+
       - name: Setup Java
         if: steps.check_version.outputs.changed == 'true'
         uses: actions/setup-java@v5
