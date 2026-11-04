@@ -49,3 +49,13 @@ Entries discovered by the Agent during task execution should follow this format:
   - 2. `core-data` 里 `var cameraHookPackages: Set<String>` 的 getter/setter 体引用了同名的 `fun getCameraHookPackages()`/`fun setCameraHookPackages()`，Kotlin 会在 JVM 层面生成一对同签名方法，导致 "Platform declaration clash"；修法是去掉外部显式函数，把读写逻辑直接写进属性 getter/setter，让 repository 层面改调属性
   - 3. 项目 pre-existing 的 compiler failure 可能在基线 commit 上就得复现，排查前先 `git stash` 确认 scope，避免改错模块
   - 4. `xposed` 模块的 `:xposed:test` 能同时跑 global + scoped flavor，但 app-ui 的 `testDebugUnitTest` 不被识别为两者，只会在 flavor 显式切分下存在
+
+[Project Knowledge Summary]
+- Date: 2026-11-04
+- Context: Discovered by Agent while rewriting the CI release workflow (release.yml) to rebuild and republish the same Release tag on every push
+- Category: Operations & Deployment
+- Instructions:
+  - 1. `.github/workflows/release.yml` 每次 push 到 main/master 都重新构建 Release APK（4 个：scoped/global × arm64-v8a/armeabi-v7a）
+  - 2. 发布端使用 `softprops/action-gh-release@v2`，`tag_name` 固定来自 `gradle.properties` 的 `APP_VERSION_NAME`（前缀 v，如 v3.0.0），`delete_existing: true` + `force_create: true` 仅删除**同 tag** 的旧 Release 并新建，不会删其他版本的 Release
+  - 3. 旧版流程里曾有一个 "Cleanup Old Releases" 步骤用 curl 循环删掉了所有旧 tag 的 Release，已移除
+  - 4. 版本格式校验现在是硬性退出（校验失败 exit 1），不再悄悄跳过；changelog 取自 `PREV_TAG..HEAD` 的 feat:/fix: 提交

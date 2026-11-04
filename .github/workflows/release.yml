@@ -1,4 +1,4 @@
-name: Release on Version Update
+name: Build and Release APK on Push
 
 on:
   push:
@@ -26,20 +26,20 @@ jobs:
           # 改为从这里读取，不再是 app/build.gradle.kts 里的字面量字符串）
           VERSION_NAME=$(grep '^APP_VERSION_NAME=' gradle.properties | head -n 1 | cut -d'=' -f2)
           echo "当前代码中的 versionName: $VERSION_NAME"
+          TAG_NAME="v$VERSION_NAME"
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
 
           if [ -z "$VERSION_NAME" ]; then
             echo "错误：未能从 gradle.properties 提取到 APP_VERSION_NAME，终止流程。"
             exit 1
           fi
-          
+
           # 校验版本号格式（支持 x.y.z 或 x.y.z-beta-n / x.y.z-beta.n）
           if ! echo "$VERSION_NAME" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-beta[-.][0-9]+)?$'; then
-            echo "警告：版本号 '$VERSION_NAME' 不符合标准语义化规范 (如 2.3.6 或 2.3.6-beta-1)，跳过发版。"
-            echo "changed=false" >> $GITHUB_OUTPUT
-            exit 0
+            echo "错误：版本号 '$VERSION_NAME' 不符合标准语义化规范 (如 2.3.6 或 2.3.6-beta-1)，终止流程。"
+            exit 1
           fi
-          
-          TAG_NAME="v$VERSION_NAME"
 
           # 判断是否是 Beta 预发布版本
           if echo "$VERSION_NAME" | grep -qi 'beta'; then
@@ -52,18 +52,12 @@ jobs:
             IS_PRERELEASE="false"
           fi
 
-          # 新 Release 生成前，删除 GitHub 上所有旧 Release（保留 Tag 供 Changelog 差量对比用）
-          echo "changed=true" >> $GITHUB_OUTPUT
-          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
-          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
-
       - name: Generate Changelog
-        if: steps.check_version.outputs.changed == 'true'
         run: |
           TAG_NAME="${{ steps.check_version.outputs.tag }}"
           IS_PRERELEASE="${{ steps.check_version.outputs.is_prerelease }}"
-          
-          # 获取上一个基准 tag
+
+          # 获取上一个基准 tag（用于生成差量 changelog）
           if [ "$IS_PRERELEASE" = "true" ]; then
             # Beta 版本：对比上一个 tag（包括旧 beta）
             PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
@@ -74,7 +68,7 @@ jobs:
               PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
             fi
           fi
-          
+
           # 获取提交记录
           if [ -z "$PREV_TAG" ]; then
             echo "没有找到上一个基准 tag，获取所有提交记录。"
@@ -83,10 +77,10 @@ jobs:
             echo "上一个基准 tag: $PREV_TAG"
             COMMITS=$(git log $PREV_TAG..HEAD --no-merges --pretty=format:"%s")
           fi
-          
+
           # 初始化 changelog 文件
           echo "" > changelog.txt
-          
+
           # 提取功能更新 (feat:)
           FEATS=$(echo "$COMMITS" | grep "^feat:" | sed 's/^feat:[[:space:]]*/- /' || true)
           if [ -n "$FEATS" ]; then
@@ -94,7 +88,7 @@ jobs:
             echo "$FEATS" >> changelog.txt
             echo "" >> changelog.txt
           fi
-          
+
           # 提取修复 (fix:)
           FIXES=$(echo "$COMMITS" | grep "^fix:" | sed 's/^fix:[[:space:]]*/- /' || true)
           if [ -n "$FIXES" ]; then
@@ -102,7 +96,7 @@ jobs:
             echo "$FIXES" >> changelog.txt
             echo "" >> changelog.txt
           fi
-          
+
           # 如果没有任何匹配的内容，至少留一行记录
           if [ -z "$FEATS" ] && [ -z "$FIXES" ]; then
             echo "常规更新与优化" >> changelog.txt
@@ -127,39 +121,8 @@ jobs:
           NOTES
 
           cat changelog.txt
-          
-      - name: Cleanup Old Releases (Keep Tags for Changelog Diff)
-        if: steps.check_version.outputs.changed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG_NAME="${{ steps.check_version.outputs.tag }}"
-          
-          echo "目标标签: $TAG_NAME"
-          echo "每轮发版前，删除该版本系列下所有旧 Release（保留 Tag 供 Changelog 差量对比用）"
-          
-          # 列出 GitHub 上全部的 Release 及其 tag_name
-          curl -s -X GET \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/releases?per_page=100" > /tmp/all_releases.json
-          
-          OLD_TAGS=$(grep -o '"tag_name": *"[^"]*"' /tmp/all_releases.json | grep -o '"[^"]*"$' | tr -d '"' | grep "^[vV][0-9]" | grep -vx "$TAG_NAME")
-          if [ -z "$OLD_TAGS" ]; then
-            echo "没有旧 Release 需要清理。"
-          fi
-          for tag in $OLD_TAGS; do
-            echo "删除旧 Release: $tag"
-            curl -s -X DELETE \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$tag" > /dev/null 2>&1 \
-              || echo "Release [$tag] 删除失败 (可能不存在)。"
-          done
-          echo "旧 Release 清理完成。"
 
       - name: Setup Java
-        if: steps.check_version.outputs.changed == 'true'
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
@@ -167,17 +130,14 @@ jobs:
           cache: 'gradle'
 
       - name: Setup Gradle
-        if: steps.check_version.outputs.changed == 'true'
         uses: gradle/actions/setup-gradle@v4
 
       - name: Setup Android SDK
-        if: steps.check_version.outputs.changed == 'true'
         uses: android-actions/setup-android@v4
         with:
           packages: "platform-tools platforms;android-37.0 build-tools;36.0.0"
 
       - name: Decode Keystore
-        if: steps.check_version.outputs.changed == 'true'
         env:
           ENCODED_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
@@ -187,7 +147,6 @@ jobs:
           echo "decoded: $(du -h "$RUNNER_TEMP/keystore.jks" | cut -f1)"
 
       - name: Build Release APK
-        if: steps.check_version.outputs.changed == 'true'
         env:
           KEYSTORE_FILE_PATH: ${{ runner.temp }}/keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -229,7 +188,6 @@ jobs:
           fi
 
       - name: Publish GitHub Release
-        if: steps.check_version.outputs.changed == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.check_version.outputs.tag }}
@@ -237,7 +195,7 @@ jobs:
           body_path: changelog.txt
           prerelease: ${{ steps.check_version.outputs.is_prerelease == 'true' }}
           files: app/build/outputs/apk/dist/LocationSpoofer-*.apk
-          # 删除旧 Release 和旧 Tag 缓存，强制重新创建全新的 Release
+          # 删除同 tag 的旧 Release 并强制重新创建，保证每次 push 都生成全新的 Release
           force_create: true
           delete_existing: true
         env:
