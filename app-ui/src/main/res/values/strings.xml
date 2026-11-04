@@ -457,7 +457,6 @@
     <string name="home_map_title">Location Map</string>
     <string name="home_map_desc">Current position and quick operations</string>
     <string name="home_map_status_line">Position %s, %s</string>
-    <string name="home_map_enter_location_desc">Enter the Location tab to change coordinates and start spoofing</string>
     <string name="home_map_voice_note_title">Add Voice Note</string>
     <string name="home_map_voice_note_desc">Record a voice note at (%1$.6f, %2$.6f)</string>
     <string name="home_map_voice_note_start_desc">Tap the button to record; save it as a note for this location</string>
@@ -470,9 +469,8 @@
     <string name="lab_header_title">Experimental</string>
     <string name="lab_warning_title">Experimental features</string>
     <string name="lab_warning_desc">These features are in beta and may not work on all devices.</string>
-    <string name="home_enter_location">Enter Location Control</string>
-    <string name="home_current_position">Current Position</string>
     <string name="home_spoofing_active">Active</string>
+    <string name="home_current_position">Current Position</string>
     <string name="home_spoofing_inactive">Inactive</string>
     <string name="home_return_map">Return to Map</string>
     <string name="lab_title">Lab</string>

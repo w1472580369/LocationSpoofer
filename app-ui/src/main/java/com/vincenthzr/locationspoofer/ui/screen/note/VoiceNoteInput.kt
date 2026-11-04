@@ -49,7 +49,9 @@ fun VoiceNoteInput(
     lat: Double,
     lng: Double,
     modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = {}
+    onDismiss: () -> Unit = {},
+    /** 长按直达录制：面板出现时直接开始录制（开启后跳过点击 Mic 的步骤） */
+    autoStartRecording: Boolean = false
 ) {
     val context = LocalContext.current
     val isDark = isSystemInDarkTheme()
@@ -69,6 +71,11 @@ fun VoiceNoteInput(
             recorder.release()
             recordingFile = null
         }
+
+        if (autoStartRecording) {
+            // 长按直达录制：面板出现时无需点击 Mic，直接尝试开始录制（未授权时唤起系统弹窗）
+            startRecordingWithPermission()
+        }
     }
 
     // 通过系统弹窗申请录音权限，未通过时提示用户（避免 MediaRecorder 直接抛出 IllegalStateException）
@@ -77,6 +84,9 @@ fun VoiceNoteInput(
     ) { granted ->
         if (!granted) {
             Toast.makeText(context, context.getString(R.string.audio_permission_required), Toast.LENGTH_LONG).show()
+        } else if (autoStartRecording) {
+            // 系统弹窗授权后补录：直接开始录制
+            startRecording()
         }
     }
 

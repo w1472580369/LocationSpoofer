@@ -334,7 +334,6 @@ fun MainScaffoldScreen(
                             viewModel = viewModel,
                             uiState = uiState,
                             mapController = mapController,
-                            onEnterLocation = { selectedTab = BottomTab.Location.ordinal },
                             lastViewport = lastViewport,
                             tabBarHeight = paddingValues.calculateBottomPadding()
                         )

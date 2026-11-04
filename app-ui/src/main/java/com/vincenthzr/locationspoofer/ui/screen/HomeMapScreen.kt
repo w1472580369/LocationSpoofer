@@ -46,7 +46,6 @@ fun HomeMapScreen(
     viewModel: MainViewModel,
     uiState: AppState,
     mapController: AppMapController?,
-    onEnterLocation: () -> Unit = {},
     lastViewport: CameraViewport? = null,
     tabBarHeight: Dp = 90.dp
 ) {
@@ -58,19 +57,25 @@ fun HomeMapScreen(
     var restoredViewport by remember { mutableStateOf<CameraViewport?>(null) }
     var notePosition by remember { mutableStateOf<Pair<Double, Double>?>(null) }
     var showVoiceNoteInput by remember { mutableStateOf(false) }
-
-    // 底部快捷按钮在录制时隐藏，避免与语音备注面板重叠
-    var showBottomButtons by remember { mutableStateOf(true) }
+    // 长按直达录制标记：长按地图开面板时直接开始录音，而非显示录制入口
+    var longPressRecording by remember { mutableStateOf(false) }
 
     DisposableEffect(mapController) {
         if (mapController != null) {
             mapController.setOnMapClickListener { lat, lng ->
                 notePosition = lat to lng
+                longPressRecording = false
+                showVoiceNoteInput = true
+            }
+            mapController.setOnMapLongClickListener { lat, lng ->
+                notePosition = lat to lng
+                longPressRecording = true
                 showVoiceNoteInput = true
             }
         }
         onDispose {
             mapController?.setOnMapClickListener { _, _ -> }
+            mapController?.setOnMapLongClickListener { _, _ -> }
         }
     }
 
@@ -190,21 +195,24 @@ fun HomeMapScreen(
                         onClick = {
                             keyboardController?.hide()
                             focusManager.clearFocus()
-                            onEnterLocation()
+                            // 回到当前真实位置：让设备实际定位，地图跟回真实的坐标与缩放
+                            viewModel.fetchCurrentLocation(context) { lat, lng ->
+                                mapController?.animateCamera(lat, lng, 16f)
+                            }
                         }
                     ) {
+                        Icon(
+                            Icons.Rounded.MyLocation,
+                            contentDescription = null,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = stringResource(R.string.home_enter_location),
+                            text = stringResource(R.string.locate_to_current),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        text = stringResource(R.string.home_map_enter_location_desc),
-                        fontSize = 11.sp,
-                        color = AppColors.textSecondary(isDark)
-                    )
                 }
             }
 
@@ -217,7 +225,8 @@ fun HomeMapScreen(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth(),
-                        onDismiss = { showVoiceNoteInput = false }
+                        onDismiss = { showVoiceNoteInput = false },
+                        autoStartRecording = longPressRecording
                     )
                 }
             }

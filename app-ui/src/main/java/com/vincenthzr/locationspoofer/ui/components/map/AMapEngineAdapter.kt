@@ -2,6 +2,7 @@ package com.vincenthzr.locationspoofer.ui.components.map
 
 import android.content.Context
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
@@ -150,9 +151,25 @@ class AMapControllerImpl(
     private var cameraFinishListener: ((Double, Double) -> Unit)? = null
     private var cameraMoveListener: ((Double, Double) -> Unit)? = null
     private var mapClickListener: ((Double, Double) -> Unit)? = null
+    private var mapLongClickListener: ((Double, Double) -> Unit)? = null
+    // 同一个手势：长按事件中 SDK 有时会在后续也回传单击事件，需要在短时间内屏蔽
+    private var lastLongPressAt: Long = 0
+
+    /** 长按手势事件后的短时间内（长按会回传单击事件），不重复上报单击 */
+    private fun isSameGestureByLongPress(): Boolean {
+        val elapsed = SystemClock.elapsedRealtime() - lastLongPressAt
+        return elapsed < 300L
+    }
 
     init {
-        map.setOnMapClickListener { latLng -> mapClickListener?.invoke(latLng.latitude, latLng.longitude) }
+        map.setOnMapClickListener { latLng ->
+            if (isSameGestureByLongPress()) return@setOnMapClickListener
+            mapClickListener?.invoke(latLng.latitude, latLng.longitude)
+        }
+        map.setOnMapLongClickListener { latLng ->
+            lastLongPressAt = SystemClock.elapsedRealtime()
+            mapLongClickListener?.invoke(latLng.latitude, latLng.longitude)
+        }
         map.setOnCameraChangeListener(object : AMap.OnCameraChangeListener {
             override fun onCameraChange(p0: CameraPosition?) {
                 p0?.target?.let { cameraMoveListener?.invoke(it.latitude, it.longitude) }
@@ -174,6 +191,10 @@ class AMapControllerImpl(
 
     override fun setOnMapClickListener(onClick: (lat: Double, lng: Double) -> Unit) {
         mapClickListener = onClick
+    }
+
+    override fun setOnMapLongClickListener(onLongClick: (lat: Double, lng: Double) -> Unit) {
+        mapLongClickListener = onLongClick
     }
 
     override fun disableUiControls() {

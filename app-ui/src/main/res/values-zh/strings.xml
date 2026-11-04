@@ -598,9 +598,7 @@
     <string name="collection_route_delete_message">删除“%1$s”及其全部采样数据？</string>
     <string name="local_collection_records_count">%1$d 个点位 · %2$d 条路线</string>
     <string name="home_current_position">当前位置</string>
-    <string name="home_enter_location">进入定位防真控制</string>
     <string name="home_map_desc">当前位置和快速操作</string>
-    <string name="home_map_enter_location_desc">前往定位面板调整坐标并启动模拟</string>
     <string name="home_map_status_line">坐标 %s, %s</string>
     <string name="home_map_title">位置地图</string>
     <string name="home_return_map">返回地图</string>
