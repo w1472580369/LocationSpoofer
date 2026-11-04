@@ -52,7 +52,6 @@ enum class BottomTab(val icon: ImageVector) {
     Location(Icons.Rounded.MyLocation),
     Route(Icons.Rounded.Route),
     Features(Icons.Rounded.Extension),
-    Lab(Icons.Rounded.Science),
     Info(Icons.Rounded.Settings);
 
     @Composable
@@ -62,7 +61,6 @@ enum class BottomTab(val icon: ImageVector) {
             Location -> stringResource(R.string.tab_location)
             Route -> stringResource(R.string.tab_route)
             Features -> stringResource(R.string.tab_features)
-            Lab -> stringResource(R.string.tab_lab)
             Info -> stringResource(R.string.tab_info)
         }
     }
@@ -368,13 +366,6 @@ fun MainScaffoldScreen(
                             onNavigateToManageData = { currentSubScreen = MainSubScreen.ManageData },
                             onNavigateToSystemHookApps = { currentSubScreen = MainSubScreen.SystemHookApps },
                             onNavigateToCameraHook = { currentSubScreen = MainSubScreen.CameraHook }
-                        )
-
-                        BottomTab.Lab.ordinal -> com.vincenthzr.locationspoofer.ui.screen.LabScreen(
-                            viewModel = viewModel,
-                            uiState = uiState,
-                            onNavigateToCameraHook = { currentSubScreen = MainSubScreen.CameraHook },
-                            tabBarHeight = paddingValues.calculateBottomPadding()
                         )
 
                         BottomTab.Info.ordinal -> com.vincenthzr.locationspoofer.ui.screen.tabs.InfoTab(

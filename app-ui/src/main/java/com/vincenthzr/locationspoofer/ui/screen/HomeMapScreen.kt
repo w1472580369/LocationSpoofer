@@ -35,7 +35,10 @@ import com.vincenthzr.locationspoofer.ui.components.AppMapController
 import com.vincenthzr.locationspoofer.ui.components.MarkerType
 import com.vincenthzr.locationspoofer.ui.theme.AppColors
 import com.vincenthzr.locationspoofer.ui.theme.AccentBlue
+import com.vincenthzr.locationspoofer.ui.screen.note.VoiceNoteInput
 import com.vincenthzr.locationspoofer.viewmodel.MainViewModel
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.animation.AnimatedVisibility
 
 @Composable
 fun HomeMapScreen(
@@ -52,6 +55,23 @@ fun HomeMapScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     var restoredViewport by remember { mutableStateOf<CameraViewport?>(null) }
+    var notePosition by remember { mutableStateOf<Pair<Double, Double>?>(null) }
+    var showVoiceNoteInput by remember { mutableStateOf(false) }
+
+    // 底部快捷按钮在录制时隐藏，避免与语音备注面板重叠
+    var showBottomButtons by remember { mutableStateOf(true) }
+
+    DisposableEffect(mapController) {
+        if (mapController != null) {
+            mapController.setOnMapClickListener { lat, lng ->
+                notePosition = lat to lng
+                showVoiceNoteInput = true
+            }
+        }
+        onDispose {
+            mapController?.setOnMapClickListener { _, _ -> }
+        }
+    }
 
     LaunchedEffect(mapController, lastViewport, uiState.latitudeInput, uiState.longitudeInput) {
         if (mapController == null) return@LaunchedEffect
@@ -146,40 +166,56 @@ fun HomeMapScreen(
 
             Spacer(Modifier.weight(1f))
 
-            // 底部快捷按钮
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Button(
+            // 底部快捷按钮（录制时隐藏，避免与语音备注面板重叠）
+            AnimatedVisibility(visible = !showVoiceNoteInput) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp)
-                        .clip(RoundedCornerShape(26.dp)),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    onClick = {
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
-                        onEnterLocation()
-                    }
+                        .padding(bottom = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .clip(RoundedCornerShape(26.dp)),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        onClick = {
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                            onEnterLocation()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.home_enter_location),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                    Spacer(Modifier.height(10.dp))
                     Text(
-                        text = stringResource(R.string.home_enter_location),
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold
+                        text = stringResource(R.string.home_map_enter_location_desc),
+                        fontSize = 11.sp,
+                        color = AppColors.textSecondary(isDark)
                     )
                 }
-                Spacer(Modifier.height(10.dp))
-                Text(
-                    text = stringResource(R.string.home_map_enter_location_desc),
-                    fontSize = 11.sp,
-                    color = AppColors.textSecondary(isDark)
-                )
+            }
+
+            // 语音备注录制面板：点击地图位置后显示在底部，录制时隐藏快捷按钮
+            AnimatedVisibility(visible = showVoiceNoteInput) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    VoiceNoteInput(
+                        lat = notePosition?.first ?: uiState.latitudeInput.toDoubleOrNull() ?: 39.9042,
+                        lng = notePosition?.second ?: uiState.longitudeInput.toDoubleOrNull() ?: 116.4074,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth(),
+                        onDismiss = { showVoiceNoteInput = false }
+                    )
+                }
             }
         }
     }

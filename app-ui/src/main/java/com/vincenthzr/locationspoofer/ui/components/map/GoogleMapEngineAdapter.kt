@@ -180,8 +180,13 @@ class GMapControllerImpl(
 
     private var cameraFinishListener: ((Double, Double) -> Unit)? = null
     private var cameraMoveListener: ((Double, Double) -> Unit)? = null
+    private var mapClickListener: ((Double, Double) -> Unit)? = null
 
     init {
+        map.setOnMapClickListener { latlng ->
+            val gcj = wgs84ToGcj02(latlng.latitude, latlng.longitude)
+            mapClickListener?.invoke(gcj.first, gcj.second)
+        }
         map.setOnCameraMoveListener {
             val target = map.cameraPosition?.target
             if (target != null) {
@@ -204,6 +209,10 @@ class GMapControllerImpl(
 
     override fun setOnCameraMoveListener(onMove: (lat: Double, lng: Double) -> Unit) {
         cameraMoveListener = onMove
+    }
+
+    override fun setOnMapClickListener(onClick: (lat: Double, lng: Double) -> Unit) {
+        mapClickListener = onClick
     }
 
     override fun disableUiControls() {
