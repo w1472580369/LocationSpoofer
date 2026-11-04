@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MyLocation
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -176,47 +176,6 @@ fun HomeMapScreen(
 
             Spacer(Modifier.weight(1f))
 
-            // 底部快捷按钮（录制时隐藏，避免与语音备注面板重叠）
-            AnimatedVisibility(visible = !showVoiceNoteInput) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .clip(RoundedCornerShape(26.dp)),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        onClick = {
-                            keyboardController?.hide()
-                            focusManager.clearFocus()
-                            // 回到当前真实位置：让设备实际定位，地图跟回真实的坐标与缩放
-                            viewModel.fetchCurrentLocation(context) { lat, lng ->
-                                mapController?.animateCamera(lat, lng, 16f)
-                            }
-                        }
-                    ) {
-                        Icon(
-                            Icons.Rounded.MyLocation,
-                            contentDescription = null,
-                            modifier = Modifier.size(22.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = stringResource(R.string.locate_to_current),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                }
-            }
-
             // 语音备注录制面板：点击地图位置后显示在底部，录制时隐藏快捷按钮
             AnimatedVisibility(visible = showVoiceNoteInput) {
                 Box(modifier = Modifier.fillMaxWidth()) {
@@ -228,6 +187,39 @@ fun HomeMapScreen(
                             .fillMaxWidth(),
                         onDismiss = { showVoiceNoteInput = false },
                         autoStartRecording = longPressRecording
+                    )
+                }
+            }
+        }
+
+        // 返回当前位置：小圆图标按钮放在顶部偏右，不再占有底部整行
+        AnimatedVisibility(visible = !showVoiceNoteInput) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .padding(16.dp),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                IconButton(
+                    onClick = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        // 回到当前真实位置：让设备实际定位，地图跟回真实的坐标与缩放
+                        viewModel.fetchCurrentLocation(context) { lat, lng ->
+                            mapController?.animateCamera(lat, lng, 16f)
+                        }
+                    },
+                    modifier = Modifier.size(44.dp),
+                    colors = IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = AccentBlue,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Icon(
+                        Icons.Rounded.MyLocation,
+                        null,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }

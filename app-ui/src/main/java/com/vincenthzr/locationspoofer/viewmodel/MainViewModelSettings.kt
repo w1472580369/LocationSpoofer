@@ -527,6 +527,8 @@ internal fun MainViewModel.setAppCoordinateSystem(pkg: String, sys: String) {
 
 /** 进入"系统级模拟应用"选择页时按需加载全量已安装 App 列表 */
 internal fun MainViewModel.loadInstalledAppsForSystemHook() {
+    // 已加载过则不重复扫描设备（应用列表动辄上千条，是 KeyHook 页打开延迟的根因）
+    if (_uiState.value.installedAppsForSystemHook.isNotEmpty()) return
     _uiState.update { it.copy(isLoadingInstalledApps = true) }
     viewModelScope.launch(Dispatchers.IO) {
         val apps = lsposedManager.getAllInstalledApps(context)

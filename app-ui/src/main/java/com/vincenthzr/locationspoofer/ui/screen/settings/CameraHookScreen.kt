@@ -87,9 +87,12 @@ fun CameraHookScreen(
 
     BackHandler(onBack = onClose)
 
-    // 进入时刷新官方走查的"全局已安装 App"列表
+    // 进入时刷新已安装 App 列表：Feature 页切换时已提前加载，已加载过则跳过
+    //（直接扫描设备上的全部 App 需要 2-3 秒，是打开相机 Hook 页延迟的根因）
     LaunchedEffect(Unit) {
-        viewModel.loadInstalledAppsForSystemHook()
+        if (uiState.installedAppsForSystemHook.isEmpty()) {
+            viewModel.loadInstalledAppsForSystemHook()
+        }
     }
 
     // 载入已选的照片：Base64 串用于预览，文件路径用于大图通道

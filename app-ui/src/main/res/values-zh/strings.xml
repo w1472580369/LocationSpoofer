@@ -597,6 +597,15 @@
     <string name="collection_route_delete_title">删除采集路线</string>
     <string name="collection_route_delete_message">删除“%1$s”及其全部采样数据？</string>
     <string name="local_collection_records_count">%1$d 个点位 · %2$d 条路线</string>
+    <string name="home_map_voice_note_title">添加语音备注</string>
+    <string name="home_map_voice_note_desc">在黑盒坐标 (%1$.6f, %2$.6f) 添加语音备注</string>
+    <string name="home_map_voice_note_start_desc">点击按钮开始录制语音备注</string>
+    <string name="voice_note_recording">录制中 %1$ds</string>
+    <string name="home_map_note_stop">停止</string>
+    <string name="home_map_note_cancel">取消</string>
+    <string name="home_map_note_close">关闭</string>
+    <string name="voice_note_saved">语音备注已保存</string>
+    <string name="audio_permission_required">录制语音需要权限</string>
     <string name="home_current_position">当前位置</string>
     <string name="home_map_desc">当前位置和快速操作</string>
     <string name="home_map_status_line">坐标 %s, %s</string>

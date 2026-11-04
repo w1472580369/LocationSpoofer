@@ -89,7 +89,7 @@ fun MainScaffoldScreen(
     uiState: AppState
 ) {
     val pageCount = BottomTab.values().size
-    var selectedTab by remember { mutableIntStateOf(BottomTab.Location.ordinal) }
+    var selectedTab by remember { mutableIntStateOf(BottomTab.Home.ordinal) }
     var currentSubScreen by remember { mutableStateOf(MainSubScreen.None) }
     var activeSubScreen by remember { mutableStateOf(MainSubScreen.None) }
     var mapController by remember { mutableStateOf<AppMapController?>(null) }
@@ -122,9 +122,10 @@ fun MainScaffoldScreen(
         }
     }
 
-    // 软件启动进入主界面时，立即在后台检索是否有新版本发布
+    // 软件启动进入主界面时，立即在后台检索是否有新版本发布，同时预加载已安装 App 列表（相机 Hook 页直连使用）
     LaunchedEffect(Unit) {
         updateViewModel.fetchReleases()
+        viewModel.loadInstalledAppsForSystemHook()
     }
 
     // 检测到未被忽略的新版本时弹出启动更新提示框
@@ -152,9 +153,22 @@ fun MainScaffoldScreen(
         }
     }
 
-    // 针对非首页 Tab（路线/功能/信息）的系统返回拦截：返回到定位首页
-    BackHandler(enabled = currentSubScreen == MainSubScreen.None && selectedTab != BottomTab.Location.ordinal) {
-        selectedTab = BottomTab.Location.ordinal
+    // 针对非首页 Tab（路线/功能/信息）的系统返回拦截：返回到首页
+    BackHandler(enabled = currentSubScreen == MainSubScreen.None && selectedTab != BottomTab.Home.ordinal) {
+        selectedTab = BottomTab.Home.ordinal
+    }
+
+    LaunchedEffect(selectedTab) {
+        if (selectedTab == BottomTab.Features.ordinal) {
+            // 提前加载已安装 App 列表，避免后面打开相机 Hook 页时卡 2-3 秒
+            viewModel.loadInstalledAppsForSystemHook()
+        }
+    }
+
+    LaunchedEffect(currentSubScreen) {
+        if (currentSubScreen != MainSubScreen.None) {
+            activeSubScreen = currentSubScreen
+        }
     }
 
     LaunchedEffect(selectedTab, mapController, uiState.mapType) {
