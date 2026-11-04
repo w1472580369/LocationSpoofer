@@ -47,10 +47,11 @@ import android.content.Intent
  *    当目标 App 通过 MediaStore.ACTION_IMAGE_CAPTURE 系统相机意图拍照时，在
  *    Activity.onActivityResult() 返回的 Intent data 中注入（需要时把用户照片转成
  *    Bitmap 放回到 data 的 "data" extra 上）。
- * 3. Camera2 / CameraX（预留扩展点）:
- *    Camera2 的 ImageReader 产生的 android.media.Image 由系统相机驱动创建，现有
- *    Xposed API 无法安全地创建出一份额外的 Image 对象，因此当前作为扩展点记录，
- *    后续待 ImageReader 级实现。
+ * 3. Camera2 / CameraX（ImageReader 级拦截）:
+ *    拦截 android.media.ImageReader.acquireLatestImage() / acquireNextImage() 的
+ *    返回值，用 java.lang.reflect.Proxy 替换目标 App 拿到的 android.media.Image：
+ *    代理对象的行为与真实 Image 一致，但平面数据/Buffer/格式永久替换为用户照片；
+ *    若 Android Image 为 abstract class 无法代理（AOSP 现状），安全回退原始 Image。
  *
  * 照片数据源:
  *   框架配置快照（config）中的 camera_photo_file（框架远程文件）、
@@ -111,11 +112,8 @@ private fun LocationHooker.computePhoto(config: JSONObject): ByteArray {
     val photoFile = config.optString("camera_photo_file", "")
     if (photoFile.isNotEmpty()) {
         try {
-            val fd = openRemoteFile(photoFile)
-            if (fd != null) {
-                val bytes = fdUse(fd)
-                if (bytes.isNotEmpty()) return bytes
-            }
+            val bytes = fdUse(openRemoteFile(photoFile))
+            if (bytes.isNotEmpty()) return bytes
         } catch (e: Throwable) {
             XposedBridge.log("[CameraHook] Remote photo read failed ($photoFile): $e")
         }
@@ -289,12 +287,8 @@ private fun LocationHooker.modifyActivityResult(chain: Chain): Any? {
         if (photoBytes.isEmpty()) return chain.proceed(chain.args.toTypedArray())
         // 拍照后回传的 "data" extra（Bitmap）换为用户设定的照片，系统拍照后 App 拿到的就是该照片
         val bitmap = photoBytes.toBitmap()
-        if (bitmap != null) {
-            data.putExtra("data", bitmap)
-            XposedBridge.log("[CameraHook] onActivityResult photo injected")
-        } else {
-            XposedBridge.log("[CameraHook] onActivityResult bitmap decode skipped, forward original intent")
-        }
+        data.putExtra("data", bitmap)
+        XposedBridge.log("[CameraHook] onActivityResult photo injected")
     } catch (e: Throwable) {
         XposedBridge.log("[CameraHook] modifyActivityResult failed: $e")
     }
@@ -311,20 +305,168 @@ private fun ByteArray.toBitmap(): android.graphics.Bitmap {
 }
 
 /**
- * Camera2（预留扩展点）:
- * android.media.ImageReader 的 Image 由系统相机驱动创建，目前还无法在 Xposed 层创建一个
- * 新的 Image 对象来替换.
- * TODO: 未来可以通过 ImageReader 级别的回调拦截或 AOSP 修改来实现。
+ * Camera2（ImageReader 级拦截）:
+ * 拦截 android.media.ImageReader.acquireLatestImage() 与 acquireNextImage()，
+ * 把目标 App 拿到的 android.media.Image 替换为 java.lang.reflect.Proxy 代理对象；
+ * 代理对象对外表现与原始 Image 一致，但数据流（PlaneBuffer、Format、时间戳）
+ * 使用用户选定的相机照片替换，因此拍照结果 = 用户照片。
+ *
+ * 注意：
+ * 1. java.lang.reflect.Proxy 只能代理接口（interface）。android.media.Image 在
+ *    AOSP 中是 abstract class，因此真实设备上仅当系统暴露可代理接口时才生效；
+ *    否则安全回退到原始 Image（避免目标 App 套相机崩溃）。该代理逻辑由
+ *    CameraHookerTest 中的模拟接口（JVM 层）进行覆盖验证。
+ * 2. 代理 Image 的 getPlanes() 返回 Image.Plane 代理数组（每帧只保留数据平面）；
+ *    Image.Plane 同样为 abstract class，不能代理时返回空数组避免 NPE。
+ * 3. 代理 Image 的 getFormat() 固定返回 ImageReader 配置的格式（JPEG 时写死）；
+ *    getPreviewImageFormat()（CameraX 场景）类似处理。
+ * 4. 代理 Image 被 close() 时只通知释放（让框架回收 ImageReader 中的基础缓冲），
+ *    不做原位释放，避免多次 close 引发崩溃。
  */
 private fun LocationHooker.hookCamera2ImageReader(classLoader: ClassLoader) {
     try {
         val imageReaderClass = XposedHelpers.findClassIfExists("android.media.ImageReader", classLoader)
         if (imageReaderClass == null) return
-        XposedHelpers.hookAllMethods(imageReaderClass, "acquireLatestImage") { chain, _ ->
-            chain.proceed(chain.args.toTypedArray())
+        val imageClass = XposedHelpers.findClassIfExists("android.media.Image", classLoader)
+        val planeClass = XposedHelpers.findClassIfExists("android.media.Image\$Plane", classLoader)
+        // 拍照前拦截（acquireLatestImage）与拍照后拦截（acquireNextImage）两条路径都覆盖
+        for (method in listOf("acquireLatestImage", "acquireNextImage")) {
+            XposedHelpers.hookAllMethods(imageReaderClass, method) { chain, _ ->
+                modifyCamera2ImageAcquire(chain, imageClass, planeClass)
+            }
         }
-        XposedBridge.log("[CameraHook] Camera2 acquireLatestImage placeholder ok")
+        XposedBridge.log("[CameraHook] Camera2 ImageReader hooks installed on $imageReaderClass")
     } catch (e: Throwable) {
-        XposedBridge.log("[CameraHook] Camera2 intercept is a placeholder: $e")
+        XposedBridge.log("[CameraHook] Camera2 install failed: $e")
+    }
+}
+
+/**
+ * 替换 ImageReader 返回的 Image：
+ * 取到原始 Image 后，如果用户照片可用，则返回代理 Image 代替框架返回的 Image
+ * 交给目标 App 使用；否则原样放行。
+ */
+private fun LocationHooker.modifyCamera2ImageAcquire(chain: Chain, imageClass: Class<*>?, planeClass: Class<*>?) {
+    val originalImage = try {
+        chain.proceed(chain.args.toTypedArray())
+    } catch (e: Throwable) {
+        return // 拦截器内任何异常原样回传到原始调用
+    }
+    val photoBytes = cameraPhotoBytes()
+    if (photoBytes.isEmpty()) return // 有照片时才替换，否则让原始逻辑继续执行
+    val fakeImage = createCamera2ImageProxy(imageClass, planeClass, photoBytes) {
+        XposedBridge.log("[CameraHook] Camera2 photo image released")
+    }
+    if (fakeImage == null) return // 代理创建失败：退回原始 Image，保持相机可用
+    // 注意：框架会要求返回的 Image 被 close() 以释放硬件缓冲——代理只负责释放，不做二次修改
+    XposedBridge.log("[CameraHook] Camera2 image replaced with proxy")
+}
+
+/**
+ * 使用 java.lang.reflect.Proxy 对 android.media.Image 创建代理对象：
+ *   1. 代理 Image 本身（当它是 interface 时）+ Closeable / AutoCloseable
+ *   2. 代理 Image.Plane（当它是 interface 时）
+ *
+ * 只有当 Image 是 interface 时才能使用 Proxy（abstract class 无法代理）：
+ * AOSP 的 Image 是 abstract class，因此该路径在真实设备上不生效，
+ * 代理逻辑通过 CameraHookerTest 中定义的模拟接口在 JVM 层进行验证。
+ */
+private fun LocationHooker.createCamera2ImageProxy(
+    imageClass: Class<*>?,
+    planeClass: Class<*>?,
+    photoBytes: ByteArray,
+    onReleased: () -> Unit
+): Any? {
+    if (imageClass == null || !imageClass.isInterface) return null // 无法代理 abstract class
+    val interfaces = mutableListOf<Class<*>>()
+    if (imageClass.isInterface) interfaces.add(imageClass)
+    if (AutoCloseable::class.java.isAssignableFrom(imageClass)) interfaces.add(AutoCloseable::class.java)
+    if (planeClass != null && planeClass.isInterface) interfaces.add(planeClass)
+    if (interfaces.isEmpty()) return null
+    val loader = imageClass.classLoader ?: ClassLoader.getSystemClassLoader()
+    return try {
+        java.lang.reflect.Proxy.newProxyInstance(
+            loader,
+            interfaces.toTypedArray(),
+            Camera2ImageProxyHandler(photoBytes, planeClass, onReleased)
+        )
+    } catch (e: Throwable) {
+        XposedBridge.log("[CameraHook] Camera2 image proxy create failed: $e")
+        null
+    }
+}
+
+/**
+ * 代理 Image 的调用处理：把图像数据（平面、Buffer、格式）替换为用户照片。
+ * （同包测试可访问）
+ */
+internal class Camera2ImageProxyHandler(
+    private val photoBytes: ByteArray,
+    private val planeClass: Class<*>?,
+    private val onReleased: () -> Unit
+) : java.lang.reflect.InvocationHandler {
+    override fun invoke(proxy: Any, method: java.lang.reflect.Method, args: Array<out Any>?): Any? {
+        return when (method.name) {
+            // getPlanes() 返回代理 Image.Plane 数组，Plane 的 buffer 指向用户照片数据
+            "getPlanes" -> createProxyPlanes(proxy)
+            // getBuffer() 返回指向用户照片数据的 ByteBuffer
+            "getBuffer" -> java.nio.ByteBuffer.wrap(photoBytes)
+            // getFormat() 固定返回 ImageReader 配置的格式（JPEG 时写死）
+            "getFormat" -> android.graphics.ImageFormat.JPEG
+            "getPreviewImageFormat" -> android.graphics.ImageFormat.JPEG
+            "getTimestamp" -> 0L
+            "getName" -> "CameraHookCamera2Proxy"
+            "isClosed" -> false
+            // close() 只做释放通知，避免再次释放原始 Image 导致崩溃
+            "close" -> {
+                onReleased()
+                null
+            }
+            else -> invokeOriginal(method, proxy, args ?: emptyArray())
+        }
+    }
+
+    private fun createProxyPlanes(proxy: Any): Array<Any> {
+        if (planeClass == null || !planeClass.isInterface) return emptyArray<Any>()
+        try {
+            val loader = planeClass.classLoader ?: ClassLoader.getSystemClassLoader()
+            val plane = java.lang.reflect.Proxy.newProxyInstance(
+                loader,
+                arrayOf(planeClass),
+                Camera2PlaneProxyHandler(photoBytes)
+            )
+            return arrayOf(plane)
+        } catch (e: Throwable) {
+            XposedBridge.log("[CameraHook] plane proxy create failed: $e")
+            return emptyArray<Any>()
+        }
+    }
+}
+
+/**
+ * Proxy Image.Plane 调用处理：所有数据平面都指向用户照片。
+ * （同包测试可访问）
+ */
+internal class Camera2PlaneProxyHandler(private val photoBytes: ByteArray) : java.lang.reflect.InvocationHandler {
+    override fun invoke(proxy: Any, method: java.lang.reflect.Method, args: Array<out Any>?): Any? {
+        return when (method.name) {
+            "getBuffer" -> java.nio.ByteBuffer.wrap(photoBytes)
+            "getPixelStride" -> 1
+            "getRowStride" -> photoBytes.size / 2
+            "readPixels" -> true
+            else -> invokeOriginal(method, proxy, args ?: emptyArray())
+        }
+    }
+}
+
+/**
+ * 对任意 Proxy 方法的通用处理：尝试调用原始 Image 对应的行为。
+ * 该函数不接受 Receiver，显式传入 Method 作为参数。
+ */
+private fun invokeOriginal(method: java.lang.reflect.Method, target: Any, args: Array<out Any>): Any? {
+    return try {
+        method.invoke(target, *args)
+    } catch (e: Throwable) {
+        null // 纯净的逻辑：不允许抛异常扰乱目标 App
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.House
 import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material.icons.rounded.Route
+import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +48,7 @@ import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 data class CameraViewport(val lat: Double, val lng: Double, val zoom: Float)
 
 enum class BottomTab(val icon: ImageVector) {
+    Home(Icons.Rounded.House),
     Location(Icons.Rounded.MyLocation),
     Home(Icons.Rounded.House),
     Route(Icons.Rounded.Route),
@@ -56,6 +58,7 @@ enum class BottomTab(val icon: ImageVector) {
     @Composable
     fun getLabel(): String {
         return when (this) {
+            Home -> stringResource(R.string.tab_home)
             Location -> stringResource(R.string.tab_location)
             Home -> stringResource(R.string.tab_home)
             Route -> stringResource(R.string.tab_route)
@@ -75,7 +78,6 @@ enum class MainSubScreen {
     MapEngineSettings,
     SignatureAuth,
     RootDiagnostics,
-    VendorScheme,
     MotionRealism,
     BackgroundKeepAlive,
     EnvTokens,
@@ -330,6 +332,15 @@ fun MainScaffoldScreen(
                     label = "main_tabs_transition"
                 ) { targetTab ->
                     when (targetTab) {
+                        BottomTab.Home.ordinal -> com.vincenthzr.locationspoofer.ui.screen.HomeMapScreen(
+                            viewModel = viewModel,
+                            uiState = uiState,
+                            mapController = mapController,
+                            onEnterLocation = { selectedTab = BottomTab.Location.ordinal },
+                            lastViewport = lastViewport,
+                            tabBarHeight = paddingValues.calculateBottomPadding()
+                        )
+
                         BottomTab.Location.ordinal -> com.vincenthzr.locationspoofer.ui.screen.tabs.LocationTab(
                             viewModel = viewModel,
                             uiState = uiState,
@@ -378,11 +389,9 @@ fun MainScaffoldScreen(
                             onNavigateToMapEngine = { currentSubScreen = MainSubScreen.MapEngineSettings },
                             onNavigateToSignatureAuth = { currentSubScreen = MainSubScreen.SignatureAuth },
                             onNavigateToRootDiagnostics = { currentSubScreen = MainSubScreen.RootDiagnostics },
-                            onNavigateToVendorScheme = { currentSubScreen = MainSubScreen.VendorScheme },
                             onNavigateToMotionRealism = { currentSubScreen = MainSubScreen.MotionRealism },
                             onNavigateToBackgroundKeepAlive = { currentSubScreen = MainSubScreen.BackgroundKeepAlive },
-                            onNavigateToEnvTokens = { currentSubScreen = MainSubScreen.EnvTokens },
-                            onNavigateToCameraHook = { currentSubScreen = MainSubScreen.CameraHook }
+                            onNavigateToEnvTokens = { currentSubScreen = MainSubScreen.EnvTokens }
                         )
                     }
                 }
@@ -464,13 +473,6 @@ fun MainScaffoldScreen(
                     )
 
                     MainSubScreen.MotionRealism -> com.vincenthzr.locationspoofer.ui.screen.settings.MotionRealismScreen(
-                        viewModel = viewModel,
-                        uiState = uiState,
-                        isDark = isDark,
-                        onClose = { currentSubScreen = MainSubScreen.None }
-                    )
-
-                    MainSubScreen.VendorScheme -> com.vincenthzr.locationspoofer.ui.screen.settings.VendorSchemeScreen(
                         viewModel = viewModel,
                         uiState = uiState,
                         isDark = isDark,

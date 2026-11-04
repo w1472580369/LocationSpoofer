@@ -40,7 +40,7 @@ jobs:
           fi
           
           TAG_NAME="v$VERSION_NAME"
-          
+
           # 判断是否是 Beta 预发布版本
           if echo "$VERSION_NAME" | grep -qi 'beta'; then
             echo "当前版本为 Beta 测试版 (Pre-release)"
@@ -51,16 +51,11 @@ jobs:
             echo "is_prerelease=false" >> $GITHUB_OUTPUT
             IS_PRERELEASE="false"
           fi
-          
-          # 检查对应的 tag 是否已经在 GitHub 远端存在（精确匹配行尾，避免 v2.3.6-beta-1 误匹配 v2.3.6）
-          if git ls-remote --tags origin "refs/tags/$TAG_NAME" | grep -qE "refs/tags/$TAG_NAME(\^\{\})?$"; then
-            echo "Tag $TAG_NAME 已经在 GitHub 远端存在（已发布过），无需重复构建。"
-            echo "changed=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          
+
+          # 强制每次 push 到 main/master 都生成，释放旧的重新发版；
+          # 不会因旧版本已发过而跳过。
           echo "=========================================="
-          echo "检测到未发布的全新版本: $TAG_NAME"
+          echo "检测到新提交，重新构建并发布: $TAG_NAME"
           echo "版本类型: $([ "$IS_PRERELEASE" = "true" ] && echo "Beta 预发布" || echo "正式稳定版")"
           echo "状态检查通过，准备构建并发布！"
           echo "=========================================="
@@ -163,7 +158,10 @@ jobs:
         env:
           ENCODED_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
-          echo "$ENCODED_KEYSTORE" | base64 -d > "$RUNNER_TEMP/keystore.jks"
+          # 过滤掉粘贴到 Secret 时可能引入的空白/换行/杂质字符，再 base64 解码
+          echo "$ENCODED_KEYSTORE" | tr -d '\n\r \t' | base64 -d > "$RUNNER_TEMP/keystore.jks"
+          chmod 600 "$RUNNER_TEMP/keystore.jks"
+          echo "decoded: $(du -h "$RUNNER_TEMP/keystore.jks" | cut -f1)"
 
       - name: Build Release APK
         if: steps.check_version.outputs.changed == 'true'
@@ -216,5 +214,8 @@ jobs:
           body_path: changelog.txt
           prerelease: ${{ steps.check_version.outputs.is_prerelease == 'true' }}
           files: app/build/outputs/apk/dist/LocationSpoofer-*.apk
+          # 删除旧 Release 和旧 Tag 缓存，强制重新创建全新的 Release
+          force_create: true
+          delete_existing: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

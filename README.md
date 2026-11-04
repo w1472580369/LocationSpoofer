@@ -224,7 +224,7 @@
 
 ```bash
 # 1. 克隆代码仓库
-git clone https://github.com/your-username/LocationSpoofer.git
+git clone https://github.com/w1472580369/LocationSpoofer.git
 
 # 2. 编译 Debug APK 并直接安装到设备
 ./gradlew installDebug
