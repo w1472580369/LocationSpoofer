@@ -65,16 +65,17 @@ fun VoiceNoteInput(
     var showSaved by remember { mutableStateOf(false) }
     var recordingFile by remember { mutableStateOf<File?>(null) }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            // 面板关闭时释放录音资源
-            recorder.release()
+    /** 开始录制（权限已成功申请） */
+    fun startRecording() {
+        try {
+            recorder.startRecording()
+            timer.start()
+            recordingFile = recorder.getCurrentFile()
+            isRecording = true
+        } catch (e: Exception) {
             recordingFile = null
-        }
-
-        if (autoStartRecording) {
-            // 长按直达录制：面板出现时无需点击 Mic，直接尝试开始录制（未授权时唤起系统弹窗）
-            startRecordingWithPermission()
+            isRecording = false
+            Toast.makeText(context, context.getString(R.string.audio_permission_required), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -90,25 +91,23 @@ fun VoiceNoteInput(
         }
     }
 
-    /** 开始录制（权限已成功申请） */
-    fun startRecording() {
-        try {
-            recorder.startRecording()
-            timer.start()
-            recordingFile = recorder.getCurrentFile()
-            isRecording = true
-        } catch (e: Exception) {
-            recordingFile = null
-            isRecording = false
-            Toast.makeText(context, context.getString(R.string.audio_permission_required), Toast.LENGTH_LONG).show()
-        }
-    }
-
     /** 点击录制按钮：已有权限则直接录制，否则引导系统弹窗申请 */
     fun startRecordingWithPermission() {
         when (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)) {
             PackageManager.PERMISSION_GRANTED -> startRecording()
             else -> recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
+
+    DisposableEffect(Unit) {
+        if (autoStartRecording) {
+            // 长按直达录制：面板出现时无需点击 Mic，直接尝试开始录制（未授权时唤起系统弹窗）
+            startRecordingWithPermission()
+        }
+        onDispose {
+            // 面板关闭时释放录音资源
+            recorder.release()
+            recordingFile = null
         }
     }
 

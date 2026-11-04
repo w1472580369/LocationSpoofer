@@ -38,6 +38,7 @@ import com.vincenthzr.locationspoofer.ui.theme.AppColors
 import com.vincenthzr.locationspoofer.ui.theme.AccentBlue
 import com.vincenthzr.locationspoofer.ui.screen.note.VoiceNoteInput
 import com.vincenthzr.locationspoofer.viewmodel.MainViewModel
+import com.vincenthzr.locationspoofer.viewmodel.fetchCurrentLocation
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.animation.AnimatedVisibility
 
