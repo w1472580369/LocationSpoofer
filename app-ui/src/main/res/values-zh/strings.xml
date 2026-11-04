@@ -606,6 +606,7 @@
     <string name="home_map_note_close">关闭</string>
     <string name="voice_note_saved">语音备注已保存</string>
     <string name="audio_permission_required">录制语音需要权限</string>
+    <string name="voice_note_record_failed">录音启动失败，请重试</string>
     <string name="home_current_position">当前位置</string>
     <string name="home_map_desc">当前位置和快速操作</string>
     <string name="home_map_status_line">坐标 %s, %s</string>

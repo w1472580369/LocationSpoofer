@@ -466,6 +466,7 @@
     <string name="home_map_note_close">Close</string>
     <string name="voice_note_saved">Voice note saved</string>
     <string name="audio_permission_required">Recording audio requires permission</string>
+    <string name="voice_note_record_failed">Failed to start recording. Please try again.</string>
     <string name="lab_header_title">Experimental</string>
     <string name="lab_warning_title">Experimental features</string>
     <string name="lab_warning_desc">These features are in beta and may not work on all devices.</string>

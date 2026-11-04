@@ -1,16 +1,13 @@
 package com.vincenthzr.locationspoofer.ui.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,22 +16,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.vincenthzr.locationspoofer.data.model.AppState
 import com.vincenthzr.locationspoofer.ui.R
 import com.vincenthzr.locationspoofer.ui.components.AppMapController
 import com.vincenthzr.locationspoofer.ui.components.MarkerType
-import com.vincenthzr.locationspoofer.ui.theme.AppColors
 import com.vincenthzr.locationspoofer.ui.theme.AccentBlue
 import com.vincenthzr.locationspoofer.ui.screen.note.VoiceNoteInput
 import com.vincenthzr.locationspoofer.viewmodel.MainViewModel
@@ -50,7 +41,6 @@ fun HomeMapScreen(
     lastViewport: CameraViewport? = null,
     tabBarHeight: Dp = 90.dp
 ) {
-    val isDark = isSystemInDarkTheme()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -124,56 +114,6 @@ fun HomeMapScreen(
                 .padding(bottom = (tabBarHeight + 10.dp).coerceAtLeast(0.dp)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 状态提示条：位置 / 模拟状态
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-                    .shadow(
-                        elevation = 2.dp,
-                        shape = RoundedCornerShape(24.dp),
-                        clip = false
-                    )
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(AppColors.surface(isDark))
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 10.dp, horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        Icons.Rounded.MyLocation,
-                        null,
-                        tint = if (uiState.isSpoofingActive) AccentBlue else AppColors.textSecondary(isDark),
-                        modifier = Modifier.size(22.dp)
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(
-                                R.string.home_map_status_line,
-                                uiState.latitudeInput,
-                                uiState.longitudeInput
-                            ),
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Text(
-                            text = if (uiState.isSpoofingActive) {
-                                stringResource(R.string.home_spoofing_active)
-                            } else {
-                                stringResource(R.string.home_spoofing_inactive)
-                            },
-                            fontSize = 11.sp,
-                            color = AppColors.textSecondary(isDark)
-                        )
-                    }
-                }
-            }
-
             Spacer(Modifier.weight(1f))
 
             // 语音备注录制面板：点击地图位置后显示在底部，录制时隐藏快捷按钮
@@ -192,14 +132,14 @@ fun HomeMapScreen(
             }
         }
 
-        // 返回当前位置：小圆图标按钮放在顶部偏右，不再占有底部整行
+        // 返回当前位置：小圆图标按钮放在右侧中间偏下，不再占有顶部/底部空间
         AnimatedVisibility(visible = !showVoiceNoteInput) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .statusBarsPadding()
                     .padding(16.dp),
-                contentAlignment = Alignment.TopEnd
+                contentAlignment = Alignment.CenterEnd
             ) {
                 IconButton(
                     onClick = {
@@ -210,7 +150,9 @@ fun HomeMapScreen(
                             mapController?.animateCamera(lat, lng, 16f)
                         }
                     },
-                    modifier = Modifier.size(44.dp),
+                    modifier = Modifier
+                        .offset(y = 64.dp)
+                        .size(44.dp),
                     colors = IconButtonDefaults.filledTonalIconButtonColors(
                         containerColor = AccentBlue,
                         contentColor = MaterialTheme.colorScheme.onPrimary

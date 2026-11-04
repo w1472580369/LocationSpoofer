@@ -60,12 +60,14 @@ class VoiceRecorder(private val context: Context) {
             val file = getOutputFile()
             recorder = MediaRecorder(context).apply {
                 setAudioSource(MediaRecorder.AudioSource.MIC)
+                // MediaRecorder 的状态机要求先设置输出格式，再设置编码器；
+                // 顺序颠倒会在已授权的情况下抛出 IllegalStateException，被误报成"需要录音权限"。
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                     setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                    setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                 } else {
-                    setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
                     setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+                    setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
                 }
                 setOutputFile(file)
                 prepare()
@@ -85,6 +87,8 @@ class VoiceRecorder(private val context: Context) {
     /** 停止录制，返回录音文件 */
     fun stopRecording(): File? {
         if (currentState != State.RECORDING) return null
+        // release() 会把 recordingFile 清空，先保存引用再释放，否则永远返回 null
+        val file = recordingFile
         try {
             recorder?.stop()
         } catch (e: Exception) {
@@ -93,7 +97,7 @@ class VoiceRecorder(private val context: Context) {
         } finally {
             release()
         }
-        return recordingFile
+        return file
     }
 
     /** 主动释放录制器资源 */

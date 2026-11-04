@@ -6,9 +6,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -169,423 +168,433 @@ fun CameraHookScreen(
                 onBack = onClose
             )
 
-            Column(
+            // 用 LazyColumn 懒加载应用列表：此前是 verticalScroll + Column 一次性组合全部应用，
+            // 首帧需要为上千个条目创建 AndroidView 并同步读取应用图标，点击后要卡 3-4 秒才显示。
+            LazyColumn(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(AccentOrange.copy(alpha = 0.10f))
-                            .padding(horizontal = 14.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Icon(
-                            Icons.Rounded.Info,
-                            contentDescription = null,
-                            tint = AccentOrange,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(Modifier.width(10.dp))
-                        Text(
-                            text = stringResource(R.string.camera_hook_warning),
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
-                        )
-                    }
-                }
-
-                // 全局开关
-                MiuixCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .noRippleClickable { viewModel.setCameraHookEnabled(!uiState.cameraHookEnabled) },
-                    cornerRadius = 16.dp,
-                    insideMargin = PaddingValues(horizontal = 14.dp, vertical = 12.dp)
-                ) {
-                    Row(
+                // 顶部固定内容（警示、全局开关、照片源、目标应用筛选栏）
+                item {
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(38.dp)
-                                .clip(RoundedCornerShape(11.dp))
-                                .background(
-                                    if (uiState.cameraHookEnabled) AccentBlue.copy(alpha = 0.16f)
-                                    else if (isDark) Color.White.copy(alpha = 0.08f)
-                                    else Color.Black.copy(alpha = 0.05f)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Rounded.Camera,
-                                contentDescription = null,
-                                tint = if (uiState.cameraHookEnabled) AccentBlue else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                        Spacer(Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.camera_hook_enabled_title),
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(Modifier.height(2.dp))
-                            Text(
-                                text = stringResource(R.string.camera_hook_enabled_desc),
-                                fontSize = 11.5.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
-                            )
-                        }
-                        Spacer(Modifier.width(8.dp))
-                        Switch(
-                            checked = uiState.cameraHookEnabled,
-                            onCheckedChange = { viewModel.setCameraHookEnabled(it) }
-                        )
-                    }
-                }
-
-                // 照片源
-                MiuixCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    cornerRadius = 16.dp,
-                    insideMargin = PaddingValues(horizontal = 14.dp, vertical = 12.dp)
-                ) {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.camera_hook_photo_title),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = stringResource(R.string.camera_hook_photo_desc),
-                            fontSize = 11.5.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                        Text(
-                            text = stringResource(R.string.camera_hook_photo_hint),
-                            fontSize = 11.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.40f),
-                            modifier = Modifier.padding(top = 6.dp)
-                        )
-                        Spacer(Modifier.height(14.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(72.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .background(if (isDark) Color.White.copy(alpha = 0.05f) else Color.Black.copy(alpha = 0.03f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (photoBitmap != null) {
-                                    PhotoPreviewImage(
-                                        bitmap = photoBitmap!!,
-                                        contentDescription = stringResource(R.string.camera_hook_photo_preview)
-                                    )
-                                } else {
-                                    Icon(
-                                        Icons.Rounded.Photo,
-                                        null,
-                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
-                            }
-                            Spacer(Modifier.width(16.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = photoPath?.takeIf { it.isNotBlank() }
-                                        ?: (uiState.cameraPhoto.takeIf { it.isNotBlank() }
-                                        ?: stringResource(R.string.camera_hook_photo_no_selected)),
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Text(
-                                    text = stringResource(R.string.camera_hook_photo_hint_large),
-                                    fontSize = 11.5.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.40f)
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(14.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Button(
-                                onClick = { launcher.launch("image/*") },
-                                modifier = Modifier.weight(1f),
-                                elevation = null,
-                                shape = RoundedCornerShape(11.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.camera_hook_photo_select),
-                                    fontSize = 13.sp
-                                )
-                            }
-                            OutlinedButton(
-                                onClick = {
-                                    viewModel.setCameraPhotoBase64("")
-                                    viewModel.setCameraPhotoPath("")
-                                },
-                                modifier = Modifier.weight(1f),
-                                elevation = null,
-                                shape = RoundedCornerShape(11.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.camera_hook_photo_clear),
-                                    fontSize = 13.sp
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // 目标应用列表
-                MiuixCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    cornerRadius = 16.dp,
-                    insideMargin = PaddingValues(14.dp)
-                ) {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.camera_hook_target_apps_title),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = stringResource(R.string.camera_hook_target_apps_desc),
-                            fontSize = 11.5.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                        if (selectedApps.isEmpty()) {
-                            Text(
-                                text = stringResource(R.string.camera_hook_no_target_apps),
-                                fontSize = 11.5.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.40f),
-                                modifier = Modifier.padding(top = 6.dp)
-                            )
-                        }
-                        Spacer(Modifier.height(12.dp))
-                        // 搜索胶囊栏
+                        // 警示条
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(44.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .background(if (isDark) Color(0xFF22272E) else Color.White)
-                                .border(
-                                    width = 0.8.dp,
-                                    color = if (isDark) Color.White.copy(alpha = 0.10f) else Color.Black.copy(
-                                        alpha = 0.05f
-                                    ),
-                                    shape = RoundedCornerShape(14.dp)
-                                )
-                                .padding(horizontal = 14.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .background(AccentOrange.copy(alpha = 0.10f))
+                                .padding(horizontal = 14.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.Top
                         ) {
                             Icon(
-                                Icons.Rounded.Search,
+                                Icons.Rounded.Info,
                                 contentDescription = null,
-                                tint = AccentBlue,
+                                tint = AccentOrange,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(Modifier.width(10.dp))
-                            BasicTextField(
-                                value = searchQuery,
-                                onValueChange = { searchQuery = it },
-                                textStyle = TextStyle(
-                                    fontSize = 13.5.sp,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                singleLine = true,
-                                modifier = Modifier.weight(1f),
-                                decorationBox = { innerTextField ->
-                                    if (searchQuery.isEmpty()) {
-                                        Text(
-                                            text = stringResource(R.string.search_app_hint),
-                                            fontSize = 13.5.sp,
-                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                                        )
-                                    }
-                                    innerTextField()
-                                }
+                            Text(
+                                text = stringResource(R.string.camera_hook_warning),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
                             )
-                            if (searchQuery.isNotEmpty()) {
+                        }
+
+                        // 全局开关
+                        MiuixCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .noRippleClickable { viewModel.setCameraHookEnabled(!uiState.cameraHookEnabled) },
+                            cornerRadius = 16.dp,
+                            insideMargin = PaddingValues(horizontal = 14.dp, vertical = 12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(20.dp)
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-                                        .noRippleClickable { searchQuery = "" },
+                                        .size(38.dp)
+                                        .clip(RoundedCornerShape(11.dp))
+                                        .background(
+                                            if (uiState.cameraHookEnabled) AccentBlue.copy(alpha = 0.16f)
+                                            else if (isDark) Color.White.copy(alpha = 0.08f)
+                                            else Color.Black.copy(alpha = 0.05f)
+                                        ),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        Icons.Rounded.Close,
-                                        null,
-                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                        modifier = Modifier.size(12.dp)
+                                        Icons.Rounded.Camera,
+                                        contentDescription = null,
+                                        tint = if (uiState.cameraHookEnabled) AccentBlue else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                        modifier = Modifier.size(20.dp)
                                     )
                                 }
-                            }
-                        }
-                        // 分类快捷过滤标签
-                        LazyRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            items(CameraHookFilterTab.values()) { tab ->
-                                val isSelected = selectedFilter == tab
-                                val label = tab.getLabel(selectedApps.size)
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(
-                                            if (isSelected) AccentBlue
-                                            else if (isDark) Color.White.copy(alpha = 0.06f)
-                                            else Color.Black.copy(alpha = 0.04f)
-                                        )
-                                        .noRippleClickable { selectedFilter = tab }
-                                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                                ) {
+                                Spacer(Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = label,
-                                        fontSize = 12.5.sp,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface.copy(
-                                            alpha = 0.7f
-                                        )
+                                        text = stringResource(R.string.camera_hook_enabled_title),
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Spacer(Modifier.height(2.dp))
+                                    Text(
+                                        text = stringResource(R.string.camera_hook_enabled_desc),
+                                        fontSize = 11.5.sp,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
                                     )
                                 }
                                 Spacer(Modifier.width(8.dp))
-                            }
-                        }
-                        // 批量操作
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(R.string.camera_hook_target_apps_count, selectedApps.size),
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            TextButton(
-                                onClick = { viewModel.selectAllUserAppsForCameraHook() },
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.camera_hook_select_all_user_apps),
-                                    fontSize = 12.sp,
-                                    color = AccentBlue
+                                Switch(
+                                    checked = uiState.cameraHookEnabled,
+                                    onCheckedChange = { viewModel.setCameraHookEnabled(it) }
                                 )
                             }
-                            if (selectedApps.isNotEmpty()) {
-                                TextButton(
-                                    onClick = { viewModel.clearAllCameraHookApps() },
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.camera_hook_clear_selection),
-                                        fontSize = 12.sp,
-                                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
-                                    )
-                                }
-                            }
                         }
-                        Spacer(Modifier.height(8.dp))
-                        if (uiState.isLoadingInstalledApps && uiState.installedAppsForSystemHook.isEmpty()) {
-                            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator(color = AccentBlue)
-                            }
-                        } else if (appsToShow.isEmpty()) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(24.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+
+                        // 照片源
+                        MiuixCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            cornerRadius = 16.dp,
+                            insideMargin = PaddingValues(horizontal = 14.dp, vertical = 12.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.camera_hook_photo_title),
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = stringResource(R.string.camera_hook_photo_desc),
+                                    fontSize = 11.5.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                    modifier = Modifier.padding(top = 2.dp)
+                                )
+                                Text(
+                                    text = stringResource(R.string.camera_hook_photo_hint),
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.40f),
+                                    modifier = Modifier.padding(top = 6.dp)
+                                )
+                                Spacer(Modifier.height(14.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Box(
                                         modifier = Modifier
-                                            .size(64.dp)
-                                            .clip(RoundedCornerShape(20.dp))
-                                            .background(
-                                                if (isDark) Color.White.copy(alpha = 0.05f) else Color.Black.copy(alpha = 0.03f)
-                                            ),
+                                            .size(72.dp)
+                                            .clip(RoundedCornerShape(14.dp))
+                                            .background(if (isDark) Color.White.copy(alpha = 0.05f) else Color.Black.copy(alpha = 0.03f)),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(
-                                            Icons.Rounded.SearchOff,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
-                                            modifier = Modifier.size(32.dp)
+                                        if (photoBitmap != null) {
+                                            PhotoPreviewImage(
+                                                bitmap = photoBitmap!!,
+                                                contentDescription = stringResource(R.string.camera_hook_photo_preview)
+                                            )
+                                        } else {
+                                            Icon(
+                                                Icons.Rounded.Photo,
+                                                null,
+                                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                                                modifier = Modifier.size(32.dp)
+                                            )
+                                        }
+                                    }
+                                    Spacer(Modifier.width(16.dp))
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = photoPath?.takeIf { it.isNotBlank() }
+                                                ?: (uiState.cameraPhoto.takeIf { it.isNotBlank() }
+                                                ?: stringResource(R.string.camera_hook_photo_no_selected)),
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.camera_hook_photo_hint_large),
+                                            fontSize = 11.5.sp,
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.40f)
                                         )
                                     }
-                                    Text(
-                                        text = stringResource(R.string.no_hooked_apps),
-                                        fontSize = 15.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onBackground
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.search_no_match_hint),
-                                        fontSize = 12.5.sp,
-                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-                                    )
+                                }
+                                Spacer(Modifier.height(14.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Button(
+                                        onClick = { launcher.launch("image/*") },
+                                        modifier = Modifier.weight(1f),
+                                        elevation = null,
+                                        shape = RoundedCornerShape(11.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.camera_hook_photo_select),
+                                            fontSize = 13.sp
+                                        )
+                                    }
+                                    OutlinedButton(
+                                        onClick = {
+                                            viewModel.setCameraPhotoBase64("")
+                                            viewModel.setCameraPhotoPath("")
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        elevation = null,
+                                        shape = RoundedCornerShape(11.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.camera_hook_photo_clear),
+                                            fontSize = 13.sp
+                                        )
+                                    }
                                 }
                             }
-                        } else {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                for (app in appsToShow) {
-                                    val isSelected = selectedApps.contains(app.packageName)
-                                    CameraHookAppItemCard(
-                                        appInfo = app,
-                                        isSelected = isSelected,
-                                        isDark = isDark,
-                                        onToggle = { enabled ->
-                                            viewModel.setCameraHookPackageEnabled(app.packageName, enabled)
+                        }
+
+                        // 目标应用：标题、搜索与筛选（应用列表在下方按需懒加载）
+                        MiuixCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            cornerRadius = 16.dp,
+                            insideMargin = PaddingValues(14.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.camera_hook_target_apps_title),
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = stringResource(R.string.camera_hook_target_apps_desc),
+                                    fontSize = 11.5.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                    modifier = Modifier.padding(top = 2.dp)
+                                )
+                                if (selectedApps.isEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.camera_hook_no_target_apps),
+                                        fontSize = 11.5.sp,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.40f),
+                                        modifier = Modifier.padding(top = 6.dp)
+                                    )
+                                }
+                                Spacer(Modifier.height(12.dp))
+                                // 搜索胶囊栏
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(44.dp)
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(if (isDark) Color(0xFF22272E) else Color.White)
+                                        .border(
+                                            width = 0.8.dp,
+                                            color = if (isDark) Color.White.copy(alpha = 0.10f) else Color.Black.copy(
+                                                alpha = 0.05f
+                                            ),
+                                            shape = RoundedCornerShape(14.dp)
+                                        )
+                                        .padding(horizontal = 14.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Search,
+                                        contentDescription = null,
+                                        tint = AccentBlue,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(Modifier.width(10.dp))
+                                    BasicTextField(
+                                        value = searchQuery,
+                                        onValueChange = { searchQuery = it },
+                                        textStyle = TextStyle(
+                                            fontSize = 13.5.sp,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            fontWeight = FontWeight.Medium
+                                        ),
+                                        singleLine = true,
+                                        modifier = Modifier.weight(1f),
+                                        decorationBox = { innerTextField ->
+                                            if (searchQuery.isEmpty()) {
+                                                Text(
+                                                    text = stringResource(R.string.search_app_hint),
+                                                    fontSize = 13.5.sp,
+                                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                                )
+                                            }
+                                            innerTextField()
                                         }
                                     )
+                                    if (searchQuery.isNotEmpty()) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(20.dp)
+                                                .clip(CircleShape)
+                                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+                                                .noRippleClickable { searchQuery = "" },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                Icons.Rounded.Close,
+                                                null,
+                                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                                modifier = Modifier.size(12.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                                // 分类快捷过滤标签
+                                LazyRow(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    items(CameraHookFilterTab.values()) { tab ->
+                                        val isSelected = selectedFilter == tab
+                                        val label = tab.getLabel(selectedApps.size)
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(10.dp))
+                                                .background(
+                                                    if (isSelected) AccentBlue
+                                                    else if (isDark) Color.White.copy(alpha = 0.06f)
+                                                    else Color.Black.copy(alpha = 0.04f)
+                                                )
+                                                .noRippleClickable { selectedFilter = tab }
+                                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                                        ) {
+                                            Text(
+                                                text = label,
+                                                fontSize = 12.5.sp,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface.copy(
+                                                    alpha = 0.7f
+                                                )
+                                            )
+                                        }
+                                        Spacer(Modifier.width(8.dp))
+                                    }
+                                }
+                                // 批量操作
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.camera_hook_target_apps_count, selectedApps.size),
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                                    )
+                                    Spacer(Modifier.width(8.dp))
+                                    TextButton(
+                                        onClick = { viewModel.selectAllUserAppsForCameraHook() },
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.camera_hook_select_all_user_apps),
+                                            fontSize = 12.sp,
+                                            color = AccentBlue
+                                        )
+                                    }
+                                    if (selectedApps.isNotEmpty()) {
+                                        TextButton(
+                                            onClick = { viewModel.clearAllCameraHookApps() },
+                                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.camera_hook_clear_selection),
+                                                fontSize = 12.sp,
+                                                color = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                Spacer(Modifier.height(16.dp))
+
+                if (uiState.isLoadingInstalledApps && uiState.installedAppsForSystemHook.isEmpty()) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = AccentBlue)
+                        }
+                    }
+                } else if (appsToShow.isEmpty()) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(64.dp)
+                                        .clip(RoundedCornerShape(20.dp))
+                                        .background(
+                                            if (isDark) Color.White.copy(alpha = 0.05f) else Color.Black.copy(alpha = 0.03f)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.SearchOff,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
+                                Text(
+                                    text = stringResource(R.string.no_hooked_apps),
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = stringResource(R.string.search_no_match_hint),
+                                    fontSize = 12.5.sp,
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    items(appsToShow, key = { it.packageName }) { app ->
+                        val isSelected = selectedApps.contains(app.packageName)
+                        CameraHookAppItemCard(
+                            appInfo = app,
+                            isSelected = isSelected,
+                            isDark = isDark,
+                            onToggle = { enabled ->
+                                viewModel.setCameraHookPackageEnabled(app.packageName, enabled)
+                            }
+                        )
+                    }
+                }
+
+                item { Spacer(Modifier.height(8.dp)) }
             }
         }
     }

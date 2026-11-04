@@ -75,7 +75,17 @@ fun VoiceNoteInput(
         } catch (e: Exception) {
             recordingFile = null
             isRecording = false
-            Toast.makeText(context, context.getString(R.string.audio_permission_required), Toast.LENGTH_LONG).show()
+            // 仅在确实没有权限时提示权限；已授权时的录制器异常要给出准确提示，避免误报
+            val hasPermission = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.RECORD_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED
+            val messageRes = if (hasPermission) {
+                R.string.voice_note_record_failed
+            } else {
+                R.string.audio_permission_required
+            }
+            Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_LONG).show()
         }
     }
 
