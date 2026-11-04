@@ -507,6 +507,42 @@
     <string name="route_planning_fallback_straight">Route planning failed, using straight-line simulation</string>
     <string name="spoofing_notification_desc">Background Keep-Alive Notification for Location Spoofer</string>
 
+<<<<<<< HEAD
+=======
+    <string name="home_map_title">Location Map</string>
+    <string name="home_map_desc">Current position and quick operations</string>
+    <string name="home_map_status_line">Position %s, %s</string>
+    <string name="home_map_enter_location_desc">Enter the Location tab to change coordinates and start spoofing</string>
+    <string name="home_map_voice_note_title">Add Voice Note</string>
+    <string name="home_map_voice_note_desc">Record a voice note at (%1$.6f, %2$.6f)</string>
+    <string name="home_map_voice_note_start_desc">Tap the button to record; save it as a note for this location</string>
+    <string name="voice_note_recording">Recording %1$ds</string>
+    <string name="home_map_note_stop">Stop</string>
+    <string name="home_map_note_cancel">Cancel</string>
+    <string name="home_map_note_close">Close</string>
+    <string name="voice_note_saved">Voice note saved</string>
+    <string name="audio_permission_required">Recording audio requires permission</string>
+    <string name="lab_header_title">Experimental</string>
+    <string name="lab_warning_title">Experimental features</string>
+    <string name="lab_warning_desc">These features are in beta and may not work on all devices.</string>
+    <string name="home_enter_location">Enter Location Control</string>
+    <string name="home_current_position">Current Position</string>
+    <string name="home_spoofing_active">Active</string>
+    <string name="home_spoofing_inactive">Inactive</string>
+    <string name="home_return_map">Return to Map</string>
+    <string name="lab_title">Lab</string>
+    <string name="lab_desc">Experimental features and switches</string>
+    <string name="lab_camera_hook_title">Camera Hook</string>
+    <string name="lab_camera_hook_desc">Fake camera photos in hooked apps</string>
+    <string name="lab_camera_preview_title">Camera Preview</string>
+    <string name="lab_camera_preview_desc">Tap to open the full camera settings</string>
+    <string name="lab_camera_hook_switch_hint">Camera Hook is currently %1$s</string>
+    <string name="lab_camera_hook_disabled">Camera Hook is disabled</string>
+    <string name="lab_camera_hook_enabled">on</string>
+    <string name="lab_camera_hook_enable_hint">Go to Lab to enable</string>
+    <string name="settings_version_name">Version</string>
+
+>>>>>>> 2c85b1a (fix(ui): 修复 app-ui 编译错误，合并 Lab 页面到 Features Tab)
     <string name="local_collected_hotspot">Locally collected hotspot</string>
     <string name="wigle_import">WiGLE Import</string>
     <string name="opencellid_import">OpenCellID Import</string>

@@ -8,6 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.baidu.mapapi.map.BaiduMap
+import com.baidu.mapapi.map.MapPoi
 import com.baidu.mapapi.map.Stroke
 import com.baidu.mapapi.map.TextureMapView
 import com.baidu.mapapi.model.LatLng
@@ -187,8 +188,19 @@ class BaiduMapControllerImpl(
 
     private var cameraFinishListener: ((Double, Double) -> Unit)? = null
     private var cameraMoveListener: ((Double, Double) -> Unit)? = null
+    private var mapClickListener: ((Double, Double) -> Unit)? = null
 
     init {
+        map.setOnMapClickListener(object : BaiduMap.OnMapClickListener {
+            override fun onMapClick(p0: LatLng?) {
+                if (p0 != null) {
+                    mapClickListener?.invoke(p0.latitude, p0.longitude)
+                }
+            }
+
+            override fun onMapPoiClick(p0: MapPoi?) {
+            }
+        })
         map.setOnMapStatusChangeListener(object :
             BaiduMap.OnMapStatusChangeListener {
             private var lastReason: Int = 0
@@ -221,6 +233,10 @@ class BaiduMapControllerImpl(
 
     override fun setOnCameraMoveListener(onMove: (lat: Double, lng: Double) -> Unit) {
         cameraMoveListener = onMove
+    }
+
+    override fun setOnMapClickListener(onClick: (lat: Double, lng: Double) -> Unit) {
+        mapClickListener = onClick
     }
 
     override fun disableUiControls() {

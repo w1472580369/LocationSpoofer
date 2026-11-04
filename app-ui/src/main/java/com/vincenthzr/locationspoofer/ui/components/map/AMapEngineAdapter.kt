@@ -148,8 +148,10 @@ class AMapControllerImpl(
 
     private var cameraFinishListener: ((Double, Double) -> Unit)? = null
     private var cameraMoveListener: ((Double, Double) -> Unit)? = null
+    private var mapClickListener: ((Double, Double) -> Unit)? = null
 
     init {
+        map.setOnMapClickListener { latLng -> mapClickListener?.invoke(latLng.latitude, latLng.longitude) }
         map.setOnCameraChangeListener(object : AMap.OnCameraChangeListener {
             override fun onCameraChange(p0: CameraPosition?) {
                 p0?.target?.let { cameraMoveListener?.invoke(it.latitude, it.longitude) }
@@ -167,6 +169,10 @@ class AMapControllerImpl(
 
     override fun setOnCameraMoveListener(onMove: (lat: Double, lng: Double) -> Unit) {
         cameraMoveListener = onMove
+    }
+
+    override fun setOnMapClickListener(onClick: (lat: Double, lng: Double) -> Unit) {
+        mapClickListener = onClick
     }
 
     override fun disableUiControls() {
