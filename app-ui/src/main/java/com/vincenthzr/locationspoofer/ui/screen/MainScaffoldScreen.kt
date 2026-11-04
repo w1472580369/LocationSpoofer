@@ -241,7 +241,7 @@ fun MainScaffoldScreen(
                             controller.moveCamera(initLat, initLng, 15f)
 
                             controller.setOnCameraChangeListener { lat, lng ->
-                                if (currentSelectedTab == BottomTab.Location.ordinal) {
+                                if (currentSelectedTab == BottomTab.Home.ordinal || currentSelectedTab == BottomTab.Location.ordinal) {
                                     viewModel.handleSpoofingIntent(
                                         SpoofingIntent.ConfirmMapPoint(
                                             lat,
@@ -344,6 +344,15 @@ fun MainScaffoldScreen(
                             uiState = uiState,
                             mapController = mapController,
                             onCollectionRouteSelected = { selectedTab = BottomTab.Route.ordinal },
+                            tabBarHeight = paddingValues.calculateBottomPadding()
+                        )
+
+                        BottomTab.Home.ordinal -> com.vincenthzr.locationspoofer.ui.screen.HomeMapScreen(
+                            viewModel = viewModel,
+                            uiState = uiState,
+                            mapController = mapController,
+                            onEnterLocation = { selectedTab = BottomTab.Location.ordinal },
+                            lastViewport = lastViewport,
                             tabBarHeight = paddingValues.calculateBottomPadding()
                         )
 

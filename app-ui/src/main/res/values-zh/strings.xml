@@ -451,7 +451,6 @@
     <string name="route_planning_fallback_straight">路线规划失败或部分失败，使用直线模拟</string>
     <string name="spoofing_notification_desc">模拟定位后台保活通知</string>
     <string name="app_description">位置模拟器模块</string>
-
     <string name="local_collected_hotspot">本地采集热点</string>
     <string name="wigle_import">WiGLE 导入</string>
     <string name="opencellid_import">OpenCellID 导入</string>
@@ -467,14 +466,11 @@
     <string name="amap_search_failed_quota">高德搜索API调用失败(可能是额度耗尽)，请检查控制台或更换Key！</string>
     <string name="amap_search_failed_code_format">高德搜索失败(错误码:%d)</string>
     <string name="amap_search_exception_format">高德搜索异常(可能是额度耗尽)：%s</string>
-
     <string name="no_saved_locations_card_hint">暂无收藏地点，点击上方「收藏」保存常用位置</string>
     <string name="saved_locations_card_title">收藏的地点</string>
     <string name="expand_more_saved_hint">上滑查看全部 %d 个收藏地点</string>
     <string name="delete_saved_location_short">删除</string>
-
     <string name="swipe_up_to_view_saved">上滑查看收藏地点</string>
-
     <string name="manage_wifi_list_title">模拟 Wi-Fi 列表与配置</string>
     <string name="designated_wifi_tip">点击可指定模拟连接的主 Wi-Fi，支持修改或新增 Wi-Fi 详细参数并保存至数据库</string>
     <string name="add_wifi_btn">+ 添加 Wi-Fi</string>
@@ -495,15 +491,12 @@
     <string name="no_wifi_data_in_record">该记录暂无 Wi-Fi 数据，点击右上角「+ 添加 Wi-Fi」创建</string>
     <string name="delete_wifi_confirm">确定要删除 Wi-Fi \"%1$s\" 吗？</string>
     <string name="save_wifi">保存 Wi-Fi</string>
-
     <string name="pinned_collected_location_badge">已锁定采集点: %1$s</string>
     <string name="pinned_collected_location_toast">已锁定「%1$s」采集环境数据 (50米范围内有效)</string>
     <string name="unpin_collected_location">解除锁定</string>
-
     <string name="manage_tab_wifi">Wi-Fi (%1$d)</string>
     <string name="manage_tab_cell">基站 (%1$d)</string>
     <string name="manage_tab_bluetooth">蓝牙 (%1$d)</string>
-
     <string name="manage_cell_list_title">模拟基站列表与配置</string>
     <string name="designated_cell_tip">点击可指定模拟连接的主服务基站 (Serving Cell)，支持修改或新增基站参数并存入数据库</string>
     <string name="add_cell_btn">+ 添加基站</string>
@@ -524,7 +517,6 @@
     <string name="no_cell_data_in_record">该记录暂无基站数据，点击右上角「+ 添加基站」创建</string>
     <string name="delete_cell_confirm">确定要删除基站 \"%1$s\" 吗？</string>
     <string name="save_cell">保存基站</string>
-
     <string name="manage_bt_list_title">模拟蓝牙列表与配置</string>
     <string name="designated_bt_tip">点击可指定模拟主连接/广播蓝牙设备，支持修改或新增蓝牙设备并存入数据库</string>
     <string name="add_bt_btn">+ 添加蓝牙</string>
@@ -576,7 +568,6 @@
     <string name="root_test_remote_config_detail">此项检查 App 侧访问能力；系统进程是否收到更新请查看 Hook 运行状态</string>
     <string name="root_test_item_config_published">配置已发布</string>
     <string name="root_test_config_not_published">尚无已发布配置，开始模拟后会发布</string>
-
     <string name="collection_info_title">采集点基本信息</string>
     <string name="collection_info_description">采集数据已保存。填写位置名称和备注，方便以后查找这个点位。</string>
     <string name="collection_info_remaining">本次还有 %d 个点位待填写。</string>
@@ -586,7 +577,6 @@
     <string name="collection_stopping">正在完成采集…</string>
     <string name="collection_no_saved_points">本次没有保存点位，请检查定位及采集权限后重试。</string>
     <string name="collection_info_save_failed">基本信息保存失败，请重试。</string>
-
     <!-- Named route collection -->
     <string name="collection_point_mode">点位采集</string>
     <string name="collection_route_mode">路线采集</string>
@@ -607,27 +597,28 @@
     <string name="collection_route_delete_title">删除采集路线</string>
     <string name="collection_route_delete_message">删除“%1$s”及其全部采样数据？</string>
     <string name="local_collection_records_count">%1$d 个点位 · %2$d 条路线</string>
-
-    <string name="home_map_title">位置地图</string>
-    <string name="home_map_desc">当前位置和快速操作</string>
-    <string name="home_enter_location">进入定位防真控制</string>
     <string name="home_current_position">当前位置</string>
+    <string name="home_enter_location">进入定位防真控制</string>
+    <string name="home_map_desc">当前位置和快速操作</string>
+    <string name="home_map_enter_location_desc">前往定位面板调整坐标并启动模拟</string>
+    <string name="home_map_status_line">坐标 %s, %s</string>
+    <string name="home_map_title">位置地图</string>
+    <string name="home_return_map">返回地图</string>
     <string name="home_spoofing_active">已开启</string>
     <string name="home_spoofing_inactive">未开启</string>
-    <string name="home_return_map">返回地图</string>
-    <string name="lab_title">实验室</string>
-    <string name="lab_desc">实验性功能开关组</string>
-    <string name="lab_camera_hook_title">相机 Hook</string>
     <string name="lab_camera_hook_desc">在目标 App 拍照时返回指定照片</string>
-    <string name="lab_camera_preview_title">相机设置</string>
-    <string name="lab_camera_preview_desc">点击打开完整相机 Hook 设置</string>
-    <string name="lab_camera_hook_switch_hint">相机 Hook 当前 %1$s</string>
     <string name="lab_camera_hook_disabled">相机 Hook 未开启</string>
-    <string name="lab_camera_hook_enabled">开启</string>
     <string name="lab_camera_hook_enable_hint">前往实验室开启</string>
-    <string name="home_map_status_line">坐标 %s, %s</string>
-    <string name="home_map_enter_location_desc">前往定位面板调整坐标并启动模拟</string>
-    <string name="lab_warning_title">实验性功能</string>
+    <string name="lab_camera_hook_enabled">开启</string>
+    <string name="lab_camera_hook_switch_hint">相机 Hook 当前 %1$s</string>
+    <string name="lab_camera_hook_title">相机 Hook</string>
+    <string name="lab_camera_preview_desc">点击打开完整相机 Hook 设置</string>
+    <string name="lab_camera_preview_title">相机设置</string>
+    <string name="lab_desc">实验性功能开关组</string>
+    <string name="lab_title">实验室</string>
     <string name="lab_warning_desc">实验性功能尚在完善中，不一定适用于所有机型</string>
+    <string name="lab_warning_title">实验性功能</string>
     <string name="settings_version_name">版本</string>
+    <string name="tab_home">首页</string>
+
 </resources>
