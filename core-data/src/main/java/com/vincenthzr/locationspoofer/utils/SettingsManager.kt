@@ -167,6 +167,11 @@ class SettingsManager(context: Context) {
         get() = prefs.getString("last_map_lng", "") ?: ""
         set(value) = prefs.edit().putString("last_map_lng", value).apply()
 
+    /** 地图最后一次停留在视口位置时的缩放级别，首页复位视口用 */
+    var lastMapZoom: Float
+        get() = prefs.getFloat("last_map_zoom", 15f)
+        set(value) = prefs.edit().putFloat("last_map_zoom", value).apply()
+
     var satelliteCount: String
         get() = prefs.getString("satellite_count", "10") ?: "10"
         set(value) = prefs.edit().putString("satellite_count", value).apply()

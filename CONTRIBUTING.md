@@ -35,7 +35,7 @@
 ### 反馈缺陷 (Bug)
 
 在提交 Issue 前，请确认：
-* 检索 [已有的 Issues](https://github.com/your-username/LocationSpoofer/issues) 确保问题未被重复汇报。
+* 检索 [已有的 Issues](https://github.com/w1472580369/LocationSpoofer/issues) 确保问题未被重复汇报。
 * 确保运行在支持的基础环境中（**Android 8.0+**、**KernelSU / APatch / Magisk**、**LSPosed API 101+**）。
 
 通过 **缺陷报告模板** 提交问题时，请尽可能提供详细信息：
@@ -79,7 +79,7 @@
 ### 编译构建
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/LocationSpoofer.git
+git clone https://github.com/w1472580369/LocationSpoofer.git
 
 # 进入目录
 cd LocationSpoofer

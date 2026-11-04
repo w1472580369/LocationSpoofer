@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddLocationAlt
 import androidx.compose.material.icons.rounded.Extension
+import androidx.compose.material.icons.rounded.House
 import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material.icons.rounded.Route
+import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,18 +45,24 @@ import org.koin.androidx.compose.koinViewModel
 import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 
+data class CameraViewport(val lat: Double, val lng: Double, val zoom: Float)
+
 enum class BottomTab(val icon: ImageVector) {
+    Home(Icons.Rounded.House),
     Location(Icons.Rounded.MyLocation),
     Route(Icons.Rounded.Route),
     Features(Icons.Rounded.Extension),
+    Lab(Icons.Rounded.Science),
     Info(Icons.Rounded.Settings);
 
     @Composable
     fun getLabel(): String {
         return when (this) {
+            Home -> stringResource(R.string.tab_home)
             Location -> stringResource(R.string.tab_location)
             Route -> stringResource(R.string.tab_route)
             Features -> stringResource(R.string.tab_features)
+            Lab -> stringResource(R.string.tab_lab)
             Info -> stringResource(R.string.tab_info)
         }
     }
@@ -70,7 +78,6 @@ enum class MainSubScreen {
     MapEngineSettings,
     SignatureAuth,
     RootDiagnostics,
-    VendorScheme,
     MotionRealism,
     BackgroundKeepAlive,
     EnvTokens,
@@ -101,6 +108,21 @@ fun MainScaffoldScreen(
         if (uiState.checkBetaUpdates) updateUiState.releases else updateUiState.releases.filter { !it.isPrerelease }
     }
     val latestRelease = targetReleases.firstOrNull()
+
+    // 记住最近一次的地图视口（坐标 + 缩放），返回首页（Home）或下次打开应用时恢复
+    var lastViewport by remember { mutableStateOf<CameraViewport?>(null) }
+
+    // 恢复上次保存的地图视口（坐标 + 缩放），在 Home 页首次展示时回到上次的位置
+    val lastMapPosition = remember { viewModel.settingsRepository.getLastMapPosition() }
+    LaunchedEffect(lastMapPosition) {
+        lastMapPosition?.let { pair ->
+            lastViewport = CameraViewport(
+                pair.first.toDouble(),
+                pair.second.toDouble(),
+                viewModel.settingsRepository.lastMapZoom
+            )
+        }
+    }
 
     // 软件启动进入主界面时，立即在后台检索是否有新版本发布
     LaunchedEffect(Unit) {
@@ -138,7 +160,7 @@ fun MainScaffoldScreen(
     }
 
     LaunchedEffect(selectedTab, mapController, uiState.mapType) {
-        if (selectedTab == 0) {
+        if (selectedTab == BottomTab.Home.ordinal || selectedTab == BottomTab.Location.ordinal) {
             mapController?.clear()
             mapController?.setMapType(uiState.mapType)
         }
@@ -239,6 +261,19 @@ fun MainScaffoldScreen(
                                         )
                                     )
                                 }
+                                if (currentSelectedTab == BottomTab.Home.ordinal) {
+                                    // Home 页记录最后一次地图视口（坐标 + 缩放），下次进入首页时恢复
+                                    val zoom = controller.cameraTargetZoom
+                                    if (zoom != null) {
+                                        lastViewport = CameraViewport(lat, lng, zoom)
+                                        // 持久化视口坐标与缩放，下次打开应用/Home 页时恢复
+                                        viewModel.settingsRepository.setLastMapPosition(
+                                            String.format(java.util.Locale.US, "%.6f", lat),
+                                            String.format(java.util.Locale.US, "%.6f", lng)
+                                        )
+                                        viewModel.settingsRepository.lastMapZoom = zoom
+                                    }
+                                }
                             }
                         }
                     )
@@ -297,6 +332,15 @@ fun MainScaffoldScreen(
                     label = "main_tabs_transition"
                 ) { targetTab ->
                     when (targetTab) {
+                        BottomTab.Home.ordinal -> com.vincenthzr.locationspoofer.ui.screen.HomeMapScreen(
+                            viewModel = viewModel,
+                            uiState = uiState,
+                            mapController = mapController,
+                            onEnterLocation = { selectedTab = BottomTab.Location.ordinal },
+                            lastViewport = lastViewport,
+                            tabBarHeight = paddingValues.calculateBottomPadding()
+                        )
+
                         BottomTab.Location.ordinal -> com.vincenthzr.locationspoofer.ui.screen.tabs.LocationTab(
                             viewModel = viewModel,
                             uiState = uiState,
@@ -326,6 +370,13 @@ fun MainScaffoldScreen(
                             onNavigateToCameraHook = { currentSubScreen = MainSubScreen.CameraHook }
                         )
 
+                        BottomTab.Lab.ordinal -> com.vincenthzr.locationspoofer.ui.screen.LabScreen(
+                            viewModel = viewModel,
+                            uiState = uiState,
+                            onNavigateToCameraHook = { currentSubScreen = MainSubScreen.CameraHook },
+                            tabBarHeight = paddingValues.calculateBottomPadding()
+                        )
+
                         BottomTab.Info.ordinal -> com.vincenthzr.locationspoofer.ui.screen.tabs.InfoTab(
                             viewModel = viewModel,
                             uiState = uiState,
@@ -336,11 +387,9 @@ fun MainScaffoldScreen(
                             onNavigateToMapEngine = { currentSubScreen = MainSubScreen.MapEngineSettings },
                             onNavigateToSignatureAuth = { currentSubScreen = MainSubScreen.SignatureAuth },
                             onNavigateToRootDiagnostics = { currentSubScreen = MainSubScreen.RootDiagnostics },
-                            onNavigateToVendorScheme = { currentSubScreen = MainSubScreen.VendorScheme },
                             onNavigateToMotionRealism = { currentSubScreen = MainSubScreen.MotionRealism },
                             onNavigateToBackgroundKeepAlive = { currentSubScreen = MainSubScreen.BackgroundKeepAlive },
-                            onNavigateToEnvTokens = { currentSubScreen = MainSubScreen.EnvTokens },
-                            onNavigateToCameraHook = { currentSubScreen = MainSubScreen.CameraHook }
+                            onNavigateToEnvTokens = { currentSubScreen = MainSubScreen.EnvTokens }
                         )
                     }
                 }
@@ -422,13 +471,6 @@ fun MainScaffoldScreen(
                     )
 
                     MainSubScreen.MotionRealism -> com.vincenthzr.locationspoofer.ui.screen.settings.MotionRealismScreen(
-                        viewModel = viewModel,
-                        uiState = uiState,
-                        isDark = isDark,
-                        onClose = { currentSubScreen = MainSubScreen.None }
-                    )
-
-                    MainSubScreen.VendorScheme -> com.vincenthzr.locationspoofer.ui.screen.settings.VendorSchemeScreen(
                         viewModel = viewModel,
                         uiState = uiState,
                         isDark = isDark,

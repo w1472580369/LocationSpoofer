@@ -10,8 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.DirectionsWalk
 import androidx.compose.material.icons.rounded.BatteryChargingFull
-import androidx.compose.material.icons.rounded.Camera
-import androidx.compose.material.icons.rounded.Devices
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Map
@@ -29,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,9 +38,6 @@ import com.vincenthzr.locationspoofer.ui.BuildConfig
 import com.vincenthzr.locationspoofer.ui.R
 import com.vincenthzr.locationspoofer.data.model.AppState
 import com.vincenthzr.locationspoofer.data.model.MapEngine
-import com.vincenthzr.locationspoofer.progress.AdaptationProgress
-import com.vincenthzr.locationspoofer.progress.AdaptationProgressSource
-import com.vincenthzr.locationspoofer.vendor.VendorProfile
 import com.vincenthzr.locationspoofer.ui.screen.FooterLinks
 import com.vincenthzr.locationspoofer.ui.screen.LANGUAGES
 import com.vincenthzr.locationspoofer.ui.screen.UpdateCheckCard
@@ -69,11 +63,9 @@ fun InfoTab(
     onNavigateToMapEngine: () -> Unit = {},
     onNavigateToSignatureAuth: () -> Unit = {},
     onNavigateToRootDiagnostics: () -> Unit = {},
-    onNavigateToVendorScheme: () -> Unit = {},
     onNavigateToMotionRealism: () -> Unit = {},
     onNavigateToBackgroundKeepAlive: () -> Unit = {},
-    onNavigateToEnvTokens: () -> Unit = {},
-    onNavigateToCameraHook: () -> Unit = {}
+    onNavigateToEnvTokens: () -> Unit = {}
 ) {
     val isDark = isSystemInDarkTheme()
 
@@ -92,24 +84,6 @@ fun InfoTab(
     val savedLangCode = viewModel.getSavedLanguage()
     val currentLangName = remember(savedLangCode, defaultLangText) {
         LANGUAGES.firstOrNull { it.code == savedLangCode }?.nativeName ?: defaultLangText
-    }
-
-    // 本机在适配进度表里的状态（只读本地缓存 / 内置文档，不联网），非全局方案不依赖系统适配，不显示
-    val progressContext = LocalContext.current
-    val statusVerified = stringResource(R.string.progress_status_verified)
-    val statusPartial = stringResource(R.string.progress_status_partial)
-    val statusBroken = stringResource(R.string.progress_status_broken)
-    val statusUnverified = stringResource(R.string.progress_status_unverified)
-    val adaptationStatusChip = remember {
-        if (!BuildConfig.GLOBAL_SCHEME) return@remember null
-        val markdown = AdaptationProgressSource(progressContext).local().markdown
-        val family = VendorProfile.current.family
-        when (AdaptationProgress.findGlobalSystem(markdown, family.progressKeywords)?.status) {
-            AdaptationProgress.Status.VERIFIED -> statusVerified
-            AdaptationProgress.Status.PARTIAL -> statusPartial
-            AdaptationProgress.Status.BROKEN -> statusBroken
-            else -> statusUnverified
-        }
     }
 
     val realismLevelNames = listOf(
@@ -264,27 +238,11 @@ fun InfoTab(
                             onClick = onNavigateToRootDiagnostics
                         )
                         SettingsEntryDivider()
-                        // 本机适配状态 + 厂商适配方案（仅全局方案可选），完整进度在它的二级页面
-                        SettingsEntryRow(
-                            icon = Icons.Rounded.Devices,
-                            tint = AccentGreen,
-                            title = stringResource(R.string.system_adaptation_title),
-                            previewChip = adaptationStatusChip,
-                            onClick = onNavigateToVendorScheme
-                        )
-                        SettingsEntryDivider()
                         SettingsEntryRow(
                             icon = Icons.Rounded.BatteryChargingFull,
                             tint = AccentOrange,
                             title = stringResource(R.string.background_keep_alive_title),
                             onClick = onNavigateToBackgroundKeepAlive
-                        )
-                        SettingsEntryDivider()
-                        SettingsEntryRow(
-                            icon = Icons.Rounded.Camera,
-                            tint = AccentBlue,
-                            title = stringResource(R.string.camera_hook_title),
-                            onClick = onNavigateToCameraHook
                         )
                         SettingsEntryDivider()
                         SettingsEntryRow(

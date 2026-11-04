@@ -35,7 +35,7 @@ This project and everyone participating in it is governed by the [LocationSpoofe
 ### Reporting Bugs
 
 Before creating a bug report, please:
-* Check the [existing Issues](https://github.com/your-username/LocationSpoofer/issues) to ensure the problem hasn't already been reported.
+* Check the [existing Issues](https://github.com/w1472580369/LocationSpoofer/issues) to ensure the problem hasn't already been reported.
 * Ensure you are running a supported environment (**Android 8.0+**, **KernelSU / APatch / Magisk**, **LSPosed API 101+**).
 
 When filing a bug report via the **Bug Report Template**, please provide:
@@ -79,7 +79,7 @@ Feature requests are welcome! When opening an issue via the **Feature Request Te
 ### Building
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/LocationSpoofer.git
+git clone https://github.com/w1472580369/LocationSpoofer.git
 
 # Open directory
 cd LocationSpoofer

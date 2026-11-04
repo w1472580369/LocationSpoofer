@@ -175,6 +175,9 @@ class GMapControllerImpl(
             return wgs84ToGcj02(target.latitude, target.longitude).second
         }
 
+    override val cameraTargetZoom: Float?
+        get() = map.cameraPosition?.zoom
+
     private var cameraFinishListener: ((Double, Double) -> Unit)? = null
     private var cameraMoveListener: ((Double, Double) -> Unit)? = null
 

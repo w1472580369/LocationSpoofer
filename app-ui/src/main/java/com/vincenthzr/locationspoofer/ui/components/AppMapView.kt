@@ -45,6 +45,7 @@ interface AppMapController {
     fun moveCamera(lat: Double, lng: Double, zoom: Float? = null)
     val cameraTargetLat: Double?
     val cameraTargetLng: Double?
+    val cameraTargetZoom: Float?
     fun setOnCameraChangeListener(onFinish: (lat: Double, lng: Double) -> Unit)
     fun setOnCameraMoveListener(onMove: (lat: Double, lng: Double) -> Unit)
     fun disableUiControls()
