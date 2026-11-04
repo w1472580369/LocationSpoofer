@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalContext
@@ -102,16 +103,19 @@ fun HomeMapScreen(
         )
     }
 
+    // 背景必须透明（不使用不透明色块），否则会把底层的共享地图层遮挡住，导致首页白屏/无地图显示
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppColors.background(isDark))
+            .background(Color.Transparent)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                // 清晰地图 Top 的虚化层：底部内容避让底部 Tab 条，避免按钮被遮挡
+                .padding(bottom = (tabBarHeight + 10.dp).coerceAtLeast(0.dp)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // 状态提示条：位置 / 模拟状态

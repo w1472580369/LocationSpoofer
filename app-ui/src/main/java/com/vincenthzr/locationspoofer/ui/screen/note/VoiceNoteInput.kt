@@ -33,6 +33,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -61,6 +68,37 @@ fun VoiceNoteInput(
             // 面板关闭时释放录音资源
             recorder.release()
             recordingFile = null
+        }
+    }
+
+    // 通过系统弹窗申请录音权限，未通过时提示用户（避免 MediaRecorder 直接抛出 IllegalStateException）
+    val recordAudioLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) {
+            Toast.makeText(context, context.getString(R.string.audio_permission_required), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /** 开始录制（权限已成功申请） */
+    fun startRecording() {
+        try {
+            recorder.startRecording()
+            timer.start()
+            recordingFile = recorder.getCurrentFile()
+            isRecording = true
+        } catch (e: Exception) {
+            recordingFile = null
+            isRecording = false
+            Toast.makeText(context, context.getString(R.string.audio_permission_required), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /** 点击录制按钮：已有权限则直接录制，否则引导系统弹窗申请 */
+    fun startRecordingWithPermission() {
+        when (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)) {
+            PackageManager.PERMISSION_GRANTED -> startRecording()
+            else -> recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
         }
     }
 
@@ -112,15 +150,8 @@ fun VoiceNoteInput(
                 }
                 IconButton(
                     onClick = {
-                        try {
-                            recorder.startRecording()
-                            timer.start()
-                            recordingFile = recorder.getCurrentFile()
-                            isRecording = true
-                        } catch (e: Exception) {
-                            recordingFile = null
-                            isRecording = false
-                        }
+                        // 先检查录音权限，未授权时唤起系统弹窗申请
+                        startRecordingWithPermission()
                     },
                     modifier = Modifier.size(48.dp),
                     colors = IconButtonDefaults.filledTonalIconButtonColors(
@@ -256,11 +287,12 @@ fun VoiceNoteInput(
         }
     }
 
-    // 保存后的提示消失
+    // 保存后的提示消失，2 秒后自动关闭面板
     LaunchedEffect(showSaved) {
         if (showSaved) {
             delay(2000)
             showSaved = false
+            onDismiss()
         }
     }
 }

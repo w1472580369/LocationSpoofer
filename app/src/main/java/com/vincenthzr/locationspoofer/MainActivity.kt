@@ -137,6 +137,13 @@ class MainActivity : ComponentActivity() {
             permissions.add(Manifest.permission.POST_NOTIFICATIONS)
         }
 
+        // 语音备注必须由用户授权录音，未授权时 MediaRecorder 会直接抛出 IllegalStateException
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 104)
+            }
+        }
+
         val notGranted = permissions.filter {
             checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
         }
@@ -205,12 +212,17 @@ class MainActivity : ComponentActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 100) {
-            val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            if (granted) checkBackgroundLocation()
-            // 悬浮窗权限与运行时权限无关，被拒绝时也照样检查
-            requestOverlayPermissionIfNeeded()
-            if (granted) requestIgnoreBatteryOptimizations()
+        when (requestCode) {
+            100 -> {
+                val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                if (granted) checkBackgroundLocation()
+                // 悬浮窗权限与运行时权限无关，被拒绝时也照样检查
+                requestOverlayPermissionIfNeeded()
+                if (granted) requestIgnoreBatteryOptimizations()
+            }
+            104 -> {
+                // 录音权限用于语音备注：被拒绝仅影响语音备注，不影响主流程
+            }
         }
     }
 }

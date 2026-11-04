@@ -347,15 +347,6 @@ fun MainScaffoldScreen(
                             tabBarHeight = paddingValues.calculateBottomPadding()
                         )
 
-                        BottomTab.Home.ordinal -> com.vincenthzr.locationspoofer.ui.screen.HomeMapScreen(
-                            viewModel = viewModel,
-                            uiState = uiState,
-                            mapController = mapController,
-                            onEnterLocation = { selectedTab = BottomTab.Location.ordinal },
-                            lastViewport = lastViewport,
-                            tabBarHeight = paddingValues.calculateBottomPadding()
-                        )
-
                         BottomTab.Route.ordinal -> com.vincenthzr.locationspoofer.ui.screen.tabs.RouteTab(
                             viewModel = viewModel,
                             uiState = uiState,
