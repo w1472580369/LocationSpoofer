@@ -50,7 +50,6 @@ data class CameraViewport(val lat: Double, val lng: Double, val zoom: Float)
 enum class BottomTab(val icon: ImageVector) {
     Home(Icons.Rounded.House),
     Location(Icons.Rounded.MyLocation),
-    Home(Icons.Rounded.House),
     Route(Icons.Rounded.Route),
     Features(Icons.Rounded.Extension),
     Info(Icons.Rounded.Settings);
@@ -60,7 +59,6 @@ enum class BottomTab(val icon: ImageVector) {
         return when (this) {
             Home -> stringResource(R.string.tab_home)
             Location -> stringResource(R.string.tab_location)
-            Home -> stringResource(R.string.tab_home)
             Route -> stringResource(R.string.tab_route)
             Features -> stringResource(R.string.tab_features)
             Info -> stringResource(R.string.tab_info)
