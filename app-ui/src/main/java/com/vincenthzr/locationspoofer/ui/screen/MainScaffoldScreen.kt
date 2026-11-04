@@ -40,6 +40,7 @@ import com.vincenthzr.locationspoofer.viewmodel.UpdateViewModel
 import com.vincenthzr.locationspoofer.viewmodel.getIgnoredVersion
 import com.vincenthzr.locationspoofer.viewmodel.handleSpoofingIntent
 import com.vincenthzr.locationspoofer.viewmodel.isDomesticEnvironment
+import com.vincenthzr.locationspoofer.viewmodel.loadInstalledAppsForSystemHook
 import com.vincenthzr.locationspoofer.viewmodel.setIgnoredVersion
 import org.koin.androidx.compose.koinViewModel
 import top.yukonga.miuix.kmp.blur.layerBackdrop
