@@ -220,6 +220,13 @@ class SettingsRepository(private val settingsManager: SettingsManager) {
         settingsManager.lastMapLng = lng
     }
 
+    /** 最后一次地图视口的缩放级别，Home 页首屏恢复时使用 */
+    var lastMapZoom: Float
+        get() = settingsManager.lastMapZoom
+        set(value) {
+            settingsManager.lastMapZoom = value
+        }
+
     var satelliteCount: String
         get() = settingsManager.satelliteCount
         set(value) {

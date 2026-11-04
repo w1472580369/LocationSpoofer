@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddLocationAlt
 import androidx.compose.material.icons.rounded.Extension
+import androidx.compose.material.icons.rounded.House
 import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material.icons.rounded.Route
 import androidx.compose.material.icons.rounded.Settings
@@ -43,8 +44,11 @@ import org.koin.androidx.compose.koinViewModel
 import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 
+data class CameraViewport(val lat: Double, val lng: Double, val zoom: Float)
+
 enum class BottomTab(val icon: ImageVector) {
     Location(Icons.Rounded.MyLocation),
+    Home(Icons.Rounded.House),
     Route(Icons.Rounded.Route),
     Features(Icons.Rounded.Extension),
     Info(Icons.Rounded.Settings);
@@ -53,6 +57,7 @@ enum class BottomTab(val icon: ImageVector) {
     fun getLabel(): String {
         return when (this) {
             Location -> stringResource(R.string.tab_location)
+            Home -> stringResource(R.string.tab_home)
             Route -> stringResource(R.string.tab_route)
             Features -> stringResource(R.string.tab_features)
             Info -> stringResource(R.string.tab_info)
@@ -102,6 +107,21 @@ fun MainScaffoldScreen(
     }
     val latestRelease = targetReleases.firstOrNull()
 
+    // 记住最近一次的地图视口（坐标 + 缩放），返回首页（Home）或下次打开应用时恢复
+    var lastViewport by remember { mutableStateOf<CameraViewport?>(null) }
+
+    // 恢复上次保存的地图视口（坐标 + 缩放），在 Home 页首次展示时回到上次的位置
+    val lastMapPosition = remember { viewModel.settingsRepository.getLastMapPosition() }
+    LaunchedEffect(lastMapPosition) {
+        lastMapPosition?.let { pair ->
+            lastViewport = CameraViewport(
+                pair.first.toDouble(),
+                pair.second.toDouble(),
+                viewModel.settingsRepository.lastMapZoom
+            )
+        }
+    }
+
     // 软件启动进入主界面时，立即在后台检索是否有新版本发布
     LaunchedEffect(Unit) {
         updateViewModel.fetchReleases()
@@ -138,7 +158,7 @@ fun MainScaffoldScreen(
     }
 
     LaunchedEffect(selectedTab, mapController, uiState.mapType) {
-        if (selectedTab == 0) {
+        if (selectedTab == BottomTab.Home.ordinal || selectedTab == BottomTab.Location.ordinal) {
             mapController?.clear()
             mapController?.setMapType(uiState.mapType)
         }
@@ -221,7 +241,7 @@ fun MainScaffoldScreen(
                             controller.moveCamera(initLat, initLng, 15f)
 
                             controller.setOnCameraChangeListener { lat, lng ->
-                                if (currentSelectedTab == BottomTab.Location.ordinal) {
+                                if (currentSelectedTab == BottomTab.Home.ordinal || currentSelectedTab == BottomTab.Location.ordinal) {
                                     viewModel.handleSpoofingIntent(
                                         SpoofingIntent.ConfirmMapPoint(
                                             lat,
@@ -238,6 +258,19 @@ fun MainScaffoldScreen(
                                             lng
                                         )
                                     )
+                                }
+                                if (currentSelectedTab == BottomTab.Home.ordinal) {
+                                    // Home 页记录最后一次地图视口（坐标 + 缩放），下次进入首页时恢复
+                                    val zoom = controller.cameraTargetZoom
+                                    if (zoom != null) {
+                                        lastViewport = CameraViewport(lat, lng, zoom)
+                                        // 持久化视口坐标与缩放，下次打开应用/Home 页时恢复
+                                        viewModel.settingsRepository.setLastMapPosition(
+                                            String.format(java.util.Locale.US, "%.6f", lat),
+                                            String.format(java.util.Locale.US, "%.6f", lng)
+                                        )
+                                        viewModel.settingsRepository.lastMapZoom = zoom
+                                    }
                                 }
                             }
                         }
@@ -302,6 +335,15 @@ fun MainScaffoldScreen(
                             uiState = uiState,
                             mapController = mapController,
                             onCollectionRouteSelected = { selectedTab = BottomTab.Route.ordinal },
+                            tabBarHeight = paddingValues.calculateBottomPadding()
+                        )
+
+                        BottomTab.Home.ordinal -> com.vincenthzr.locationspoofer.ui.screen.HomeMapScreen(
+                            viewModel = viewModel,
+                            uiState = uiState,
+                            mapController = mapController,
+                            onEnterLocation = { selectedTab = BottomTab.Location.ordinal },
+                            lastViewport = lastViewport,
                             tabBarHeight = paddingValues.calculateBottomPadding()
                         )
 
