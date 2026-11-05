@@ -42,6 +42,15 @@ Entries discovered by the Agent during task execution should follow this format:
   - 4. 在 `gradle.properties` 追加 `org.gradle.java.home=/root/.gradle/jdks/eclipse_adoptium-21-amd64-linux.2` 可避免每次重复
 
 [Project Knowledge Summary]
+- Date: 2026-11-05
+- Context: Discovered by Agent while fixing failed GitHub Actions CI build after upgrading Kotlin thrust target to JVM_21
+- Category: Build Methods
+- Instructions:
+  - 1. 所有模块的 Kotlin `jvmTarget` 和 Java `compileOptions` 升级到 JVM_21 后，CI 中必须把 `build.yml` matrix、`release.yml` Setup Java 均改为 `java-version: 21`，否则 AGP 用 Java 17 编译会报 "source value 21 is only supported in Java 21 or higher" 级报错
+  - 2. `gradle.properties` 里不能写 `org.gradle.java.home` 指向本机路径（如 `/root/.gradle/jdks/eclipse_adoptium-21-amd64-linux.2`），该路径在 CI runner 上不存在；Gradle 的自动工具链下载（`gradle/gradle-daemon-jvm.properties` 标记 Java 21）收不到这个值时会用 setup-java 的 JDK
+  - 3. 本地构建在 `export ANDROID_HOME=/opt/AndroidSDK` 时正常，`local.properties` 是 gitignore 的，不记录到仓库
+
+[Project Knowledge Summary]
 - Date: 2026-11-03
 - Context: Discovered by Agent while fixing blocking compile errors in app-ui: VerticalScroll and VerticalScroll of Compose (BOM 2026.06.01) import location
 - Category: Build Methods

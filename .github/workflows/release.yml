@@ -126,7 +126,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '17' # Gradle 需要 Java 17 进行编译
+          java-version: '21' # Kotlin 目标为 JVM_21，必须使用 Java 21 才能完成全部模块编译
           cache: 'gradle'
 
       - name: Setup Gradle

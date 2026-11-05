@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 60
     strategy:
       matrix:
-        java-version: [17]
+        java-version: [21]
       fail-fast: false
 
     steps:
