@@ -59,6 +59,10 @@ class VoiceRecorder(private val context: Context) {
         }
         try {
             val file = getOutputFile()
+            // 先创建一个空文件，让 MediaRecorder 在底层打开这个 FileDescriptor；
+            // 某些机型 prepare/start 后如果文件不存在或 0 字节，按 Sel 方案是录到了但没写盘
+            val created = file.createNewFile()
+            Log.d("VoiceRecorder", "createNewFile: $created path=$file")
             recorder = MediaRecorder(context).apply {
                 setAudioSource(MediaRecorder.AudioSource.MIC)
                 // MediaRecorder 的状态机要求先设置输出格式，再设置编码器；
@@ -71,12 +75,15 @@ class VoiceRecorder(private val context: Context) {
                     setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
                 }
                 setOutputFile(file)
+                setOnInfoListener { _, what, _ -> Log.d("VoiceRecorder", "info: what=$what") }
+                setOnErrorListener { _, what, _ -> Log.e("VoiceRecorder", "error: what=$what") }
                 prepare()
                 start()
             }
             recordingFile = file
             startTimeMillis = System.currentTimeMillis()
             currentState = State.RECORDING
+            Log.d("VoiceRecorder", "started at $file size=${file.length()}")
         } catch (e: Exception) {
             release()
             Log.e("VoiceRecorder", "startRecording failed", e)
@@ -90,8 +97,10 @@ class VoiceRecorder(private val context: Context) {
         if (currentState != State.RECORDING) return null
         // release() 会把 recordingFile 清空，先保存引用再释放，否则永远返回 null
         val file = recordingFile
+        Log.d("VoiceRecorder", "stopRecording: file=${file?.absolutePath} exists=${file?.exists()}")
         try {
             recorder?.stop()
+            Log.d("VoiceRecorder", "stop() ok")
         } catch (e: Exception) {
             // 录制被系统中断，文件可能不完整
             Log.e("VoiceRecorder", "stopRecording failed", e)
@@ -101,13 +110,14 @@ class VoiceRecorder(private val context: Context) {
         // 路径存在不等于文件落地，没有实际音频文件时不对外暴露，避免后续保存到列表后播放/标记全部失效
         if (file == null) return null
         // 部分机型/模拟器上 MediaRecorder 停止后由媒体管道异步写盘，
-        // 对抗写盘延迟：轮询等待文件真正落地，最长约 3 秒。
-        // 文件存在且大小大于 0 才算真正录制成功，否则返回 null 避免后续列表/蓝点全是空路径。
+        // 对抗写盘延迟：轮询等待文件真正落地且大于 0，最长约 15 秒。
         var attempt = 0
-        while (( !file.exists() || file.length() == 0L ) && attempt++ < 30) {
+        while (( !file.exists() || file.length() == 0L ) && attempt++ < 150) {
             delay(100)
         }
-        return if (file.exists() && file.length() > 0L) file else null
+        val fileOk = file.exists() && file.length() > 0L
+        Log.d("VoiceRecorder", "file ready: ${file.absolutePath} size=${file.length()} ok=$fileOk")
+        return if (fileOk) file else null
     }
 
     /** 主动释放录制器资源 */

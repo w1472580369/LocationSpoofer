@@ -468,6 +468,9 @@
     <string name="voice_note_files_not_saved">No audio file was generated (recording aborted), please try again</string>
     <string name="audio_permission_required">Recording audio requires permission</string>
     <string name="voice_note_record_failed">Failed to start recording. Please try again.</string>
+    <string name="voice_note_cancel">Recording cancelled, no file saved</string>
+    <string name="voice_note_permission_denied">Recording permission denied by the system, please open settings to allow it</string>
+    <string name="voice_note_file_missing">Audio file missing after stop, saving skipped</string>
     <string name="lab_header_title">Experimental</string>
     <string name="lab_warning_title">Experimental features</string>
     <string name="lab_warning_desc">These features are in beta and may not work on all devices.</string>

@@ -79,6 +79,11 @@ fun VoiceNoteInput(
     /** 录制时长（秒）：由 Compose 可观察的 State 驱动，确保秒数在录制过程中持续跳动 */
     var elapsedSeconds by remember { mutableStateOf(0.0) }
 
+    /** 用户拒绝录音权限后的引导：系统弹窗不会再出现时提示用户手动开启 */
+    fun showPermissionDeniedHint() {
+        Toast.makeText(context, context.getString(R.string.voice_note_permission_denied), Toast.LENGTH_LONG).show()
+    }
+
     /** 开始录制（权限已成功申请） */
     suspend fun startRecording() {
         try {
@@ -102,6 +107,10 @@ fun VoiceNoteInput(
                 R.string.audio_permission_required
             }
             Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_LONG).show()
+            if (!hasPermission) {
+                // 没有录音权限：录制器无法写文件，给用户明确提示
+                showPermissionDeniedHint()
+            }
         }
     }
 
@@ -111,18 +120,33 @@ fun VoiceNoteInput(
     ) { granted ->
         if (!granted) {
             Toast.makeText(context, context.getString(R.string.audio_permission_required), Toast.LENGTH_LONG).show()
+            // 如果系统弹窗已经不再出现（用户勾选了"不再询问"），直接给出手动开启的引导
+            showPermissionDeniedHint()
         } else if (autoStartRecording) {
             // 系统弹窗授权后补录：直接开始录制
             scope.launch { startRecording() }
         }
     }
 
-    /** 点击录制按钮：已有权限则直接录制，否则引导系统弹窗申请 */
+    /** 点击录制按钮：先确认录音权限，未授权时唤起系统弹窗申请，已授权时直接录制 */
     suspend fun startRecordingWithPermission() {
         when (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)) {
             PackageManager.PERMISSION_GRANTED -> startRecording()
             else -> recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
         }
+    }
+
+    /** 手势取消录制时给用户明确的反馈，避免误操作后静默无文件 */
+    fun cancelRecording() {
+        recorder.release()
+        recordingFile = null
+        timer.stop()
+        isRecording = false
+        textNote = ""
+        canSave = false
+        focusManager.clearFocus()
+        // 通过主线程 Toast 提示确认当前状态
+        Toast.makeText(context, context.getString(R.string.voice_note_cancel), Toast.LENGTH_LONG).show()
     }
 
     DisposableEffect(Unit) {
@@ -235,11 +259,7 @@ fun VoiceNoteInput(
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(
                         onClick = {
-                            recorder.release()
-                            recordingFile = null
-                            isRecording = false
-                            textNote = ""
-                            focusManager.clearFocus()
+                            cancelRecording()
                         },
                         modifier = Modifier.defaultMinSize(minWidth = 100.dp).height(40.dp)
                     ) {
