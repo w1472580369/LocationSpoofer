@@ -18,9 +18,16 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 // MainViewModel 的当前位置获取、原生定位回退与模拟能力评估相关扩展函数
 
-// 当前位置获取
+// 当前位置获取：优先系统原生定位（真实位置），高德 AMap 定位回退，再失败回退到原生定位
 internal fun MainViewModel.fetchCurrentLocation(ctx: Context, forceCallback: ((Double, Double) -> Unit)? = null) {
     viewModelScope.launch(Dispatchers.Main) {
+        // 宿主 App 自身就是定位目标：取真实位置，避免高德 SDK 返回模拟坐标与抖动
+        val native = withContext(Dispatchers.IO) { fetchNativePosition(ctx) }
+        if (native != null) {
+            updatePositionInputs(native.first, native.second, forceCallback)
+            return@launch
+        }
+
         val client = try {
             AMapLocationClient(ctx.applicationContext)
         } catch (e: Exception) {
@@ -34,16 +41,7 @@ internal fun MainViewModel.fetchCurrentLocation(ctx: Context, forceCallback: ((D
         })
         client.setLocationListener { loc ->
             if (loc != null && loc.errorCode == 0) {
-                if (_uiState.value.longitudeInput.isEmpty() || _uiState.value.latitudeInput.isEmpty() || forceCallback != null) {
-                    _uiState.update {
-                        it.copy(
-                            latitudeInput = String.format("%.6f", loc.latitude),
-                            longitudeInput = String.format("%.6f", loc.longitude),
-                            showCoordinateError = false
-                        )
-                    }
-                    forceCallback?.invoke(loc.latitude, loc.longitude)
-                }
+                updatePositionInputs(loc.latitude, loc.longitude, forceCallback)
             } else {
                 // 如果鉴权失败(如 SERVICE_NOT_EXIST)或其他错误，回退到原生定位
                 fallbackToNativeLocation(ctx, forceCallback, true)
@@ -124,6 +122,23 @@ private fun MainViewModel.fallbackToNativeLocation(
     }
 }
 
+private fun MainViewModel.updatePositionInputs(
+    lat: Double,
+    lng: Double,
+    forceCallback: ((Double, Double) -> Unit)?
+) {
+    if (_uiState.value.longitudeInput.isEmpty() || _uiState.value.latitudeInput.isEmpty() || forceCallback != null) {
+        _uiState.update {
+            it.copy(
+                latitudeInput = String.format("%.6f", lat),
+                longitudeInput = String.format("%.6f", lng),
+                showCoordinateError = false
+            )
+        }
+        forceCallback?.invoke(lat, lng)
+    }
+}
+
 private fun MainViewModel.applyNativeLocation(
     ctx: Context,
     location: android.location.Location,
@@ -142,17 +157,7 @@ private fun MainViewModel.applyNativeLocation(
         finalLat = gcj.latitude
         finalLng = gcj.longitude
     }
-
-    if (_uiState.value.longitudeInput.isEmpty() || _uiState.value.latitudeInput.isEmpty() || forceCallback != null) {
-        _uiState.update {
-            it.copy(
-                latitudeInput = String.format("%.6f", finalLat),
-                longitudeInput = String.format("%.6f", finalLng),
-                showCoordinateError = false
-            )
-        }
-        forceCallback?.invoke(finalLat, finalLng)
-    }
+    updatePositionInputs(finalLat, finalLng, forceCallback)
 }
 
 internal suspend fun MainViewModel.fetchRealLocationSilent(ctx: Context): Pair<Double, Double>? {
@@ -185,6 +190,43 @@ internal suspend fun MainViewModel.fetchRealLocationSilent(ctx: Context): Pair<D
         }
     }
     return amapResult ?: fallbackToNativeLocationSilent(ctx, true)
+}
+
+// 系统原生定位：优先使用系统已缓存的位置（真实位置），没有缓存时尝试请求一次最新真实坐标
+@android.annotation.SuppressLint("MissingPermission")
+private suspend fun MainViewModel.fetchNativePosition(ctx: Context): Pair<Double, Double>? {
+    return withTimeoutOrNull(5_000) {
+        suspendCancellableCoroutine { cont ->
+            val locationManager = ctx.applicationContext
+                .getSystemService(Context.LOCATION_SERVICE) as android.location.LocationManager
+            val listener = object : android.location.LocationListener {
+                override fun onLocationChanged(location: android.location.Location) {
+                    locationManager.removeUpdates(this)
+                    if (cont.isActive) cont.resume(getNativeConverted(ctx, location, true))
+                }
+                override fun onStatusChanged(provider: String?, status: Int, extras: android.os.Bundle?) {}
+                override fun onProviderEnabled(provider: String) {}
+                override fun onProviderDisabled(provider: String) {}
+            }
+            val provider = when {
+                locationManager.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER) ->
+                    android.location.LocationManager.NETWORK_PROVIDER
+                locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER) ->
+                    android.location.LocationManager.GPS_PROVIDER
+                else -> {
+                    if (cont.isActive) cont.resume(null)
+                    return@suspendCancellableCoroutine
+                }
+            }
+            val lastLocation = locationManager.getLastKnownLocation(provider)
+            if (lastLocation != null) {
+                cont.resume(getNativeConverted(ctx, lastLocation, true))
+                if (!cont.isActive) locationManager.removeUpdates(listener)
+            } else {
+                locationManager.requestSingleUpdate(provider, listener, android.os.Looper.getMainLooper())
+            }
+        }
+    }
 }
 
 @android.annotation.SuppressLint("MissingPermission")

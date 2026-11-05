@@ -47,6 +47,10 @@ internal fun LocationHooker.hookAMapSDK(classLoader: ClassLoader) {
                 XposedHelpers.hookAllConstructors(amapLocClazz) { chain, _ ->
                     val result = chain.proceed(chain.args.toTypedArray())
                     val amapLoc = chain.thisObject
+                    // 宿主 App 自身需要获取真实位置（"定位到当前位置"功能），不拦截宿主 App 的高德 SDK
+                    if (currentPackageName.substringBefore(":") == "com.vincenthzr.locationspoofer") {
+                        return@hookAllConstructors result
+                    }
                     if (amapLoc != null) {
                         val config = readConfig()
                         if (config != null && config.optBoolean("active", false)) {
@@ -218,6 +222,10 @@ internal fun LocationHooker.hookAMapSDK(classLoader: ClassLoader) {
                         if (hookedCallbackClasses.putIfAbsent(listenerClazz, true) == null) {
                             try {
                                 XposedHelpers.hookAllMethods(listenerClazz, "onLocationChanged") { innerChain, _ ->
+                                    // 宿主 App 自身需要获取真实位置（"定位到当前位置"功能），不拦截宿主 App 的高德 SDK
+                                    if (currentPackageName.substringBefore(":") == "com.vincenthzr.locationspoofer") {
+                                        return@hookAllMethods innerChain.proceed(innerChain.args.toTypedArray())
+                                    }
                                     val config = readConfig() ?: return@hookAllMethods innerChain.proceed(innerChain.args.toTypedArray())
                                     if (!config.optBoolean("active", false) || innerChain.args.isEmpty()) return@hookAllMethods innerChain.proceed(innerChain.args.toTypedArray())
                                     val amapLoc = innerChain.args[0] ?: return@hookAllMethods innerChain.proceed(innerChain.args.toTypedArray())
@@ -256,6 +264,10 @@ internal fun LocationHooker.hookAMapSDK(classLoader: ClassLoader) {
 
             XposedHelpers.hookAllMethods(clientClazz, "getLastKnownLocation") { chain, _ ->
                 val result = chain.proceed(chain.args.toTypedArray())
+                // 宿主 App 自身需要获取真实位置（"定位到当前位置"功能），不拦截宿主 App 的高德 SDK
+                if (currentPackageName.substringBefore(":") == "com.vincenthzr.locationspoofer") {
+                    return@hookAllMethods result
+                }
                 val config = readConfig()
                 if (config != null && config.optBoolean("active", false)) {
                     val motion = getCurrentSpoofedMotion("GCJ-02")

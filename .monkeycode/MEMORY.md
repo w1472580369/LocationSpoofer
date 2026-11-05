@@ -32,6 +32,16 @@ Entries discovered by the Agent during task execution should follow this format:
 ## Entries
 
 [Project Knowledge Summary]
+- Date: 2026-11-05
+- Context: Discovered by Agent while fixing Gradle toolchain failures for the LocationSpoofer multi-module Android project
+- Category: Build Methods
+- Instructions:
+  - 1. 本机只有 Java 17 **JRE**（在 PATH 中，但没有 javac），Gradle 自动下载并安装的 JDK 21 位于 `/root/.gradle/jdks/eclipse_adoptium-21-amd64-linux.2`，编译和调试时统一指向 JDK 21
+  - 2. `android的新Dsl=false`（旧版 Variant API）下，所有模块的 `compileOptions` 和 `jvmTarget.set(JvmTarget.JVM_17)` 必须保持 **Java 21 一致**（`VERSION_21` / `JVM_21`），否则 AGP 报 "Inconsistent JVM Target Compatibility Between Java and Kotlin Tasks"
+  - 3. 修改编译器版本前，先 `grep -rn "jvmTarget\|VERSION_17" --include=*.kts` 搜全部模块的build.gradle.kts，5 个模块（app, app-ui, core-data, service, xposed）各改一处
+  - 4. 在 `gradle.properties` 追加 `org.gradle.java.home=/root/.gradle/jdks/eclipse_adoptium-21-amd64-linux.2` 可避免每次重复
+
+[Project Knowledge Summary]
 - Date: 2026-11-03
 - Context: Discovered by Agent while fixing blocking compile errors in app-ui: VerticalScroll and VerticalScroll of Compose (BOM 2026.06.01) import location
 - Category: Build Methods

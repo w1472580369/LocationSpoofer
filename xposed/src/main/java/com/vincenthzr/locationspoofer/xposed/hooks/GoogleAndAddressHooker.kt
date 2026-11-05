@@ -55,6 +55,10 @@ internal fun LocationHooker.hookAddressFields(clazz: Class<*>, classLoader: Clas
         try {
             XposedHelpers.hookAllMethods(clazz, methodName) { chain, method ->
                 var result = chain.proceed(chain.args.toTypedArray())
+                // 宿主 App 自身需要获取真实位置（"定位到当前位置"功能），不拦截宿主 App 的地址
+                if (currentPackageName.substringBefore(":") == "com.vincenthzr.locationspoofer") {
+                    return@hookAllMethods result
+                }
                 if (method !is Method) return@hookAllMethods result
                 if (method.returnType != String::class.java) return@hookAllMethods result
 
