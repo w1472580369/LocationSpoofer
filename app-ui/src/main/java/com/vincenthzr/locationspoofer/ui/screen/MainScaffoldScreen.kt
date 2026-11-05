@@ -19,13 +19,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import com.vincenthzr.locationspoofer.ui.BuildConfig
 import com.vincenthzr.locationspoofer.ui.R
 import com.vincenthzr.locationspoofer.data.model.AppState
@@ -90,6 +94,7 @@ fun MainScaffoldScreen(
     viewModel: MainViewModel,
     uiState: AppState
 ) {
+    val context = LocalContext.current
     val pageCount = BottomTab.values().size
     var selectedTab by remember { mutableIntStateOf(BottomTab.Home.ordinal) }
     var currentSubScreen by remember { mutableStateOf(MainSubScreen.None) }
@@ -248,6 +253,12 @@ fun MainScaffoldScreen(
                         modifier = Modifier.fillMaxSize(),
                         mapEngine = uiState.mapEngine,
                         isDomestic = viewModel.isDomesticEnvironment(),
+                        onMapLoadFailed = {
+                            // 地图未加载时没有任何地图控制器，蓝点/坐标拾取全部静默失效，
+                            // 这里上报失败态并 toast 提示，避免用户拿到一个无地图的界面。
+                            Log.e("MainScaffold", "map view failed to load: engine=${uiState.mapEngine}")
+                            Toast.makeText(context, R.string.map_load_failed, Toast.LENGTH_LONG).show()
+                        },
                         onMapReady = { controller ->
                             mapController = controller
                             controller.disableUiControls()

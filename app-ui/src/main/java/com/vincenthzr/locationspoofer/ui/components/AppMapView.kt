@@ -71,7 +71,9 @@ fun AppMapView(
     mapEngine: MapEngine,
     isDomestic: Boolean,
     modifier: Modifier = Modifier,
-    onMapReady: (AppMapController) -> Unit
+    onMapReady: (AppMapController) -> Unit,
+    /** 地图加载失败（如 Key 被禁用）时的回调，让 UI 层能明确上报而不是静默无地图 */
+    onMapLoadFailed: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -96,7 +98,8 @@ fun AppMapView(
                 isDark = isDark,
                 modifier = modifier,
                 onMapReady = onMapReady,
-                onControllerCreated = { mapController = it }
+                onControllerCreated = { mapController = it },
+                onMapLoadFailed = onMapLoadFailed
             )
         }
 
@@ -107,7 +110,8 @@ fun AppMapView(
                 isDark = isDark,
                 modifier = modifier,
                 onMapReady = onMapReady,
-                onControllerCreated = { mapController = it }
+                onControllerCreated = { mapController = it },
+                onMapLoadFailed = onMapLoadFailed
             )
         }
 
@@ -118,7 +122,8 @@ fun AppMapView(
                 isDark = isDark,
                 modifier = modifier,
                 onMapReady = onMapReady,
-                onControllerCreated = { mapController = it }
+                onControllerCreated = { mapController = it },
+                onMapLoadFailed = onMapLoadFailed
             )
         }
     }

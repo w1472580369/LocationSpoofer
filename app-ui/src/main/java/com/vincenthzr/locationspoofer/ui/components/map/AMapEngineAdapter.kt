@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.SystemClock
 import androidx.compose.runtime.*
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -267,12 +268,25 @@ fun AMapViewContainer(
     isDark: Boolean,
     modifier: Modifier,
     onMapReady: (AppMapController) -> Unit,
-    onControllerCreated: (AppMapController) -> Unit
+    onControllerCreated: (AppMapController) -> Unit,
+    /** 超过加载时限仍未触发 onMapLoadedCallback 时的回调 */
+    onMapLoadFailed: () -> Unit
 ) {
     val amapView = remember {
         val view = TextureMapView(context)
         view.onCreate(Bundle())
         view
+    }
+
+    var mapLoaded by remember { mutableStateOf(false) }
+
+    // 地图加载超时检测：15 秒内未触发 onMapLoadedCallback 说明地图没有真正加载（例如 key 被禁用），
+    // 上报失败态可以避免地图控制器一直为 null，导致蓝点/坐标拾取等静默失效。
+    LaunchedEffect(Unit) {
+        delay(15_000)
+        if (!mapLoaded) {
+            onMapLoadFailed()
+        }
     }
 
     DisposableEffect(lifecycleOwner.lifecycle, amapView) {
@@ -301,6 +315,7 @@ fun AMapViewContainer(
                 setOnTouchListener { v, _ -> v.parent?.requestDisallowInterceptTouchEvent(true); false }
                 map.setOnMapLoadedListener {
                     val controller = AMapControllerImpl(map, context)
+                    mapLoaded = true
                     onControllerCreated(controller)
                     controller.setDarkMode(isDark, context)
                     onMapReady(controller)

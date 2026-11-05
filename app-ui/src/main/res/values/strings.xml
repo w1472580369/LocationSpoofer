@@ -423,7 +423,9 @@
     <string name="layers_and_engine_title">Layers &amp; Map Engine</string>
     <string name="layers_and_engine_desc">Select map rendering style and underlying engine</string>
     <string name="map_engine_service">Map Engine Service</string>
+
     <string name="auto_match">Auto Match</string>
+    <string name="map_load_failed">Map load failed, please check network / API key and switch the map engine in settings.</string>
     <string name="local_collected_points_format">%d local collection points total</string>
     <string name="search_remark_coord_hint">Search remark, place, or coordinates...</string>
     <string name="no_local_env_data">No local collected data</string>
