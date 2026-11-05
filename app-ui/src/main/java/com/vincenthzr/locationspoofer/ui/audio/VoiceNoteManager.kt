@@ -101,12 +101,13 @@ class VoiceRecorder(private val context: Context) {
         // 路径存在不等于文件落地，没有实际音频文件时不对外暴露，避免后续保存到列表后播放/标记全部失效
         if (file == null) return null
         // 部分机型/模拟器上 MediaRecorder 停止后由媒体管道异步写盘，
-        // 在这里等待文件真正落地再返回，避免"没有文件/无法保存"误判。
+        // 对抗写盘延迟：轮询等待文件真正落地，最长约 3 秒。
+        // 文件存在且大小大于 0 才算真正录制成功，否则返回 null 避免后续列表/蓝点全是空路径。
         var attempt = 0
-        while (!file.exists() && attempt++ < 8) {
+        while (( !file.exists() || file.length() == 0L ) && attempt++ < 30) {
             delay(100)
         }
-        return if (file.exists()) file else null
+        return if (file.exists() && file.length() > 0L) file else null
     }
 
     /** 主动释放录制器资源 */
