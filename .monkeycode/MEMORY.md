@@ -68,3 +68,14 @@ Entries discovered by the Agent during task execution should follow this format:
   - 2. `VoiceRecorder.getOutputFile()` 的扩展名必须和 MediaRecorder 的输出格式匹配（S 版本以上 .m4a，以下 .3gp），否则 `prepare/start` 抛 `IllegalStateException` 被误报成缺录音权限
   - 3. `MediaRecorder` 必须先 `setOutputFormat` 再 `setAudioEncoder`（反序抛 `IllegalStateException`）
   - 4. 录制时长必须用 Compose 可观察的 State 驱动（`LaunchedEffect(isRecording)` 里每 100ms 刷新 `elapsedSeconds`），直接调 `Timer.getElapsedSeconds()` 面板不会自更
+
+[Project Knowledge Summary]
+- Date: 2026-11-05
+- Context: Discovered by Agent while smelting the "saved voice note disappears / map blue dot not shown" bug from user log in app-ui (VoiceNoteRepository)
+- Category: Troubleshooting & Debugging
+- Instructions:
+  - 1. `androidx.datastore`（具体是 `VoiceNoteRepository.clearExpired()`）里 `prefs.edit().putString(...).apply()` 是**异步写盘**，紧接在后面的 `prefs.getString("notes")` 读到的是 `[]` 旧值，不是新值 — 日志特征：同一微秒级时间戳里 `getAll entries=1 jsonLen=187` 后紧接着 `getAll entries=0 jsonLen=2`
+  - 2. 复现这个 bug 的症状链是：录音文件其实生成了（`VoiceRecorder: file ready: ... size=12839 ok=true`），但列表永远是 0，功能实验室/地图蓝点都不出现
+  - 3. 修复：把 `VoiceNoteRepository` 里所有写盘都改为 `.commit()`（同步落盘），并在 `clearExpired()` 里加 `entries/kept` 日志
+  - 4. 百度地图 SDK 启动时如果 auth 失败，logcat 里有 `LBSAuthManager` 的 `javax.crypto.BadPaddingException`；旧 key 报 errorcode 201 "APP被用户自己禁用"（在 Baidu 控制台被禁），新 key 报 PKCS 解码错误（Baidu 控制台未注册对应签名的 key）—— 用户去控制台重新生成 `com.vincenthzr.locationspoofer` 的 key
+  - 5. 注意本地 `~/.android/debug.keystore` 的 SHA1 是 `34:01:BD:14:DE:C0:3D:2C:4D:B4:1D:59:44:2C:5B:6D:48:73:16:B9`，包名是 `com.vincenthzr.locationspoofer`，CN 地址上海
