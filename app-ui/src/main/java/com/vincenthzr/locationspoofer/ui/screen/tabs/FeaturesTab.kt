@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Camera
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.Science
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -69,7 +70,8 @@ fun FeaturesTab(
     onNavigateToScanner: () -> Unit,
     onNavigateToManageData: () -> Unit,
     onNavigateToSystemHookApps: () -> Unit,
-    onNavigateToCameraHook: () -> Unit
+    onNavigateToCameraHook: () -> Unit,
+    onNavigateToRecordingFiles: () -> Unit
 ) {
     val isDark = isSystemInDarkTheme()
     val context = LocalContext.current
@@ -308,6 +310,62 @@ fun FeaturesTab(
                                     focusManager.clearFocus()
                                     viewModel.setCameraHookEnabled(enabled)
                                 }
+                            )
+                        }
+                    }
+                }
+
+                // 录音文件入口：进入全屏录音文件列表页（点击播放 / 长按删除）
+                item {
+                    MiuixCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .noRippleClickable {
+                                keyboardController?.hide()
+                                focusManager.clearFocus()
+                                onNavigateToRecordingFiles()
+                            },
+                        cornerRadius = 16.dp,
+                        insideMargin = PaddingValues(horizontal = 16.dp, vertical = 14.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .clip(RoundedCornerShape(11.dp))
+                                    .background(AccentOrange.copy(alpha = 0.12f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Mic,
+                                    null,
+                                    tint = AccentOrange,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(14.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = stringResource(R.string.lab_recording_files_title),
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Spacer(Modifier.height(2.dp))
+                                Text(
+                                    text = stringResource(R.string.lab_recording_files_count, uiState.voiceNoteCount),
+                                    fontSize = 12.sp,
+                                    color = AppColors.textSecondary(isDark)
+                                )
+                            }
+                            Icon(
+                                Icons.Rounded.ChevronRight,
+                                null,
+                                tint = AppColors.textSecondary(isDark).copy(alpha = 0.7f),
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }

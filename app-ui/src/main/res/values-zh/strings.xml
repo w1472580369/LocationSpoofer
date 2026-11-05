@@ -607,6 +607,25 @@
     <string name="voice_note_saved">语音备注已保存</string>
     <string name="audio_permission_required">录制语音需要权限</string>
     <string name="voice_note_record_failed">录音启动失败，请重试</string>
+
+    <string name="lab_recording_files_title">录音文件</string>
+    <string name="lab_recording_files_desc">查看和管理已录制的语音备注，按坐标排序</string>
+    <string name="lab_recording_files_count">已录制 %1$d 条</string>
+    <string name="voice_note_list_empty">暂无录音备注</string>
+    <string name="voice_note_list_empty_desc">在地图上录制的语音备注会显示在这里</string>
+    <string name="voice_note_delete_title">删除语音备注</string>
+    <string name="voice_note_delete_message">确认删除本次录音？删除后无法恢复。</string>
+    <string name="voice_note_delete_cancel">取消</string>
+    <string name="voice_note_delete_confirm">确认</string>
+    <string name="voice_note_recording_time">录制时间</string>
+    <string name="voice_note_duration">时长</string>
+    <string name="voice_note_file_not_found">录音文件已被删除</string>
+    <string name="voice_note_play_failed">此格式暂不支持播放</string>
+    <string name="voice_note_player_error">播放失败</string>
+    <string name="voice_note_play">播放</string>
+    <string name="voice_note_pause">暂停</string>
+    <string name="voice_note_mark">语音备注</string>
+    <string name="home_map_note_marker_title">语音备注</string>
     <string name="home_current_position">当前位置</string>
     <string name="home_map_desc">当前位置和快速操作</string>
     <string name="home_map_status_line">坐标 %s, %s</string>

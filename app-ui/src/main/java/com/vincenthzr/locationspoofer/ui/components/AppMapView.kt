@@ -13,6 +13,9 @@ import com.vincenthzr.locationspoofer.ui.components.map.GoogleMapViewContainer
 
 interface AppMapMarker {
     fun setPosition(lat: Double, lng: Double)
+
+    /** 从地图上移除该标记点 */
+    fun remove()
 }
 
 enum class MarkerType { GREEN, RED, ORANGE, DEFAULT }
@@ -50,6 +53,8 @@ interface AppMapController {
     fun setOnCameraMoveListener(onMove: (lat: Double, lng: Double) -> Unit)
     fun setOnMapClickListener(onClick: (lat: Double, lng: Double) -> Unit)
     fun setOnMapLongClickListener(onLongClick: (lat: Double, lng: Double) -> Unit)
+    /** 标记点被点击时触发（latitude, longitude, title），对后来创建的所有标记生效 */
+    fun setOnMarkerClickListener(onClick: (lat: Double, lng: Double, title: String) -> Unit)
     fun disableUiControls()
     fun setMapType(type: AppMapType)
     fun setDarkMode(isDark: Boolean, context: android.content.Context)

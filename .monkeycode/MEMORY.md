@@ -78,3 +78,14 @@ Entries discovered by the Agent during task execution should follow this format:
   - 2. 发布端使用 `softprops/action-gh-release@v2`，`tag_name` 固定来自 `gradle.properties` 的 `APP_VERSION_NAME`（前缀 v，如 v3.0.0），`delete_existing: true` + `force_create: true` 仅删除**同 tag** 的旧 Release 并新建，不会删其他版本的 Release
   - 3. 旧版流程里曾有一个 "Cleanup Old Releases" 步骤用 curl 循环删掉了所有旧 tag 的 Release，已移除
   - 4. 版本格式校验现在是硬性退出（校验失败 exit 1），不再悄悄跳过；changelog 取自 `PREV_TAG..HEAD` 的 feat:/fix: 提交
+
+[Project Knowledge Summary]
+- Date: 2026-11-05
+- Context: Discovered by Agent while compiling the recording-list + home-map blue dots feature in app-ui
+- Category: Troubleshooting & Debugging
+- Instructions:
+  - 1. app-ui 的标记点（AppMapMarker）点击事件统一注册在地图控制器级别（AMap / Baidu / Google 三套适配器的 `map.setOnMarkerClickListener`），**不要**在单条 Marker 实现里写 `setOnMarkerClickListener`，否则 AppMapMarker 接口会报错 "does not implement abstract member"
+  - 2. Kotlin 局部函数必须先声明后调用：Composable 方法体内的 `fun` 如果被 Lambda 回调先调用（如 `deleteNote { refreshList() }`），后面才声明，Kotlin 会报 "Unresolved reference"；把辅助函数放在调用处之前即可避免
+  - 3. `VoiceNoteListScreen` 里 `deleteVoiceNote(record) { ... }` 是 `MainViewModel` 的扩展函数（同包 `com.vincenthzr.locationspoofer.viewmodel`），跨文件调用需显式 import，不能因为同包就省略
+
+[Project Knowledge Summary]

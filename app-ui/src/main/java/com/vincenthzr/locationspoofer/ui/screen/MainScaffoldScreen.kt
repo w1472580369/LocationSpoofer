@@ -81,7 +81,8 @@ enum class MainSubScreen {
     BackgroundKeepAlive,
     EnvTokens,
     SystemHookApps,
-    CameraHook
+    CameraHook,
+    RecordingFiles
 }
 
 @Composable
@@ -379,7 +380,8 @@ fun MainScaffoldScreen(
                             onNavigateToScanner = { currentSubScreen = MainSubScreen.ScannerMap },
                             onNavigateToManageData = { currentSubScreen = MainSubScreen.ManageData },
                             onNavigateToSystemHookApps = { currentSubScreen = MainSubScreen.SystemHookApps },
-                            onNavigateToCameraHook = { currentSubScreen = MainSubScreen.CameraHook }
+                            onNavigateToCameraHook = { currentSubScreen = MainSubScreen.CameraHook },
+                        onNavigateToRecordingFiles = { currentSubScreen = MainSubScreen.RecordingFiles }
                         )
 
                         BottomTab.Info.ordinal -> com.vincenthzr.locationspoofer.ui.screen.tabs.InfoTab(
@@ -503,6 +505,13 @@ fun MainScaffoldScreen(
                     )
 
                     MainSubScreen.CameraHook -> com.vincenthzr.locationspoofer.ui.screen.settings.CameraHookScreen(
+                        viewModel = viewModel,
+                        uiState = uiState,
+                        isDark = isDark,
+                        onClose = { currentSubScreen = MainSubScreen.None }
+                    )
+
+                    MainSubScreen.RecordingFiles -> com.vincenthzr.locationspoofer.ui.screen.VoiceNoteListScreen(
                         viewModel = viewModel,
                         uiState = uiState,
                         isDark = isDark,

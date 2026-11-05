@@ -25,10 +25,13 @@ import androidx.compose.ui.unit.dp
 import com.vincenthzr.locationspoofer.data.model.AppState
 import com.vincenthzr.locationspoofer.ui.R
 import com.vincenthzr.locationspoofer.ui.components.AppMapController
+import com.vincenthzr.locationspoofer.ui.components.AppMapMarker
 import com.vincenthzr.locationspoofer.ui.components.MarkerType
 import com.vincenthzr.locationspoofer.ui.theme.AccentBlue
 import com.vincenthzr.locationspoofer.ui.screen.note.VoiceNoteInput
 import com.vincenthzr.locationspoofer.viewmodel.MainViewModel
+import com.vincenthzr.locationspoofer.viewmodel.showVoiceNoteInfo
+import com.vincenthzr.locationspoofer.viewmodel.refreshVoiceNoteList
 import com.vincenthzr.locationspoofer.viewmodel.fetchCurrentLocation
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.animation.AnimatedVisibility
@@ -50,6 +53,8 @@ fun HomeMapScreen(
     var showVoiceNoteInput by remember { mutableStateOf(false) }
     // 长按直达录制标记：长按地图开面板时直接开始录音，而非显示录制入口
     var longPressRecording by remember { mutableStateOf(false) }
+    /** 已添加到地图的语音备注蓝点（以录音文件路径为键，用于与列表同步） */
+    var noteMarkers by remember { mutableStateOf<Map<String, AppMapMarker>>(emptyMap()) }
 
     DisposableEffect(mapController) {
         if (mapController != null) {
@@ -63,10 +68,20 @@ fun HomeMapScreen(
                 longPressRecording = true
                 showVoiceNoteInput = true
             }
+            mapController.setOnMarkerClickListener { lat, lng, title ->
+                // 点击蓝点时展示备注详情（录制时间 / 时长 / 文本），不触发录制面板
+                val record = uiState.voiceNoteList.firstOrNull {
+                    it.lat == lat && it.lng == lng
+                }
+                if (record != null) {
+                    context.showVoiceNoteInfo(record)
+                }
+            }
         }
         onDispose {
             mapController?.setOnMapClickListener { _, _ -> }
             mapController?.setOnMapLongClickListener { _, _ -> }
+            mapController?.setOnMarkerClickListener { _, _, _ -> }
         }
     }
 
@@ -99,6 +114,27 @@ fun HomeMapScreen(
         )
     }
 
+    // 语音备注蓝点：与绿色标记点隔离，仅凭 voiceNoteList 变化感知，避免重复添加
+    LaunchedEffect(mapController, uiState.voiceNoteList) {
+        if (mapController == null) return@LaunchedEffect
+        val currentNotes = uiState.voiceNoteList.associate { it.path to it }
+        // 取消已不在列表中的旧蓝点（避免删除后标记残留）
+        noteMarkers
+            .filter { !currentNotes.containsKey(it.key) }
+            .forEach { it.value.remove() }
+        noteMarkers = noteMarkers.filter { currentNotes.containsKey(it.key) }
+        // 新增的语音备注：在录制坐标处绘制默认蓝色标记点
+        for (record in uiState.voiceNoteList) {
+            if (noteMarkers.containsKey(record.path)) continue
+            val title = if (record.text.isNotBlank()) {
+                record.text
+            } else {
+                context.getString(R.string.home_map_note_marker_title)
+            }
+            noteMarkers = noteMarkers + (record.path to mapController.addMarker(record.lat, record.lng, title, MarkerType.DEFAULT))
+        }
+    }
+
     // 背景必须透明（不使用不透明色块），否则会把底层的共享地图层遮挡住，导致首页白屏/无地图显示
     Box(
         modifier = Modifier
@@ -126,6 +162,7 @@ fun HomeMapScreen(
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth(),
                         onDismiss = { showVoiceNoteInput = false },
+                        onNoteSaved = { viewModel.refreshVoiceNoteList() },
                         autoStartRecording = longPressRecording
                     )
                 }

@@ -641,4 +641,24 @@ Error details: %s</string>
     <string name="collection_route_delete_title">Delete collected route</string>
     <string name="collection_route_delete_message">Delete “%1$s” and all its collected samples?</string>
     <string name="local_collection_records_count">%1$d points · %2$d routes</string>
+
+    <!-- Voice note recording / observation -->
+    <string name="lab_recording_files_title">Recording Files</string>
+    <string name="lab_recording_files_desc">View and manage recorded voice notes, sorted by coordinate</string>
+    <string name="lab_recording_files_count">Already recorded %1$d</string>
+    <string name="voice_note_list_empty">No recorded voice notes</string>
+    <string name="voice_note_list_empty_desc">The audio notes recorded on the map will appear here</string>
+    <string name="voice_note_delete_title">Delete voice note</string>
+    <string name="voice_note_delete_message">Are you sure you want to delete this recording? This action cannot be undone.</string>
+    <string name="voice_note_delete_cancel">Cancel</string>
+    <string name="voice_note_delete_confirm">Confirm</string>
+    <string name="voice_note_recording_time">Recording time</string>
+    <string name="voice_note_duration">Duration</string>
+    <string name="voice_note_file_not_found">Audio file was deleted externally</string>
+    <string name="voice_note_play_failed">This format is not supported for playback</string>
+    <string name="voice_note_player_error">Playback failure</string>
+    <string name="voice_note_play">Play</string>
+    <string name="voice_note_pause">Pause</string>
+    <string name="voice_note_mark">Voice note</string>
+    <string name="home_map_note_marker_title">Voice note</string>
 </resources>

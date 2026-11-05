@@ -104,6 +104,10 @@ class BaiduMapControllerImpl(
             override fun setPosition(lat: Double, lng: Double) {
                 marker?.position = LatLng(lat, lng)
             }
+
+            override fun remove() {
+                marker?.remove()
+            }
         }
     }
 
@@ -192,6 +196,7 @@ class BaiduMapControllerImpl(
     private var cameraMoveListener: ((Double, Double) -> Unit)? = null
     private var mapClickListener: ((Double, Double) -> Unit)? = null
     private var mapLongClickListener: ((Double, Double) -> Unit)? = null
+    private var markerClickListener: ((Double, Double, String) -> Unit)? = null
     // 同一个手势：长按事件中 SDK 有时会在后续也回传单击事件，需要在短时间内屏蔽
     private var lastLongPressAt: Long = 0
 
@@ -259,6 +264,15 @@ class BaiduMapControllerImpl(
 
     override fun setOnMapLongClickListener(onLongClick: (lat: Double, lng: Double) -> Unit) {
         mapLongClickListener = onLongClick
+    }
+
+    override fun setOnMarkerClickListener(onClick: (lat: Double, lng: Double, title: String) -> Unit) {
+        markerClickListener = onClick
+        // 标记级事件统一通过地图级回调上报，避免逐个标记点注册遗漏
+        map.setOnMarkerClickListener { marker ->
+            markerClickListener?.invoke(marker.position.latitude, marker.position.longitude, marker.title ?: "")
+            true
+        }
     }
 
     override fun disableUiControls() {

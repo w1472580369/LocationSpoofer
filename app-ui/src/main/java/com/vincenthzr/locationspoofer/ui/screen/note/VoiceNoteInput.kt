@@ -51,7 +51,9 @@ fun VoiceNoteInput(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {},
     /** 长按直达录制：面板出现时直接开始录制（开启后跳过点击 Mic 的步骤） */
-    autoStartRecording: Boolean = false
+    autoStartRecording: Boolean = false,
+    /** 备注保存成功后的回调（通知系统刷新语音备注列表状态） */
+    onNoteSaved: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val isDark = isSystemInDarkTheme()
@@ -282,6 +284,8 @@ fun VoiceNoteInput(
                             textNote = ""
                             canSave = false
                             showSaved = true
+                            // 通知上层（ ViewModel / HomeMapScreen ）刷新语音备注状态，以便蓝点和计数可见
+                            onNoteSaved()
                         },
                         modifier = Modifier.defaultMinSize(minWidth = 100.dp).height(40.dp),
                         colors = ButtonDefaults.buttonColors(

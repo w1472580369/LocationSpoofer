@@ -5,6 +5,7 @@ import com.vincenthzr.locationspoofer.ui.R
 import com.vincenthzr.locationspoofer.utils.GaitTemplate
 import com.vincenthzr.locationspoofer.utils.AltitudeModel
 import com.vincenthzr.locationspoofer.vendor.VendorScheme
+import com.vincenthzr.locationspoofer.ui.audio.VoiceNoteRecord
 import com.vincenthzr.locationspoofer.utils.MotionRealism
 
 enum class WifiLoadStatus { IDLE, LOADING, DONE }
@@ -180,5 +181,9 @@ data class AppState(
     val pinnedLocationName: String? = null,
 
     // 是否接收测试版更新 (Beta 通道)
-    val checkBetaUpdates: Boolean = false
+    val checkBetaUpdates: Boolean = false,
+    /** 已录制的语音备注列表（按录制时间倒序），由 MainViewModel 实时更新 */
+    val voiceNoteList: List<VoiceNoteRecord> = emptyList(),
+    /** 未过期的已录制语音备注数量，供功能实验室卡片计数展示 */
+    val voiceNoteCount: Int = 0
 )

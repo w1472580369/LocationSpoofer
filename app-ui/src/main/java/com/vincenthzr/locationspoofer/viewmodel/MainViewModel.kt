@@ -17,6 +17,8 @@ import com.vincenthzr.locationspoofer.data.repository.LocationRepository
 import com.vincenthzr.locationspoofer.data.repository.SettingsRepository
 import com.vincenthzr.locationspoofer.data.repository.WifiRepository
 import com.vincenthzr.locationspoofer.data.state.SpoofingState
+import com.vincenthzr.locationspoofer.ui.audio.VoiceNoteRepository
+import com.vincenthzr.locationspoofer.ui.audio.VoiceNoteRecord
 import com.vincenthzr.locationspoofer.ui.screen.spoofing.SpoofingUiState
 import com.vincenthzr.locationspoofer.utils.EnvironmentScanner
 import com.vincenthzr.locationspoofer.utils.LSPosedManager
@@ -119,8 +121,17 @@ class MainViewModel(
     internal var locationSyncJob: Job? = null
     internal var continuousScanJob: Job? = null
 
+    /** 语音备注持久化仓库（所有语音备注的唯一数据源） */
+    internal val voiceNoteRepository = VoiceNoteRepository(context)
+
+    /** 已录制语音备注列表（按录制时间倒序） */
+    internal val _voiceNoteList = MutableStateFlow<List<VoiceNoteRecord>>(emptyList())
+    val voiceNoteList: StateFlow<List<VoiceNoteRecord>> = _voiceNoteList.asStateFlow()
+
     init {
         initialize()
+        // 语音备注：从数据仓库恢复完整列表到视图状态，供地图蓝点与录音文件列表使用
+        refreshVoiceNoteList()
     }
 
     data class ClusterData(
