@@ -172,16 +172,6 @@ class VoiceNoteRepository(private val context: Context) {
         Log.d("VoiceNoteRepository", "saveNote committed=$written")
     }
 
-    /** 删除一条语音备注（释放关联的录音文件） */
-    fun deleteNote(record: VoiceNoteRecord): Boolean {
-        val file = File(record.path)
-        val deleted = file.delete()
-        val notes = getAll().toMutableList()
-        notes.remove(record)
-        prefs.edit().putString("notes", Json.Default.encodeToString(notes)).apply()
-        return deleted
-    }
-
     /** 按坐标寻找附近（<= 50m）的语音备注 */
     fun findNearby(lat: Double, lng: Double, maxMeters: Double = 50.0): List<VoiceNoteRecord> {
         return getAll().filter {
@@ -192,11 +182,13 @@ class VoiceNoteRepository(private val context: Context) {
         }.sortedByDescending { it.recordTime }
     }
 
-    /** 清理超过 30 天的旧录音（释放磁盘空间） */
+    /** 清理超过 30 天的旧录音（释放磁盘空间），commit 保证落盘后可见，避免后续 getAll 读到过期空列表 */
     fun clearExpired() {
         val now = System.currentTimeMillis()
         val keeping = getAll().filter { now - it.recordTime <= 30 * 24 * 60 * 60 * 1000 }
-        prefs.edit().putString("notes", Json.Default.encodeToString(keeping)).apply()
+        Log.d("VoiceNoteRepository", "clearExpired total=${getAll().size} kept=${keeping.size}")
+        val committed = prefs.edit().putString("notes", Json.Default.encodeToString(keeping)).commit()
+        Log.d("VoiceNoteRepository", "clearExpired committed=$committed kept=${keeping.size}")
     }
 
     /** 更新指定录音的时长（秒） */
@@ -207,7 +199,19 @@ class VoiceNoteRepository(private val context: Context) {
                 notes[notes.indexOf(record)] = entry.copy(durationSeconds = seconds)
             }
         }
-        prefs.edit().putString("notes", Json.Default.encodeToString(notes)).apply()
+        val committed = prefs.edit().putString("notes", Json.Default.encodeToString(notes)).commit()
+        Log.d("VoiceNoteRepository", "updateDuration committed=$committed")
+    }
+
+    /** 删除一条语音备注（释放关联的录音文件） */
+    fun deleteNote(record: VoiceNoteRecord): Boolean {
+        val file = File(record.path)
+        val deleted = file.delete()
+        val notes = getAll().toMutableList()
+        notes.remove(record)
+        val committed = prefs.edit().putString("notes", Json.Default.encodeToString(notes)).commit()
+        Log.d("VoiceNoteRepository", "deleteNote committed=$committed remaining=${notes.size}")
+        return deleted
     }
 }
 
