@@ -605,6 +605,7 @@
     <string name="home_map_note_cancel">取消</string>
     <string name="home_map_note_close">关闭</string>
     <string name="voice_note_saved">语音备注已保存</string>
+    <string name="voice_note_files_not_saved">未生成录音文件（录制可能已中断），请重新录制</string>
     <string name="audio_permission_required">录制语音需要权限</string>
     <string name="voice_note_record_failed">录音启动失败，请重试</string>
 

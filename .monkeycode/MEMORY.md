@@ -60,32 +60,11 @@ Entries discovered by the Agent during task execution should follow this format:
   - 3. 修复规则：先 `javap` / `unzip -l` 查 jar 包里实际的方法候选，再决定 import，不要凭印象写
 
 [Project Knowledge Summary]
-- Date: 2026-11-03
-- Context: Discovered by Agent while reproducing CI-equivalent test runs for a multi-flavor Android project
-- Category: Build Methods
-- Instructions:
-  - 1. 同时有两个 flavor dimension 的模块（app-ui / core-data），测试 task 名字是 flavor 限定的，不能直接写 `:app-ui:testDebugUnitTest`，会报 "Ambiguous matches"；用 `testGlobalDebugUnitTest` 和 `testScopedDebugUnitTest`
-  - 2. `core-data` 里 `var cameraHookPackages: Set<String>` 的 getter/setter 体引用了同名的 `fun getCameraHookPackages()`/`fun setCameraHookPackages()`，Kotlin 会在 JVM 层面生成一对同签名方法，导致 "Platform declaration clash"；修法是去掉外部显式函数，把读写逻辑直接写进属性 getter/setter，让 repository 层面改调属性
-  - 3. 项目 pre-existing 的 compiler failure 可能在基线 commit 上就得复现，排查前先 `git stash` 确认 scope，避免改错模块
-  - 4. `xposed` 模块的 `:xposed:test` 能同时跑 global + scoped flavor，但 app-ui 的 `testDebugUnitTest` 不被识别为两者，只会在 flavor 显式切分下存在
-
-[Project Knowledge Summary]
-- Date: 2026-11-04
-- Context: Discovered by Agent while rewriting the CI release workflow (release.yml) to rebuild and republish the same Release tag on every push
-- Category: Operations & Deployment
-- Instructions:
-  - 1. `.github/workflows/release.yml` 每次 push 到 main/master 都重新构建 Release APK（4 个：scoped/global × arm64-v8a/armeabi-v7a）
-  - 2. 发布端使用 `softprops/action-gh-release@v2`，`tag_name` 固定来自 `gradle.properties` 的 `APP_VERSION_NAME`（前缀 v，如 v3.0.0），`delete_existing: true` + `force_create: true` 仅删除**同 tag** 的旧 Release 并新建，不会删其他版本的 Release
-  - 3. 旧版流程里曾有一个 "Cleanup Old Releases" 步骤用 curl 循环删掉了所有旧 tag 的 Release，已移除
-  - 4. 版本格式校验现在是硬性退出（校验失败 exit 1），不再悄悄跳过；changelog 取自 `PREV_TAG..HEAD` 的 feat:/fix: 提交
-
-[Project Knowledge Summary]
 - Date: 2026-11-05
-- Context: Discovered by Agent while compiling the recording-list + home-map blue dots feature in app-ui
+- Context: Discovered by Agent while fixing voice-note recording on the home screen (seconds not ticking, no audio file, blue markers missing from map)
 - Category: Troubleshooting & Debugging
 - Instructions:
-  - 1. app-ui 的标记点（AppMapMarker）点击事件统一注册在地图控制器级别（AMap / Baidu / Google 三套适配器的 `map.setOnMarkerClickListener`），**不要**在单条 Marker 实现里写 `setOnMarkerClickListener`，否则 AppMapMarker 接口会报错 "does not implement abstract member"
-  - 2. Kotlin 局部函数必须先声明后调用：Composable 方法体内的 `fun` 如果被 Lambda 回调先调用（如 `deleteNote { refreshList() }`），后面才声明，Kotlin 会报 "Unresolved reference"；把辅助函数放在调用处之前即可避免
-  - 3. `VoiceNoteListScreen` 里 `deleteVoiceNote(record) { ... }` 是 `MainViewModel` 的扩展函数（同包 `com.vincenthzr.locationspoofer.viewmodel`），跨文件调用需显式 import，不能因为同包就省略
-
-[Project Knowledge Summary]
+  - 1. 每个 `ContextImpl` 都有自己独立的 `SharedPreferencesImpl` 内存缓存，两个上下文之间不共享：如果 `VoiceNoteInput` 里 `new` 了一份 `VoiceNoteRepository`，而 `MainViewModel` 里又有一份，界面侧 `saveNote` 后列表/地图蓝点读不到这条备注。修复方式：`VoiceNoteInput` 不允许 `VoiceNoteRepository(context)` 默认值，必须由 `HomeMapScreen` 显式传入 `viewModel.voiceNoteRepository`（单例 = 唯一数据源）
+  - 2. `VoiceRecorder.getOutputFile()` 的扩展名必须和 MediaRecorder 的输出格式匹配（S 版本以上 .m4a，以下 .3gp），否则 `prepare/start` 抛 `IllegalStateException` 被误报成缺录音权限
+  - 3. `MediaRecorder` 必须先 `setOutputFormat` 再 `setAudioEncoder`（反序抛 `IllegalStateException`）
+  - 4. 录制时长必须用 Compose 可观察的 State 驱动（`LaunchedEffect(isRecording)` 里每 100ms 刷新 `elapsedSeconds`），直接调 `Timer.getElapsedSeconds()` 面板不会自更

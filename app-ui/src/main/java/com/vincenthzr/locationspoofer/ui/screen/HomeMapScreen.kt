@@ -33,6 +33,7 @@ import com.vincenthzr.locationspoofer.viewmodel.MainViewModel
 import com.vincenthzr.locationspoofer.viewmodel.showVoiceNoteInfo
 import com.vincenthzr.locationspoofer.viewmodel.refreshVoiceNoteList
 import com.vincenthzr.locationspoofer.viewmodel.fetchCurrentLocation
+import android.util.Log
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.animation.AnimatedVisibility
 
@@ -116,7 +117,10 @@ fun HomeMapScreen(
 
     // 语音备注蓝点：与绿色标记点隔离，仅凭 voiceNoteList 变化感知，避免重复添加
     LaunchedEffect(mapController, uiState.voiceNoteList) {
-        if (mapController == null) return@LaunchedEffect
+        if (mapController == null) {
+            Log.e("HomeMapScreen", "mapController is null, skip voice-note marker")
+            return@LaunchedEffect
+        }
         val currentNotes = uiState.voiceNoteList.associate { it.path to it }
         // 取消已不在列表中的旧蓝点（避免删除后标记残留）
         noteMarkers
@@ -131,7 +135,11 @@ fun HomeMapScreen(
             } else {
                 context.getString(R.string.home_map_note_marker_title)
             }
-            noteMarkers = noteMarkers + (record.path to mapController.addMarker(record.lat, record.lng, title, MarkerType.DEFAULT))
+            try {
+                noteMarkers = noteMarkers + (record.path to mapController.addMarker(record.lat, record.lng, title, MarkerType.DEFAULT))
+            } catch (e: Exception) {
+                Log.e("HomeMapScreen", "add marker for voice note failed", e)
+            }
         }
     }
 
@@ -161,6 +169,9 @@ fun HomeMapScreen(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth(),
+                        // 必须与 MainViewModel 共用同一份 VoiceNoteRepository，
+                        // 否则面板存的备注 ViewModel 读不到（列表与地图蓝点不刷新）
+                        voiceNoteRepository = viewModel.voiceNoteRepository,
                         onDismiss = { showVoiceNoteInput = false },
                         onNoteSaved = { viewModel.refreshVoiceNoteList() },
                         autoStartRecording = longPressRecording

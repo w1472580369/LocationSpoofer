@@ -84,7 +84,7 @@ class VoiceRecorder(private val context: Context) {
         return recordingFile
     }
 
-    /** 停止录制，返回录音文件 */
+    /** 停止录制，返回录音文件（文件必须实际落在磁盘上，否则返回 null） */
     fun stopRecording(): File? {
         if (currentState != State.RECORDING) return null
         // release() 会把 recordingFile 清空，先保存引用再释放，否则永远返回 null
@@ -97,7 +97,8 @@ class VoiceRecorder(private val context: Context) {
         } finally {
             release()
         }
-        return file
+        // 路径存在不等于文件落地，没有实际音频文件时不对外暴露，避免后续保存到列表后播放/标记全部失效
+        return if (file != null && file.exists()) file else null
     }
 
     /** 主动释放录制器资源 */
@@ -110,7 +111,10 @@ class VoiceRecorder(private val context: Context) {
 
     private fun getOutputFile(): File {
         val dir = File(context.cacheDir, "voice_notes").apply { if (!exists()) mkdirs() }
-        return File(dir, "record_${System.currentTimeMillis()}.3gp")
+        // 扩展名必须和输出格式匹配，否则某些机型 prepare/start 会抛 IllegalStateException：
+        // MPEG_4/AAC → .m4a，THREE_GPP/AMR_NB → .3gp
+        val ext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ".m4a" else ".3gp"
+        return File(dir, "record_${System.currentTimeMillis()}$ext")
     }
 
     private fun hasPermission(): Boolean {
@@ -137,11 +141,11 @@ class VoiceNoteRepository(private val context: Context) {
         }
     }
 
-    /** 添加一条语音备注 */
+    /** 添加一条语音备注（commit 同步落盘，保证随后 read getAll() 一定能读到抢救回这份备注） */
     fun saveNote(record: VoiceNoteRecord) {
         val notes = getAll().toMutableList()
         notes.add(record)
-        prefs.edit().putString("notes", Json.Default.encodeToString(notes)).apply()
+        prefs.edit().putString("notes", Json.Default.encodeToString(notes)).commit()
     }
 
     /** 删除一条语音备注（释放关联的录音文件） */

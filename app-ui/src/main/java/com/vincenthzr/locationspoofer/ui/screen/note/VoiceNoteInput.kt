@@ -53,12 +53,18 @@ fun VoiceNoteInput(
     /** 长按直达录制：面板出现时直接开始录制（开启后跳过点击 Mic 的步骤） */
     autoStartRecording: Boolean = false,
     /** 备注保存成功后的回调（通知系统刷新语音备注列表状态） */
-    onNoteSaved: () -> Unit = {}
+    onNoteSaved: () -> Unit = {},
+    /** 语音备注仓库：必须由 HomeMapScreen 传入与 ViewModel 同一份实例。
+     *  界面与 ViewModel 各持一份仓库时，Android 会为它们创建两个 ContextImpl，
+     *  各自的 SharedPreferencesImpl 内存缓存不共享，
+     *  界面侧保存的备注 ViewModel 侧读不到（列表/地图蓝点不刷新）。
+     *  不允许使用默认值，必须显式传入同一份实例。 */
+    voiceNoteRepository: VoiceNoteRepository
 ) {
     val context = LocalContext.current
     val isDark = isSystemInDarkTheme()
     val focusManager = LocalFocusManager.current
-    val repository = remember { VoiceNoteRepository(context) }
+    val repository = remember { voiceNoteRepository }
     val recorder = remember { VoiceRecorder(context) }
     val timer = remember { RecordingTimer() }
     var isRecording by remember { mutableStateOf(false) }
@@ -66,6 +72,8 @@ fun VoiceNoteInput(
     var textNote by remember { mutableStateOf("") }
     var showSaved by remember { mutableStateOf(false) }
     var recordingFile by remember { mutableStateOf<File?>(null) }
+    /** 录制时长（秒）：由 Compose 可观察的 State 驱动，确保秒数在录制过程中持续跳动 */
+    var elapsedSeconds by remember { mutableStateOf(0.0) }
 
     /** 开始录制（权限已成功申请） */
     fun startRecording() {
@@ -73,10 +81,12 @@ fun VoiceNoteInput(
             recorder.startRecording()
             timer.start()
             recordingFile = recorder.getCurrentFile()
+            elapsedSeconds = timer.getElapsedSeconds()
             isRecording = true
         } catch (e: Exception) {
             recordingFile = null
             isRecording = false
+            elapsedSeconds = 0.0
             // 仅在确实没有权限时提示权限；已授权时的录制器异常要给出准确提示，避免误报
             val hasPermission = ContextCompat.checkSelfPermission(
                 context,
@@ -120,7 +130,19 @@ fun VoiceNoteInput(
             // 面板关闭时释放录音资源
             recorder.release()
             recordingFile = null
+            timer.stop()
         }
+    }
+
+    // 录制中：按 Compose 的状态更新机制每 100ms 刷新一次时长，
+    // 否则秒数只会停留在录制开始时的 0.0（要等到后续任意重组才刷新）
+    LaunchedEffect(isRecording) {
+        while (isRecording) {
+            elapsedSeconds = timer.getElapsedSeconds()
+            delay(100)
+        }
+        // 停止瞬间补最后一次，确保停止按钮那一帧显示准确的录制秒数
+        elapsedSeconds = timer.getElapsedSeconds()
     }
 
     // 界面层：录制照片/文本
@@ -199,7 +221,7 @@ fun VoiceNoteInput(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.voice_note_recording, timer.getElapsedSeconds().toLong()),
+                        text = stringResource(R.string.voice_note_recording, elapsedSeconds.toLong()),
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.SemiBold
@@ -223,9 +245,19 @@ fun VoiceNoteInput(
                         onClick = {
                             val file = recorder.stopRecording()
                             recordingFile = file
-                            isRecording = false
+                            // 录制器停止后立即定格时长（避免停止后被 LaunchedEffect 误刷）
+                            elapsedSeconds = timer.getElapsedSeconds()
                             timer.stop()
+                            isRecording = false
                             canSave = file != null
+                            if (file == null) {
+                                // AudioRecorder 只返回了路径，实际文件未落地（设备未录）
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.voice_note_files_not_saved),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                             focusManager.clearFocus()
                         },
                         modifier = Modifier.defaultMinSize(minWidth = 100.dp).height(40.dp),
@@ -273,19 +305,30 @@ fun VoiceNoteInput(
                                 canSave = false
                                 return@Button
                             }
+                            // 文件不在，不要保存空路径（补录组件找不到本地音频文件）
+                            if (!file.exists()) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.voice_note_files_not_saved),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                canSave = false
+                                recordingFile = null
+                                return@Button
+                            }
                             val record = VoiceNoteRecord(
                                 path = file.absolutePath,
                                 lat = lat,
                                 lng = lng,
                                 recordTime = System.currentTimeMillis(),
                                 text = textNote,
-                                durationSeconds = timer.getElapsedSeconds()
+                                durationSeconds = elapsedSeconds
                             )
                             repository.saveNote(record)
                             textNote = ""
                             canSave = false
                             showSaved = true
-                            // 通知上层（ ViewModel / HomeMapScreen ）刷新语音备注状态，以便蓝点和计数可见
+                            // 通知上层（ ViewModel / HomeMapScreen ）刷新语音备注列表，补录蓝色地图标记
                             onNoteSaved()
                         },
                         modifier = Modifier.defaultMinSize(minWidth = 100.dp).height(40.dp),
