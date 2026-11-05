@@ -40,7 +40,10 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 /** 语音备注录制面板：点击地图位置后弹出的底部操作条，录制并保存该位置的语音备注 */
@@ -67,6 +70,7 @@ fun VoiceNoteInput(
     val repository = remember { voiceNoteRepository }
     val recorder = remember { VoiceRecorder(context) }
     val timer = remember { RecordingTimer() }
+    val scope = rememberCoroutineScope()
     var isRecording by remember { mutableStateOf(false) }
     var canSave by remember { mutableStateOf(false) }
     var textNote by remember { mutableStateOf("") }
@@ -76,7 +80,7 @@ fun VoiceNoteInput(
     var elapsedSeconds by remember { mutableStateOf(0.0) }
 
     /** 开始录制（权限已成功申请） */
-    fun startRecording() {
+    suspend fun startRecording() {
         try {
             recorder.startRecording()
             timer.start()
@@ -109,12 +113,12 @@ fun VoiceNoteInput(
             Toast.makeText(context, context.getString(R.string.audio_permission_required), Toast.LENGTH_LONG).show()
         } else if (autoStartRecording) {
             // 系统弹窗授权后补录：直接开始录制
-            startRecording()
+            scope.launch { startRecording() }
         }
     }
 
     /** 点击录制按钮：已有权限则直接录制，否则引导系统弹窗申请 */
-    fun startRecordingWithPermission() {
+    suspend fun startRecordingWithPermission() {
         when (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)) {
             PackageManager.PERMISSION_GRANTED -> startRecording()
             else -> recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -124,7 +128,7 @@ fun VoiceNoteInput(
     DisposableEffect(Unit) {
         if (autoStartRecording) {
             // 长按直达录制：面板出现时无需点击 Mic，直接尝试开始录制（未授权时唤起系统弹窗）
-            startRecordingWithPermission()
+            scope.launch { startRecordingWithPermission() }
         }
         onDispose {
             // 面板关闭时释放录音资源
@@ -194,7 +198,7 @@ fun VoiceNoteInput(
                 IconButton(
                     onClick = {
                         // 先检查录音权限，未授权时唤起系统弹窗申请
-                        startRecordingWithPermission()
+                        scope.launch { startRecordingWithPermission() }
                     },
                     modifier = Modifier.size(48.dp),
                     colors = IconButtonDefaults.filledTonalIconButtonColors(
@@ -243,22 +247,27 @@ fun VoiceNoteInput(
                     }
                     Button(
                         onClick = {
-                            val file = recorder.stopRecording()
-                            recordingFile = file
-                            // 录制器停止后立即定格时长（避免停止后被 LaunchedEffect 误刷）
-                            elapsedSeconds = timer.getElapsedSeconds()
-                            timer.stop()
-                            isRecording = false
-                            canSave = file != null
-                            if (file == null) {
-                                // AudioRecorder 只返回了路径，实际文件未落地（设备未录）
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.voice_note_files_not_saved),
-                                    Toast.LENGTH_LONG
-                                ).show()
+                            // 停止录制：转为 IO 协程中的挂起调用，等文件真正落地后再更新 UI 状态
+                            scope.launch(Dispatchers.IO) {
+                                val file = recorder.stopRecording()
+                                withContext(Dispatchers.Main) {
+                                    recordingFile = file
+                                    // 录制器停止后立即定格时长（避免停止后被 LaunchedEffect 误刷）
+                                    elapsedSeconds = timer.getElapsedSeconds()
+                                    timer.stop()
+                                    isRecording = false
+                                    canSave = file != null
+                                    if (file == null) {
+                                        // AudioRecorder 只返回了路径，实际文件未落地（设备未录）
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.voice_note_files_not_saved),
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                    focusManager.clearFocus()
+                                }
                             }
-                            focusManager.clearFocus()
                         },
                         modifier = Modifier.defaultMinSize(minWidth = 100.dp).height(40.dp),
                         colors = ButtonDefaults.buttonColors(

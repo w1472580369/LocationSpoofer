@@ -13,6 +13,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.delay
 
 /** 一条已保存的语音备注（定位 + 录音 + 文本备注 + 时长） */
 @Serializable
@@ -51,8 +52,8 @@ class VoiceRecorder(private val context: Context) {
     fun getCurrentFile(): File? = recordingFile
 
     /** 开始录制，完成时不要返回 null；失败时抛出异常 */
-    fun startRecording(): File? {
-        if (currentState == State.RECORDING) stopRecording()
+    suspend fun startRecording(): File? {
+        if (currentState == State.RECORDING) release()
         if (!hasPermission()) {
             throw IllegalStateException("RECORD_AUDIO permission not granted")
         }
@@ -85,7 +86,7 @@ class VoiceRecorder(private val context: Context) {
     }
 
     /** 停止录制，返回录音文件（文件必须实际落在磁盘上，否则返回 null） */
-    fun stopRecording(): File? {
+    suspend fun stopRecording(): File? {
         if (currentState != State.RECORDING) return null
         // release() 会把 recordingFile 清空，先保存引用再释放，否则永远返回 null
         val file = recordingFile
@@ -98,7 +99,14 @@ class VoiceRecorder(private val context: Context) {
             release()
         }
         // 路径存在不等于文件落地，没有实际音频文件时不对外暴露，避免后续保存到列表后播放/标记全部失效
-        return if (file != null && file.exists()) file else null
+        if (file == null) return null
+        // 部分机型/模拟器上 MediaRecorder 停止后由媒体管道异步写盘，
+        // 在这里等待文件真正落地再返回，避免"没有文件/无法保存"误判。
+        var attempt = 0
+        while (!file.exists() && attempt++ < 8) {
+            delay(100)
+        }
+        return if (file.exists()) file else null
     }
 
     /** 主动释放录制器资源 */
