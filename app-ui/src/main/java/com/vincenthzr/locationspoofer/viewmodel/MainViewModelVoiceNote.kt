@@ -1,6 +1,7 @@
 package com.vincenthzr.locationspoofer.viewmodel
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import com.vincenthzr.locationspoofer.ui.audio.VoiceNoteRecord
@@ -20,9 +21,11 @@ internal fun MainViewModel.refreshVoiceNoteList() {
     viewModelScope.launch(Dispatchers.IO) {
         voiceNoteRepository.clearExpired()
         val notes = voiceNoteRepository.getAll().sortedByDescending { it.recordTime }
+        Log.d("MainViewModel", "refreshVoiceNoteList notes=${notes.size}")
         _voiceNoteList.value = notes
         withContext(Dispatchers.Main) {
             updateVoiceNoteState()
+            Log.d("MainViewModel", "updateVoiceNoteState voiceNoteCount=${notes.size}")
         }
     }
 }
@@ -45,6 +48,7 @@ internal fun MainViewModel.deleteVoiceNote(record: VoiceNoteRecord, onSuccess: (
  * HomeMapScreen 的蓝点与功能实验室计数均依赖这两个字段。
  */
 internal fun MainViewModel.updateVoiceNoteState() {
+    Log.d("MainViewModel", "updateVoiceNoteState in")
     val notes = _voiceNoteList.value
     _uiState.update {
         it.copy(

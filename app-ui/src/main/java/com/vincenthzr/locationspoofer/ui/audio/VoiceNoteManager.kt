@@ -154,8 +154,11 @@ class VoiceNoteRepository(private val context: Context) {
     fun getAll(): List<VoiceNoteRecord> {
         val json = prefs.getString("notes", "[]") ?: "[]"
         return try {
-            Json.Default.decodeFromString<List<VoiceNoteRecord>>(json)
+            val list = Json.Default.decodeFromString<List<VoiceNoteRecord>>(json)
+            Log.d("VoiceNoteRepository", "getAll entries=${list.size} jsonLen=${json.length}")
+            list
         } catch (e: Exception) {
+            Log.e("VoiceNoteRepository", "getAll failed: ${e.message}")
             emptyList()
         }
     }
@@ -164,7 +167,9 @@ class VoiceNoteRepository(private val context: Context) {
     fun saveNote(record: VoiceNoteRecord) {
         val notes = getAll().toMutableList()
         notes.add(record)
-        prefs.edit().putString("notes", Json.Default.encodeToString(notes)).commit()
+        Log.d("VoiceNoteRepository", "saveNote entries=${notes.size} path=${record.path}")
+        val written = prefs.edit().putString("notes", Json.Default.encodeToString(notes)).commit()
+        Log.d("VoiceNoteRepository", "saveNote committed=$written")
     }
 
     /** 删除一条语音备注（释放关联的录音文件） */

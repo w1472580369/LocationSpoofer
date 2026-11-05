@@ -121,6 +121,7 @@ fun HomeMapScreen(
             Log.e("HomeMapScreen", "mapController is null, skip voice-note marker")
             return@LaunchedEffect
         }
+        Log.d("HomeMapScreen", "voiceNoteList=【${uiState.voiceNoteList.size}】总计 voiceNoteCount=${uiState.voiceNoteCount}")
         val currentNotes = uiState.voiceNoteList.associate { it.path to it }
         // 取消已不在列表中的旧蓝点（避免删除后标记残留）
         noteMarkers

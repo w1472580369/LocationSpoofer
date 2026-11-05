@@ -1,5 +1,6 @@
 package com.vincenthzr.locationspoofer.ui.screen.note
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -277,6 +278,7 @@ fun VoiceNoteInput(
                                     timer.stop()
                                     isRecording = false
                                     canSave = file != null
+                                    Log.d("VoiceNoteInput", "stopRecording: file=$file canSave=$canSave")
                                     if (file == null) {
                                         // AudioRecorder 只返回了路径，实际文件未落地（设备未录）
                                         Toast.makeText(
@@ -345,6 +347,7 @@ fun VoiceNoteInput(
                                 recordingFile = null
                                 return@Button
                             }
+                            Log.d("VoiceNoteInput", "save page: path=${file.absolutePath} size=${file.length()} lat=$lat lng=$lng rec=${System.currentTimeMillis()}")
                             val record = VoiceNoteRecord(
                                 path = file.absolutePath,
                                 lat = lat,
@@ -358,6 +361,7 @@ fun VoiceNoteInput(
                             canSave = false
                             showSaved = true
                             // 通知上层（ ViewModel / HomeMapScreen ）刷新语音备注列表，补录蓝色地图标记
+                            Log.d("VoiceNoteInput", "save called onNoteSaved")
                             onNoteSaved()
                         },
                         modifier = Modifier.defaultMinSize(minWidth = 100.dp).height(40.dp),
