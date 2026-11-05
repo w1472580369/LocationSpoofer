@@ -278,7 +278,8 @@ fun VoiceNoteInput(
                                 lat = lat,
                                 lng = lng,
                                 recordTime = System.currentTimeMillis(),
-                                text = textNote
+                                text = textNote,
+                                durationSeconds = timer.getElapsedSeconds()
                             )
                             repository.saveNote(record)
                             textNote = ""
