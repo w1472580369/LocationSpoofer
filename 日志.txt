@@ -1,0 +1,209 @@
+1793906338.321 10363 24223 24223 E locationspoofe: Not starting debugger since process cannot load the jdwp agent.
+1793906338.323 10363 24223 24223 D ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+1793906338.384 10363 24223 24223 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10363; state: ENABLED
+1793906338.398 10363 24223 24238 D AppScoutStateMachine: 24223-ScoutStateMachinecreated
+1793906338.470 10363 24223 24223 V GraphicsEnvironment: ANGLE Developer option for 'com.vincenthzr.locationspoofer' set to: 'default'
+1793906338.470 10363 24223 24223 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+1793906338.480 10363 24223 24223 I ForceDarkHelperStubImpl: initialize for com.vincenthzr.locationspoofer , ForceDarkOrigin
+1793906338.486 10363 24223 24223 D OpenGLRenderer: JNI_OnLoad success
+1793906338.486 10363 24223 24223 I MiuiForceDarkConfig: setConfig density:2.750000, mainRule:0, secondaryRule:0, tertiaryRule:0
+1793906338.488 10363 24223 24223 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+1793906338.493 10363 24223 24223 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+1793906338.509 10363 24223 24223 W ReflectionUtils: java.lang.NoSuchMethodException: android.view.ViewRootImpl#needSurface()#bestmatch
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at miui.util.ReflectionUtils.findMethodBestMatch(Unknown Source:146)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at miui.util.ReflectionUtils.tryFindMethodBestMatch(Unknown Source:0)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.view.ChoreographerInjectorStubImpl.<init>(Unknown Source:18)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at java.lang.reflect.Constructor.newInstance0(Native Method)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at java.lang.reflect.Constructor.newInstance(Constructor.java:343)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.newInstance(Unknown Source:31)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.newInstanceNoThrow(Unknown Source:0)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry$ImplHolder.getInstance(Unknown Source:9)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.doGetInstance(Unknown Source:26)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.get(Unknown Source:3)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.get(Unknown Source:2)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at com.miui.base.MiuiStubUtil.getInstance(Unknown Source:0)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.view.animation.ChoreographerInjectorStub.getInstance(Unknown Source:2)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.view.Choreographer.postCallbackDelayedInternal(Unknown Source:16)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.view.Choreographer.postFrameCallbackDelayed(Unknown Source:8)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.view.Choreographer.postFrameCallback(Unknown Source:2)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at androidx.profileinstaller.ProfileInstallerInitializer.b(r8-map-id-99ffa40a69fa5990e2bd31791e0188ed2c737407ac16ff37e758b45b32b54963:14)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at nj.k(r8-map-id-99ffa40a69fa5990e2bd31791e0188ed2c737407ac16ff37e758b45b32b54963:86)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at nj.j(r8-map-id-99ffa40a69fa5990e2bd31791e0188ed2c737407ac16ff37e758b45b32b54963:86)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at androidx.startup.InitializationProvider.onCreate(r8-map-id-99ffa40a69fa5990e2bd31791e0188ed2c737407ac16ff37e758b45b32b54963:53)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.content.ContentProvider.attachInfo(Unknown Source:102)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.content.ContentProvider.attachInfo(Unknown Source:1)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.app.ActivityThread.installProvider(Unknown Source:264)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.app.ActivityThread.installContentProviders(Unknown Source:28)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.app.ActivityThread.handleBindApplication(Unknown Source:854)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.app.ActivityThread.access$1600(Unknown Source:0)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.app.ActivityThread$H.handleMessage(Unknown Source:774)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.os.Handler.dispatchMessage(Unknown Source:19)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.os.Looper.loopOnce(Unknown Source:176)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.os.Looper.loop(Unknown Source:76)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at android.app.ActivityThread.main(Unknown Source:138)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at java.lang.reflect.Method.invoke(Native Method)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(Unknown Source:11)
+1793906338.509 10363 24223 24223 W ReflectionUtils: 	at com.android.internal.os.ZygoteInit.main(Unknown Source:309)
+1793906338.526 10363 24223 24238 D XposedProvider: binder received: android.os.BinderProxy@caa3530
+1793906338.535 10363 24223 24223 E PermissionCheck: The authManager is: null; the authCallback is: null; the mContext is: null
+1793906338.535 10363 24223 24223 I BaiduApiAuth: BaiduApiAuth SDK Version:1.0.31
+1793906338.569 10363 24223 24223 E PermissionCheck: The authManager is: null; the authCallback is: null; the mContext is: null
+1793906338.576 10363 24223 24248 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+1793906338.576 10363 24223 24248 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+1793906338.576 10363 24223 24248 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+1793906338.624 10363 24223 24223 E PermissionCheck: permission check result is: 201
+1793906338.630 10363 24223 24223 I [Koin]  : [init] declare Android Context
+1793906338.634 10363 24223 24223 I [Koin]  : Started 21 definitions in 0.105208 ms
+1793906338.640 10363 24223 24265 D CompatibilityChangeReporter: Compat change id reported: 160794467; UID 10363; state: ENABLED
+1793906338.663 10363 24223 24223 D ViewScrollStubImpl: the value of ScrollFrictionRes is: 0.03
+1793906338.672 10363 24223 24223 D IS_CTS_MODE: false
+1793906338.672 10363 24223 24223 D MULTI_WINDOW_SWITCH_ENABLED: false
+1793906338.672 10363 24223 24223 D IS_CTS_MODE: false
+1793906338.672 10363 24223 24223 D MULTI_WINDOW_SWITCH_ENABLED: false
+1793906338.677 10363 24223 24223 D DecorView[]: getWindowModeFromSystem  windowmode is 1
+1793906338.718 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906338.732 10363 24223 24223 D VFUtils : scaleWght : 412
+1793906338.860 10363 24223 24223 D DecorView[]: getWindowModeFromSystem  windowmode is 1
+1793906338.860 10363 24223 24223 D DecorView[]: updateDecorCaptionStatus displayWindowDecor is false
+1793906338.867 10363 24223 24223 W Looper  : PerfMonitor looperActivity : package=com.vincenthzr.locationspoofer/.MainActivity time=0ms latency=496ms running=0ms  procState=-1  historyMsgCount=3 (msgIndex=2 wall=260ms seq=2 late=22ms h=android.app.ActivityThread$H w=110) (msgIndex=3 wall=224ms seq=3 late=273ms h=android.app.ActivityThread$H w=159)
+1793906338.868 10363 24223 24223 I Choreographer: Skipped 42 frames!  The application may be doing too much work on its main thread.
+1793906338.892 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906338.896 10363 24223 24223 D VFUtils : scaleWght : 631
+1793906338.900 10363 24223 24223 D VFUtils : scaleWght : 407
+1793906338.905 10363 24223 24223 D VFUtils : scaleWght : 407
+1793906338.908 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906338.908 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906338.909 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906338.909 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906338.927 10363 24223 24273 I AdrenoGLES-0: QUALCOMM build                   : 16c8186230, I159ae7f0bb
+1793906338.927 10363 24223 24273 I AdrenoGLES-0: Build Date                       : 04/05/21
+1793906338.927 10363 24223 24273 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.32.02.10
+1793906338.927 10363 24223 24273 I AdrenoGLES-0: Local Branch                     :
+1793906338.927 10363 24223 24273 I AdrenoGLES-0: Remote Branch                    :
+1793906338.927 10363 24223 24273 I AdrenoGLES-0: Remote Branch                    :
+1793906338.927 10363 24223 24273 I AdrenoGLES-0: Reconstruct Branch               :
+1793906338.927 10363 24223 24273 I AdrenoGLES-0: Build Config                     : S P 10.0.7 AArch64
+1793906338.928 10363 24223 24273 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+1793906338.938 10363 24223 24273 I AdrenoGLES-0: PFP: 0x016dd093, ME: 0x00000000
+1793906338.972 10363 24223 24273 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+1793906339.011 10363 24223 24273 E LB      : fail to open file: No such file or directory
+1793906339.018 10363 24223 24223 W Looper  : PerfMonitor doFrame : time=149ms vsyncFrame=0 latency=356ms procState=-1 historyMsgCount=4 (msgIndex=1 wall=260ms seq=2 late=22ms h=android.app.ActivityThread$H w=110) (msgIndex=2 wall=224ms seq=3 late=273ms h=android.app.ActivityThread$H w=159)
+1793906339.064 10363 24223 24223 D DecorView[]: onWindowFocusChanged hasWindowFocus true
+1793906339.140 10363 24223 24223 I [Koin]  : [Warning] - No Koin context defined in Compose, fallback to default Koin context.
+1793906339.140 10363 24223 24223 I [Koin]  : Use KoinContext(), KoinAndroidContext() or KoinApplication() to setup or create Koin context with Compose and avoid such message.
+1793906339.173 10363 24223 24223 D VFUtils : scaleWght : 412
+1793906339.178 10363 24223 24223 D VFUtils : scaleWght : 412
+1793906339.182 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.187 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.188 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.189 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.190 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.191 10363 24223 24223 D VFUtils : scaleWght : 412
+1793906339.192 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.193 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.194 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.194 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.207 10363 24223 24223 D VFUtils : scaleWght : 487
+1793906339.263 10363 24223 24223 E HomeMapScreen: mapController is null, skip voice-note marker
+1793906339.416 10363 24223 24223 D VFUtils : scaleWght : 412
+1793906339.417 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.417 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.418 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.418 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.418 10363 24223 24223 D VFUtils : scaleWght : 412
+1793906339.418 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.419 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.419 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.419 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906339.473 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.473 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.474 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.474 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.474 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.475 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.476 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.476 10363 24223 24340 D VFUtils : scaleWght : 325
+1793906339.476 10363 24223 24340 D VFUtils : scaleWght : 325
+1793906339.478 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.478 10363 24223 24340 D VFUtils : scaleWght : 325
+1793906339.480 10363 24223 24340 D VFUtils : scaleWght : 325
+1793906339.481 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.481 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.481 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.482 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.482 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.484 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.485 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.485 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.486 10363 24223 24340 D VFUtils : scaleWght : 315
+1793906339.524 10363 24223 24357 D IdProviderImpl: getOAID from com.vincenthzr.locationspoofer
+1793906339.651 10363 24223 24340 E mapcore : addMapEngine 10001 0xb400007b8885ef00
+1793906339.693 10363 24223 24223 E baidumapsdk: Authentication Error
+1793906339.693 10363 24223 24223 E baidumapsdk: =============================================
+1793906339.693 10363 24223 24223 E baidumapsdk: ----------------- 鉴权错误信息 ------------
+1793906339.693 10363 24223 24223 E baidumapsdk: sha1;package:5C:B0:D6:61:A1:6E:83:1F:78:A8:55:49:83:4E:31:0F:15:DD:8F:DA;com.vincenthzr.locationspoofer
+1793906339.693 10363 24223 24223 E baidumapsdk: key:Io41bNEhfVx3CCsud5jjrft3UOpeh2WF
+1793906339.693 10363 24223 24223 E baidumapsdk: errorcode: 201 uid: -1 appid -1 msg: APP被用户自己禁用，请在控制台解禁
+1793906339.693 10363 24223 24223 E baidumapsdk: 请仔细核查 SHA1、package与key申请信息是否对应，key是否删除，平台是否匹配
+1793906339.693 10363 24223 24223 E baidumapsdk: =============================================
+1793906339.726 10363 24223 24223 D CompatibilityChangeReporter: Compat change id reported: 171228096; UID 10363; state: ENABLED
+1793906339.762 10363 24223 24223 D VFUtils : scaleWght : 487
+1793906339.762 10363 24223 24223 D VFUtils : scaleWght : 487
+1793906339.808 10363 24223 24368 D VFUtils : scaleWght : 315
+1793906339.825 10363 24223 24368 D VFUtils : scaleWght : 315
+1793906339.828 10363 24223 24368 D VFUtils : scaleWght : 315
+1793906339.830 10363 24223 24368 D VFUtils : scaleWght : 315
+1793906339.833 10363 24223 24368 D VFUtils : scaleWght : 325
+1793906339.838 10363 24223 24368 D VFUtils : scaleWght : 325
+1793906339.856 10363 24223 24367 D VFUtils : scaleWght : 325
+1793906340.286 10363 24223 24366 D VFUtils : scaleWght : 315
+1793906342.060 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906342.060 10363 24223 24223 D VFUtils : scaleWght : 407
+1793906342.061 10363 24223 24223 D VFUtils : scaleWght : 407
+1793906342.062 10363 24223 24223 D VFUtils : scaleWght : 407
+1793906342.063 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906342.064 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906342.068 10363 24223 24223 D VoiceRecorder: createNewFile: true path=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793906342068.m4a
+1793906342.130 10363 24223 24223 D VoiceRecorder: started at /data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793906342068.m4a size=3232
+1793906342.134 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906342.134 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906342.138 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906342.139 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906342.140 10363 24223 24223 D VFUtils : scaleWght : 407
+1793906342.141 10363 24223 24223 D VFUtils : scaleWght : 407
+1793906343.158 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906344.144 10363 24223 24474 D ProfileInstaller: Skipping profile installation for com.vincenthzr.locationspoofer
+1793906344.162 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906345.182 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906345.666 10363 24223 24223 W Choreographer: Frame time is 0.113073 ms in the future!  Check that graphics HAL is generating vsync timestamps using the correct timebase.
+1793906346.192 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906346.493 10363 24223 24273 W RenderInspector: DequeueBuffer time out on com.vincenthzr.locationspoofer/com.vincenthzr.locationspoofer.MainActivity, count=60, avg=16 ms, max=23 ms.
+1793906347.194 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906347.695 10363 24223 24273 W RenderInspector: DequeueBuffer time out on com.vincenthzr.locationspoofer/com.vincenthzr.locationspoofer.MainActivity, count=60, avg=15 ms, max=18 ms.
+1793906348.217 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906348.897 10363 24223 24273 W RenderInspector: DequeueBuffer time out on com.vincenthzr.locationspoofer/com.vincenthzr.locationspoofer.MainActivity, count=60, avg=15 ms, max=18 ms.
+1793906349.219 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906350.103 10363 24223 24273 W RenderInspector: DequeueBuffer time out on com.vincenthzr.locationspoofer/com.vincenthzr.locationspoofer.MainActivity, count=60, avg=15 ms, max=18 ms.
+1793906350.221 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906351.223 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906351.305 10363 24223 24273 W RenderInspector: DequeueBuffer time out on com.vincenthzr.locationspoofer/com.vincenthzr.locationspoofer.MainActivity, count=60, avg=15 ms, max=18 ms.
+1793906352.227 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906352.506 10363 24223 24273 W RenderInspector: DequeueBuffer time out on com.vincenthzr.locationspoofer/com.vincenthzr.locationspoofer.MainActivity, count=60, avg=15 ms, max=18 ms.
+1793906352.666 10363 24223 24268 D VoiceRecorder: stopRecording: file=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793906342068.m4a exists=true
+1793906352.680 10363 24223 24223 D VoiceRecorder: info: what=268436456
+1793906352.690 10363 24223 24273 W RenderInspector: DequeueBuffer time out on com.vincenthzr.locationspoofer/com.vincenthzr.locationspoofer.MainActivity, count=8, avg=16 ms, max=22 ms.
+1793906352.730 10363 24223 24268 D VoiceRecorder: stop() ok
+1793906352.732 10363 24223 24268 D VoiceRecorder: file ready: /data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793906342068.m4a size=19079 ok=true
+1793906352.741 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906352.744 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906352.745 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906352.746 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906352.747 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906352.749 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906352.750 10363 24223 24223 D VFUtils : scaleWght : 407
+1793906352.751 10363 24223 24223 D VFUtils : scaleWght : 407
+1793906354.222 10363 24223 24223 D VFUtils : scaleWght : 315
+1793906354.223 10363 24223 24223 D VFUtils : scaleWght : 325
+1793906354.224 10363 24223 24223 D VFUtils : scaleWght : 544
+1793906357.283 10363 24223 24223 D DecorView[]: onWindowFocusChanged hasWindowFocus false
+1793906357.958 10363 24223 24273 D OpenGLRenderer: endAllActiveAnimators on 0xb400007c0a63b200 (lf3) with handle 0xb400007b9b89fec0
