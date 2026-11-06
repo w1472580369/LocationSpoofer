@@ -71,11 +71,14 @@ Entries discovered by the Agent during task execution should follow this format:
 
 [Project Knowledge Summary]
 - Date: 2026-11-05
-- Context: Discovered by Agent while smelting the "saved voice note disappears / map blue dot not shown" bug from user log in app-ui (VoiceNoteRepository)
+- Context: Discovered by Agent while fixing the "saved voice note disappears / map blue dot not shown" bug from the user log in app-ui (VoiceNoteRepository)
 - Category: Troubleshooting & Debugging
 - Instructions:
-  - 1. `androidx.datastore`（具体是 `VoiceNoteRepository.clearExpired()`）里 `prefs.edit().putString(...).apply()` 是**异步写盘**，紧接在后面的 `prefs.getString("notes")` 读到的是 `[]` 旧值，不是新值 — 日志特征：同一微秒级时间戳里 `getAll entries=1 jsonLen=187` 后紧接着 `getAll entries=0 jsonLen=2`
-  - 2. 复现这个 bug 的症状链是：录音文件其实生成了（`VoiceRecorder: file ready: ... size=12839 ok=true`），但列表永远是 0，功能实验室/地图蓝点都不出现
-  - 3. 修复：把 `VoiceNoteRepository` 里所有写盘都改为 `.commit()`（同步落盘），并在 `clearExpired()` 里加 `entries/kept` 日志
-  - 4. 百度地图 SDK 启动时如果 auth 失败，logcat 里有 `LBSAuthManager` 的 `javax.crypto.BadPaddingException`；旧 key 报 errorcode 201 "APP被用户自己禁用"（在 Baidu 控制台被禁），新 key 报 PKCS 解码错误（Baidu 控制台未注册对应签名的 key）—— 用户去控制台重新生成 `com.vincenthzr.locationspoofer` 的 key
-  - 5. 注意本地 `~/.android/debug.keystore` 的 SHA1 是 `34:01:BD:14:DE:C0:3D:2C:4D:B4:1D:59:44:2C:5B:6D:48:73:16:B9`，包名是 `com.vincenthzr.locationspoofer`，CN 地址上海
+  - 1. **真正的根因：`clearExpired()` 里 `30 * 24 * 60 * 60 * 1000` 是 Int 运算，2_592_000_000 超出 Int.MAX(2_147_483_647) 溢出成负数**，导致 `now - recordTime <= 负数` 永远为 false，刚保存的每条备注都被当作"已过期"清空。日志铁证：`getAll entries=1` → `clearExpired total=1 kept=0` → `getAll entries=0`
+  - 2. 修复：时间常量必须用 Long 字面量 `30L * 24 * 60 * 60 * 1000`；已加回归测试 `app-ui/src/test/.../progress/RecordingTtlTest.kt`（断言 ttl==2_592_000_000L 且 Int 运算结果为负）
+  - 3. 次要修复：`VoiceNoteRepository` 所有写盘从 `.apply()` 改为 `.commit()`（同步落盘），`clearExpired()` 加 `total/kept/ttl` 日志
+  - 4. 症状链：录音文件其实生成了（`VoiceRecorder: file ready: ... size=16149 ok=true`），但列表永远是 0，功能实验室/地图蓝点都不出现
+  - 5. 百度地图 SDK 启动时如果 auth 失败，logcat 里有 `LBSAuthManager` 的 `javax.crypto.BadPaddingException`；旧 key 报 errorcode 201 "APP被用户自己禁用"（在 Baidu 控制台被禁），新 key 报 PKCS 解码错误（Baidu 控制台未注册对应签名的 key）—— 用户需去控制台重新生成 `com.vincenthzr.locationspoofer` 的 key
+  - 6. 本地 `~/.android/debug.keystore` 的 SHA1 是 `34:01:BD:14:DE:C0:3D:2C:4D:B4:1D:59:44:2C:5B:6D:48:73:16:B9`，包名 `com.vincenthzr.locationspoofer`
+  - 7. app-ui 有 flavor（scoped/global），单元测试任务名带变体：`testGlobalDebugUnitTest` / `testScopedDebugUnitTest`，直接写 `testDebugUnitTest` 会报 ambiguous
+
