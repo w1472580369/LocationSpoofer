@@ -1,0 +1,421 @@
+1793935956.127 10363 19897 19897 D ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+1793935956.178 10363 19897 19897 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10363; state: ENABLED
+1793935956.201 10363 19897 19914 D AppScoutStateMachine: 19897-ScoutStateMachinecreated
+1793935956.287 10363 19897 19897 V GraphicsEnvironment: ANGLE Developer option for 'com.vincenthzr.locationspoofer' set to: 'default'
+1793935956.287 10363 19897 19897 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+1793935956.292 10363 19897 19897 I ForceDarkHelperStubImpl: initialize for com.vincenthzr.locationspoofer , ForceDarkOrigin
+1793935956.293 10363 19897 19897 D OpenGLRenderer: JNI_OnLoad success
+1793935956.294 10363 19897 19897 I MiuiForceDarkConfig: setConfig density:2.750000, mainRule:0, secondaryRule:0, tertiaryRule:0
+1793935956.296 10363 19897 19897 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+1793935956.296 10363 19897 19897 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+1793935956.312 10363 19897 19897 W ReflectionUtils: java.lang.NoSuchMethodException: android.view.ViewRootImpl#needSurface()#bestmatch
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at miui.util.ReflectionUtils.findMethodBestMatch(Unknown Source:146)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at miui.util.ReflectionUtils.tryFindMethodBestMatch(Unknown Source:0)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.view.ChoreographerInjectorStubImpl.<init>(Unknown Source:18)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at java.lang.reflect.Constructor.newInstance0(Native Method)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at java.lang.reflect.Constructor.newInstance(Constructor.java:343)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.newInstance(Unknown Source:31)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.newInstanceNoThrow(Unknown Source:0)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry$ImplHolder.getInstance(Unknown Source:9)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.doGetInstance(Unknown Source:26)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.get(Unknown Source:3)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.get(Unknown Source:2)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at com.miui.base.MiuiStubUtil.getInstance(Unknown Source:0)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.view.animation.ChoreographerInjectorStub.getInstance(Unknown Source:2)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.view.Choreographer.postCallbackDelayedInternal(Unknown Source:16)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.view.Choreographer.postFrameCallbackDelayed(Unknown Source:8)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.view.Choreographer.postFrameCallback(Unknown Source:2)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at androidx.profileinstaller.ProfileInstallerInitializer.b(r8-map-id-43cd2bf7a022c3de9f65c5555745e12ffbabd928d827e2ab448ef80ef9f285f6:14)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at pj.k(r8-map-id-43cd2bf7a022c3de9f65c5555745e12ffbabd928d827e2ab448ef80ef9f285f6:86)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at pj.j(r8-map-id-43cd2bf7a022c3de9f65c5555745e12ffbabd928d827e2ab448ef80ef9f285f6:86)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at androidx.startup.InitializationProvider.onCreate(r8-map-id-43cd2bf7a022c3de9f65c5555745e12ffbabd928d827e2ab448ef80ef9f285f6:53)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.content.ContentProvider.attachInfo(Unknown Source:102)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.content.ContentProvider.attachInfo(Unknown Source:1)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.app.ActivityThread.installProvider(Unknown Source:264)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.app.ActivityThread.installContentProviders(Unknown Source:28)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.app.ActivityThread.handleBindApplication(Unknown Source:854)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.app.ActivityThread.access$1600(Unknown Source:0)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.app.ActivityThread$H.handleMessage(Unknown Source:774)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.os.Handler.dispatchMessage(Unknown Source:19)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.os.Looper.loopOnce(Unknown Source:176)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.os.Looper.loop(Unknown Source:76)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at android.app.ActivityThread.main(Unknown Source:138)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at java.lang.reflect.Method.invoke(Native Method)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(Unknown Source:11)
+1793935956.312 10363 19897 19897 W ReflectionUtils: 	at com.android.internal.os.ZygoteInit.main(Unknown Source:309)
+1793935956.326 10363 19897 19914 D XposedProvider: binder received: android.os.BinderProxy@9ad9ee2
+1793935956.338 10363 19897 19897 E PermissionCheck: The authManager is: null; the authCallback is: null; the mContext is: null
+1793935956.338 10363 19897 19897 I BaiduApiAuth: BaiduApiAuth SDK Version:1.0.31
+1793935956.378 10363 19897 19897 E PermissionCheck: The authManager is: null; the authCallback is: null; the mContext is: null
+1793935956.386 10363 19897 19927 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+1793935956.386 10363 19897 19927 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+1793935956.386 10363 19897 19927 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+1793935956.418 10363 19897 19943 D CompatibilityChangeReporter: Compat change id reported: 160794467; UID 10363; state: ENABLED
+1793935956.421 10363 19897 19897 I [Koin]  : [init] declare Android Context
+1793935956.424 10363 19897 19897 I [Koin]  : Started 21 definitions in 0.075365 ms
+1793935956.457 10363 19897 19897 D ViewScrollStubImpl: the value of ScrollFrictionRes is: 0.03
+1793935956.469 10363 19897 19897 D IS_CTS_MODE: false
+1793935956.469 10363 19897 19897 D MULTI_WINDOW_SWITCH_ENABLED: false
+1793935956.470 10363 19897 19897 D IS_CTS_MODE: false
+1793935956.470 10363 19897 19897 D MULTI_WINDOW_SWITCH_ENABLED: false
+1793935956.476 10363 19897 19897 D DecorView[]: getWindowModeFromSystem  windowmode is 1
+1793935956.490 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935956.502 10363 19897 19897 D VFUtils : scaleWght : 412
+1793935956.599 10363 19897 19947 D VoiceNoteRepository: getAll entries=0 jsonLen=2
+1793935956.599 10363 19897 19947 D VoiceNoteRepository: getAll entries=0 jsonLen=2
+1793935956.599 10363 19897 19947 D VoiceNoteRepository: clearExpired total=0 kept=0
+1793935956.600 10363 19897 19947 D VoiceNoteRepository: clearExpired committed=true kept=0
+1793935956.600 10363 19897 19947 D VoiceNoteRepository: getAll entries=0 jsonLen=2
+1793935956.600 10363 19897 19947 D MainViewModel: refreshVoiceNoteList notes=0
+1793935956.664 10363 19897 19897 D DecorView[]: getWindowModeFromSystem  windowmode is 1
+1793935956.664 10363 19897 19897 D DecorView[]: updateDecorCaptionStatus displayWindowDecor is false
+1793935956.671 10363 19897 19897 W Looper  : PerfMonitor looperActivity : package=com.vincenthzr.locationspoofer/.MainActivity time=0ms latency=492ms running=0ms  procState=-1  historyMsgCount=2 (msgIndex=1 wall=261ms seq=2 late=6ms h=android.app.ActivityThread$H w=110) (msgIndex=2 wall=237ms seq=3 late=256ms h=android.app.ActivityThread$H w=159)
+1793935956.672 10363 19897 19897 I Choreographer: Skipped 43 frames!  The application may be doing too much work on its main thread.
+1793935956.698 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935956.702 10363 19897 19897 D VFUtils : scaleWght : 631
+1793935956.706 10363 19897 19897 D VFUtils : scaleWght : 407
+1793935956.711 10363 19897 19897 D VFUtils : scaleWght : 407
+1793935956.714 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935956.714 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935956.714 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935956.714 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935956.727 10363 19897 19955 I AdrenoGLES-0: QUALCOMM build                   : 16c8186230, I159ae7f0bb
+1793935956.727 10363 19897 19955 I AdrenoGLES-0: Build Date                       : 04/05/21
+1793935956.727 10363 19897 19955 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.32.02.10
+1793935956.727 10363 19897 19955 I AdrenoGLES-0: Local Branch                     :
+1793935956.727 10363 19897 19955 I AdrenoGLES-0: Remote Branch                    :
+1793935956.727 10363 19897 19955 I AdrenoGLES-0: Remote Branch                    :
+1793935956.727 10363 19897 19955 I AdrenoGLES-0: Reconstruct Branch               :
+1793935956.727 10363 19897 19955 I AdrenoGLES-0: Build Config                     : S P 10.0.7 AArch64
+1793935956.727 10363 19897 19955 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+1793935956.736 10363 19897 19955 I AdrenoGLES-0: PFP: 0x016dd093, ME: 0x00000000
+1793935956.764 10363 19897 19955 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+1793935956.787 10363 19897 19955 E LB      : fail to open file: No such file or directory
+1793935956.793 10363 19897 19897 W Looper  : PerfMonitor doFrame : time=120ms vsyncFrame=0 latency=359ms procState=-1 historyMsgCount=4 (msgIndex=1 wall=261ms seq=2 late=6ms h=android.app.ActivityThread$H w=110) (msgIndex=2 wall=237ms seq=3 late=256ms h=android.app.ActivityThread$H w=159)
+1793935956.797 10363 19897 19897 D MainViewModel: updateVoiceNoteState in
+1793935956.797 10363 19897 19897 D MainViewModel: updateVoiceNoteState voiceNoteCount=0
+1793935956.834 10363 19897 19897 D DecorView[]: onWindowFocusChanged hasWindowFocus true
+1793935956.904 10363 19897 19897 I [Koin]  : [Warning] - No Koin context defined in Compose, fallback to default Koin context.
+1793935956.904 10363 19897 19897 I [Koin]  : Use KoinContext(), KoinAndroidContext() or KoinApplication() to setup or create Koin context with Compose and avoid such message.
+1793935956.960 10363 19897 19897 D VFUtils : scaleWght : 412
+1793935956.978 10363 19897 19897 D VFUtils : scaleWght : 412
+1793935956.986 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935956.996 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935956.998 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935956.999 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.000 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.000 10363 19897 19897 D VFUtils : scaleWght : 412
+1793935957.002 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.003 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.004 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.006 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.045 10363 19897 20055 D DEBUG   : ThreadProc, CVSocketMan::SocketThreadProc start ...
+1793935957.049 10363 19897 19897 D NetworkLogic: onNetWorkChanged-0
+1793935957.054 10363 19897 20056 D NetworkLogic: NetworkDetect
+1793935957.060 10363 19897 19924 W System.err: javax.crypto.BadPaddingException: error:04000089:RSA routines:OPENSSL_internal:PKCS_DECODING_ERROR
+1793935957.062 10363 19897 19924 W System.err: 	at com.android.org.conscrypt.NativeCrypto.RSA_private_decrypt(Native Method)
+1793935957.063 10363 19897 19924 W System.err: 	at com.android.org.conscrypt.OpenSSLCipherRSA$DirectRSA.doCryptoOperation(OpenSSLCipherRSA.java:404)
+1793935957.063 10363 19897 19924 W System.err: 	at com.android.org.conscrypt.OpenSSLCipherRSA.engineDoFinal(OpenSSLCipherRSA.java:316)
+1793935957.063 10363 19897 19924 W System.err: 	at javax.crypto.Cipher.doFinal(Cipher.java:2055)
+1793935957.063 10363 19897 19924 W System.err: 	at com.baidu.lbsapi.auth.r.b(Unknown Source:39)
+1793935957.063 10363 19897 19924 W System.err: 	at com.baidu.lbsapi.auth.LBSAuthManager.a(Unknown Source:334)
+1793935957.063 10363 19897 19924 W System.err: 	at com.baidu.lbsapi.auth.LBSAuthManager.a(Unknown Source:339)
+1793935957.063 10363 19897 19924 W System.err: 	at com.baidu.lbsapi.auth.LBSAuthManager.a(Unknown Source:338)
+1793935957.063 10363 19897 19924 W System.err: 	at com.baidu.lbsapi.auth.m.run(Unknown Source:36)
+1793935957.063 10363 19897 19924 W System.err: 	at android.os.Handler.handleCallback(Unknown Source:2)
+1793935957.063 10363 19897 19924 W System.err: 	at android.os.Handler.dispatchMessage(Unknown Source:4)
+1793935957.063 10363 19897 19924 W System.err: 	at android.os.Looper.loopOnce(Unknown Source:176)
+1793935957.063 10363 19897 19924 W System.err: 	at android.os.Looper.loop(Unknown Source:76)
+1793935957.063 10363 19897 19924 W System.err: 	at com.baidu.lbsapi.auth.p.run(Unknown Source:20)
+1793935957.078 10363 19897 20056 D DEBUG   : CNetworkDetectEngine::NetworkDetect Start 1
+1793935957.091 10363 19897 20079 I GLThread: noticed surfaceView surface lost tid=103
+1793935957.110 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935957.110 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935957.110 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935957.112 10363 19897 19897 D VFUtils : scaleWght : 407
+1793935957.118 10363 19897 19897 D VFUtils : scaleWght : 412
+1793935957.120 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935957.120 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935957.120 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935957.129 10363 19897 19897 D GLTextureView: onAttachedToWindow reattach =false
+1793935957.137 10363 19897 19897 D VFUtils : scaleWght : 412
+1793935957.142 10363 19897 20079 I GLThread: noticed surfaceView surface acquired tid=103
+1793935957.142 10363 19897 20079 W EglHelper: start() tid=103
+1793935957.145 10363 19897 20079 W EglHelper: createContext com.google.android.gles_jni.EGLContextImpl@afaa5e0b tid=103
+1793935957.145 10363 19897 20079 I GLThread: noticing that we want render notification tid=103
+1793935957.145 10363 19897 20079 W GLThread: egl createSurface
+1793935957.145 10363 19897 19897 I Main thread: onWindowResize waiting for render complete from tid=103
+1793935957.145 10363 19897 20079 W EglHelper: createSurface()  tid=103
+1793935957.146 10363 19897 20079 W GLThreadManager: checkGLESVersion mGLESVersion = 196610 mMultipleGLESContextsAllowed = true
+1793935957.146 10363 19897 20079 W GLThreadManager: checkGLDriver renderer = "Adreno (TM) 620" multipleContextsAllowed = true mLimitedGLESContexts = false
+1793935957.146 10363 19897 20079 W GLThread: onSurfaceCreated
+1793935957.147 10363 19897 20079 W GLThread: onSurfaceChanged(1080, 2400)
+1793935957.151 10363 19897 19897 I Main thread: onWindowResize waiting for render complete from tid=103
+1793935957.153 10363 19897 20079 I GLThread: sending render notification tid=103
+1793935957.153 10363 19897 20079 I GLThread: noticing that we want render notification tid=103
+1793935957.153 10363 19897 20079 W GLThread: egl createSurface
+1793935957.153 10363 19897 20079 W EglHelper: createSurface()  tid=103
+1793935957.153 10363 19897 20079 W GLThread: onSurfaceChanged(1080, 2400)
+1793935957.165 10363 19897 19897 E HomeMapScreen: mapController is null, skip voice-note marker
+1793935957.166 10363 19897 19897 I Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
+1793935957.179 10363 19897 19897 D NetworkLogic: onNetWorkChanged-0
+1793935957.180 10363 19897 20056 D NetworkLogic: NetworkDetect
+1793935957.181 10363 19897 19897 D NetworkLogic: onNetWorkChanged-1
+1793935957.181 10363 19897 20056 D DEBUG   : CNetworkDetectEngine::NetworkDetect Start 2
+1793935957.200 10363 19897 19928 D NetworkLogic: onNetWorkChanged-WIFI
+1793935957.200 10363 19897 20056 D NetworkLogic: NetworkDetect
+1793935957.202 10363 19897 20056 D DEBUG   : CNetworkDetectEngine::NetworkDetect Start 3
+1793935957.203 10363 19897 19897 I GLThread: onResume tid=103
+1793935957.248 10363 19897 19897 D VFUtils : scaleWght : 487
+1793935957.252 10363 19897 19897 D VFUtils : scaleWght : 487
+1793935957.255 10363 19897 19897 D HomeMapScreen: voiceNoteList=【0】总计 voiceNoteCount=0
+1793935957.283 10363 19897 19897 D VFUtils : scaleWght : 412
+1793935957.284 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.284 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.285 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.286 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.287 10363 19897 19897 D VFUtils : scaleWght : 412
+1793935957.287 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.287 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.288 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.288 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935957.340 10363 19897 20079 I GLThread: sending render notification tid=103
+1793935957.635 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.636 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.643 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.643 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.645 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.656 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.657 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.658 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.659 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.660 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.661 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.663 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.666 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.667 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.671 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.673 10363 19897 20078 D VFUtils : scaleWght : 487
+1793935957.691 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.706 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.710 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.711 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.714 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.717 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.721 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.725 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.727 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.730 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.734 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.737 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.741 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.745 10363 19897 20079 D VFUtils : scaleWght : 315
+1793935957.745 10363 19897 20079 D VFUtils : scaleWght : 469
+1793935957.755 10363 19897 20079 D VFUtils : scaleWght : 469
+1793935957.756 10363 19897 20079 D VFUtils : scaleWght : 315
+1793935957.757 10363 19897 20079 D VFUtils : scaleWght : 315
+1793935957.757 10363 19897 20079 D VFUtils : scaleWght : 315
+1793935957.757 10363 19897 20079 D VFUtils : scaleWght : 315
+1793935957.757 10363 19897 20079 D VFUtils : scaleWght : 315
+1793935957.757 10363 19897 20079 D VFUtils : scaleWght : 315
+1793935957.757 10363 19897 20079 D VFUtils : scaleWght : 315
+1793935957.757 10363 19897 20079 D VFUtils : scaleWght : 315
+1793935957.758 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.762 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.765 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.768 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.771 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.774 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.777 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.780 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.784 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.787 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.790 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.793 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.796 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.802 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.806 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.810 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.813 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.817 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.820 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.823 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.826 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.829 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.832 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.835 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.839 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.842 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.845 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.848 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.851 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.854 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.857 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.860 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.864 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.867 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.870 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.871 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.874 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.877 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.880 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.883 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.887 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.890 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.893 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.896 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.898 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.900 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.903 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.906 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.911 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.914 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.917 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.920 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.923 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.924 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.927 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.930 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.933 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.936 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.939 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.942 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.945 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.947 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.949 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.976 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.978 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.993 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.996 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935957.999 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.003 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.004 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.007 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.010 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.013 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.015 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.018 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.020 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.022 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.025 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.028 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.031 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.032 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.033 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.038 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.041 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.043 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.045 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.048 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.051 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.052 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.054 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.056 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.059 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.061 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.062 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.063 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.064 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.065 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.066 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.068 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.070 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.072 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.073 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.074 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.075 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.076 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.076 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.078 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.081 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.083 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.085 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.085 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.086 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.087 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.090 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.093 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.096 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.098 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.099 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.100 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.103 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.107 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.110 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.113 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.116 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.119 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.124 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.128 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.132 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.135 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.138 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.141 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.145 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.149 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.152 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.155 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.159 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.162 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.164 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935958.167 10363 19897 20100 D VFUtils : scaleWght : 464
+1793935959.548 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935959.548 10363 19897 19897 D VFUtils : scaleWght : 407
+1793935959.548 10363 19897 19897 D VFUtils : scaleWght : 407
+1793935959.549 10363 19897 19897 D VFUtils : scaleWght : 407
+1793935959.550 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935959.551 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935959.556 10363 19897 19897 D VoiceRecorder: createNewFile: true path=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793935959555.m4a
+1793935959.613 10363 19897 19897 D VoiceRecorder: started at /data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793935959555.m4a size=3232
+1793935959.621 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935959.621 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935959.625 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935959.625 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935959.627 10363 19897 19897 D VFUtils : scaleWght : 407
+1793935959.628 10363 19897 19897 D VFUtils : scaleWght : 407
+1793935960.648 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935961.659 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935961.770 10363 19897 20157 D ProfileInstaller: Skipping profile installation for com.vincenthzr.locationspoofer
+1793935962.668 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935963.694 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935964.693 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935965.695 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935966.696 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935967.722 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935968.196 10363 19897 19948 D VoiceRecorder: stopRecording: file=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793935959555.m4a exists=true
+1793935968.205 10363 19897 19897 D VoiceRecorder: info: what=268436456
+1793935968.272 10363 19897 19948 D VoiceRecorder: stop() ok
+1793935968.274 10363 19897 19948 D VoiceRecorder: file ready: /data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793935959555.m4a size=16149 ok=true
+1793935968.274 10363 19897 19897 D VoiceNoteInput: stopRecording: file=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793935959555.m4a canSave=true
+1793935968.287 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935968.290 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935968.291 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935968.292 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935968.293 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935968.295 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935968.296 10363 19897 19897 D VFUtils : scaleWght : 407
+1793935968.297 10363 19897 19897 D VFUtils : scaleWght : 407
+1793935968.788 10363 19897 19897 D VoiceNoteInput: save page: path=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793935959555.m4a size=16149 lat=31.551865424838628 lng=120.37655377605553 rec=1793935968788
+1793935968.788 10363 19897 19897 D VoiceNoteRepository: getAll entries=0 jsonLen=2
+1793935968.788 10363 19897 19897 D VoiceNoteRepository: saveNote entries=1 path=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793935959555.m4a
+1793935968.792 10363 19897 19897 D VoiceNoteRepository: saveNote committed=true
+1793935968.792 10363 19897 19897 D VoiceNoteInput: save called onNoteSaved
+1793935968.793 10363 19897 19947 D VoiceNoteRepository: getAll entries=1 jsonLen=187
+1793935968.794 10363 19897 19947 D VoiceNoteRepository: getAll entries=1 jsonLen=187
+1793935968.794 10363 19897 19947 D VoiceNoteRepository: clearExpired total=1 kept=0
+1793935968.796 10363 19897 19947 D VoiceNoteRepository: clearExpired committed=true kept=0
+1793935968.797 10363 19897 19947 D VoiceNoteRepository: getAll entries=0 jsonLen=2
+1793935968.797 10363 19897 19947 D MainViewModel: refreshVoiceNoteList notes=0
+1793935968.798 10363 19897 19897 D VFUtils : scaleWght : 315
+1793935968.799 10363 19897 19897 D VFUtils : scaleWght : 325
+1793935968.799 10363 19897 19897 D VFUtils : scaleWght : 544
+1793935968.803 10363 19897 19897 D MainViewModel: updateVoiceNoteState in
+1793935968.803 10363 19897 19897 D MainViewModel: updateVoiceNoteState voiceNoteCount=0
+1793935971.313 10363 19897 19897 I GLThread: onPause tid=103
+1793935971.313 10363 19897 19897 I Main thread: onPause waiting for mPaused.
+1793935971.313 10363 19897 20079 I GLThread: mPaused is now true tid=103
+1793935971.313 10363 19897 20079 I GLThread: releasing EGL surface because paused tid=103
+1793935971.313 10363 19897 20079 W EglHelper: destroySurface()  tid=103
+1793935971.335 10363 19897 19897 D DecorView[]: onWindowFocusChanged hasWindowFocus false
+1793935971.502 10363 19897 19955 W RenderInspector: QueueBuffer time out on com.vincenthzr.locationspoofer/com.vincenthzr.locationspoofer.MainActivity, count=1, avg=9 ms, max=9 ms.
+1793935971.998 10363 19897 19955 D OpenGLRenderer: endAllActiveAnimators on 0xb400007b6cb83c00 (mf3) with handle 0xb400007b94e4c4e0
