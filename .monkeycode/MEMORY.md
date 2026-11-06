@@ -80,5 +80,7 @@ Entries discovered by the Agent during task execution should follow this format:
   - 4. 症状链：录音文件其实生成了（`VoiceRecorder: file ready: ... size=16149 ok=true`），但列表永远是 0，功能实验室/地图蓝点都不出现
   - 5. 百度地图 SDK 启动时如果 auth 失败，logcat 里有 `LBSAuthManager` 的 `javax.crypto.BadPaddingException`；旧 key 报 errorcode 201 "APP被用户自己禁用"（在 Baidu 控制台被禁），新 key 报 PKCS 解码错误（Baidu 控制台未注册对应签名的 key）—— 用户需去控制台重新生成 `com.vincenthzr.locationspoofer` 的 key
   - 6. 本地 `~/.android/debug.keystore` 的 SHA1 是 `34:01:BD:14:DE:C0:3D:2C:4D:B4:1D:59:44:2C:5B:6D:48:73:16:B9`，包名 `com.vincenthzr.locationspoofer`
-  - 7. app-ui 有 flavor（scoped/global），单元测试任务名带变体：`testGlobalDebugUnitTest` / `testScopedDebugUnitTest`，直接写 `testDebugUnitTest` 会报 ambiguous
+  - 7. 地图蓝点（语音备注的标记点）不显示/移动地图就消失的根因：`HomeMapScreen` 里两个 `LaunchedEffect` 不是同一频的——Home 视口效果会清图（+ 提前 `return`），语音标记效果只监听 `voiceNoteList`，所以 Home 页清图（视口恢复/坐标面板/地图类型/Tab 切换回来）后已挂的标记点**静默消失且无法恢复**；修复做法是把 Home 锚点与所有语音备注标记点合在同一个 `LaunchedEffect(mapController, uiState.voiceNoteList, uiState.latitudeInput, uiState.longitudeInput, lastViewport, uiState.mapType)` 里，标记改成 `MarkerType.GREEN`，这样只要录音文件在就一直显示在录制坐标上
+  - 8. 新 Key（`qK9Crqs5XfcofAdGrGUye06znkv6ulAc`）在百度开发者中心必须与包名 `com.vincenthzr.locationspoofer` 及本机的 SHA1 匹配，否则一直 `PKCS_DECODING_ERROR`
+  - 9. app-ui 有 flavor（scoped/global），单元测试任务名带变体：`testGlobalDebugUnitTest` / `testScopedDebugUnitTest`，直接写 `testDebugUnitTest` 会报 ambiguous
 
