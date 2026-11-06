@@ -32,12 +32,32 @@ data class VoiceNoteRecord(
     val durationSeconds: Double = 0.0
 )
 
-/**
- * 语音备注录制器。
+/** 语音备注录制器。
  * 使用系统 MediaRecorder 录制麦克风声音（AAC/MP4），录音文件保存到应用私有目录中，
  * 不需要额外的存储空间授权。
  */
 class VoiceRecorder(private val context: Context) {
+    companion object {
+        /** 录音文件命名前缀，按录音时间（先后顺序）用数字顺序生成，如 voice_note_1.m4a */
+        const val RECORD_PREFIX = "voice_note"
+
+        /** 已有录音文件已编号（按录音时间先后），下一条录音的编号必须在最大编号之上，避免与任何已有文件重名 */
+        fun nextRecordingIndex(existingFiles: List<File>, extension: String = "m4a"): Int {
+            var index = 1
+            for (file in existingFiles) {
+                if (file.extension != extension) continue
+                file.nameWithoutExtension
+                    .removePrefix(RECORD_PREFIX)
+                    .removePrefix("_")
+                    .toLongOrNull()?.let { number ->
+                        if (number >= index.toLong()) {
+                            index = (number + 1).toInt()
+                        }
+                    }
+            }
+            return index
+        }
+    }
     enum class State { IDLE, RECORDING }
 
     private var recorder: MediaRecorder? = null
@@ -128,12 +148,15 @@ class VoiceRecorder(private val context: Context) {
         currentState = State.IDLE
     }
 
+    /** 录音文件按录音时间（录音先后顺序）用数字顺序命名：voice_note_1、voice_note_2 ... */
     private fun getOutputFile(): File {
         val dir = File(context.cacheDir, "voice_notes").apply { if (!exists()) mkdirs() }
         // 扩展名必须和输出格式匹配，否则某些机型 prepare/start 会抛 IllegalStateException：
         // MPEG_4/AAC → .m4a，THREE_GPP/AMR_NB → .3gp
         val ext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ".m4a" else ".3gp"
-        return File(dir, "record_${System.currentTimeMillis()}$ext")
+        // 录音文件按录音时间（录音先后顺序）用数字顺序命名：voice_note_1、voice_note_2 ...
+        val existing = dir.listFiles()?.filter { it.extension == ext }?.sortedBy { it.name } ?: emptyList()
+        return File(dir, RECORD_PREFIX + "_" + nextRecordingIndex(existing, ext) + ext)
     }
 
     private fun hasPermission(): Boolean {
@@ -190,8 +213,12 @@ class VoiceNoteRepository(private val context: Context) {
         val all = getAll()
         val keeping = all.filter { now - it.recordTime <= ttlMillis }
         Log.d("VoiceNoteRepository", "clearExpired total=${all.size} kept=${keeping.size} ttl=$ttlMillis")
+        // 把超过 30 天的录音文件本身也删掉（之前只清了元数据，没有释放磁盘空间）
+        val expiredFiles = all.filter { now - it.recordTime > ttlMillis }.mapNotNull { record ->
+            runCatching { File(record.path).delete() }.getOrNull()
+        }
         val committed = prefs.edit().putString("notes", Json.Default.encodeToString(keeping)).commit()
-        Log.d("VoiceNoteRepository", "clearExpired committed=$committed kept=${keeping.size}")
+        Log.d("VoiceNoteRepository", "clearExpired committed=$committed kept=${keeping.size} expiredFiles=$expiredFiles")
     }
 
     /** 更新指定录音的时长（秒） */

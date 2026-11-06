@@ -49,7 +49,7 @@ fun HomeMapScreen(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    /** 已添加到地图的语音备注小绿点（以录音文件路径为键，用于与列表同步） */
+    /** 已添加到地图的语音备注小绿点（0.5 比例，以录音文件路径为键，用于与列表同步） */
     var noteMarkers by remember { mutableStateOf<Map<String, AppMapMarker>>(emptyMap()) }
     var restoredViewport by remember { mutableStateOf<CameraViewport?>(null) }
     var notePosition by remember { mutableStateOf<Pair<Double, Double>?>(null) }
@@ -60,7 +60,8 @@ fun HomeMapScreen(
     /** Home 页视口恢复 / 坐标面板 / 地图类型变更时，Home 页面会执行 mapController.clear()。
      * 如果标记点的添加独立于 Home 页，清屏后标记点就再也不会出现 —
      * 因此将 Home 锚点与语音备注的标记点合在同一个效果里，
-     * 随时重挂，保证只要有录音文件就持续显示在绑定的经纬度坐标上。 */
+     * 随时重挂，保证只要有录音文件就持续显示在绑定的经纬度坐标上。
+     * 注意 Home 锚点用默认蓝色（不随绿点变色/变小），语音备注用 0.5 比例的小绿点，两者视觉隔离。 */
     LaunchedEffect(
         mapController,
         uiState.voiceNoteList,
@@ -91,9 +92,10 @@ fun HomeMapScreen(
             mapController.moveCamera(lat, lng, 15f)
             restoredViewport = CameraViewport(lat, lng, 15f)
         }
-        mapController.addMarker(lastViewport?.lat ?: lat, lastViewport?.lng ?: lng, context.getString(R.string.home_map_title), MarkerType.GREEN)
+        /** Home 锚点标记：用默认蓝色（与语音备注的绿色小点隔离，避免图钉与绿点混在一起分不清）。 */
+        mapController.addMarker(lastViewport?.lat ?: lat, lastViewport?.lng ?: lng, context.getString(R.string.home_map_title), MarkerType.DEFAULT)
 
-        // 新增的小绿点：语音备注标记，绑定录制坐标（lat/lng），录音文件存在就一直显示
+        // 语音备注的小绿点：与 Home 锚点颜色不同，且大小为标准标记的一半
         for (record in uiState.voiceNoteList) {
             val title = if (record.text.isNotBlank()) {
                 record.text
@@ -101,7 +103,7 @@ fun HomeMapScreen(
                 context.getString(R.string.home_map_note_marker_title)
             }
             try {
-                noteMarkers = noteMarkers + (record.path to mapController.addMarker(record.lat, record.lng, title, MarkerType.GREEN))
+                noteMarkers = noteMarkers + (record.path to mapController.addMarker(record.lat, record.lng, title, MarkerType.GREEN, scale = 0.5f))
             } catch (e: Exception) {
                 Log.e("HomeMapScreen", "add marker for voice note failed", e)
             }

@@ -69,9 +69,10 @@ class AMapControllerImpl(
         lat: Double,
         lng: Double,
         title: String,
-        type: MarkerType
+        type: MarkerType,
+        scale: Float
     ): AppMapMarker {
-        val bitmap = GaodeMarkerHelper.getMarkerBitmap(context, title, type)
+        val bitmap = GaodeMarkerHelper.getMarkerBitmap(context, title, type, scale)
         val marker = map.addMarker(
             AMapMarkerOptions()
                 .position(AMapLatLng(lat, lng))

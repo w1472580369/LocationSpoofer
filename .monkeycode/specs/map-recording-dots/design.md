@@ -91,7 +91,7 @@ graph TD
 
 ```kotlin
 data class VoiceNoteRecord(
-    val path: String,       // cacheDir/voice_notes/record_<timestamp>.3gp
+    val path: String,       // cacheDir/voice_notes/voice_note_<N>.m4a（按录音先后顺序编号）或 .3gp
     val lat: Double,        // 录制时的地图坐标（GCJ-02）
     val lng: Double,
     val recordTime: Long,

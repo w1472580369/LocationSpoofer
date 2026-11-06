@@ -32,7 +32,7 @@ interface AppMapController {
         strokeWidth: Float
     )
 
-    fun addMarker(lat: Double, lng: Double, title: String, type: MarkerType): AppMapMarker
+    fun addMarker(lat: Double, lng: Double, title: String, type: MarkerType, scale: Float = 1.0f): AppMapMarker
     fun animateCamera(lat: Double, lng: Double, zoom: Float? = null)
     fun fitBounds(points: List<Pair<Double, Double>>, padding: Int)
     fun fitBounds(

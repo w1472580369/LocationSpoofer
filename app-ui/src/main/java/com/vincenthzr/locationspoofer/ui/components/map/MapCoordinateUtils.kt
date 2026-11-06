@@ -44,16 +44,18 @@ object GaodeMarkerHelper {
     fun getMarkerBitmap(
         context: Context,
         text: String,
-        type: MarkerType
+        type: MarkerType,
+        scale: Float = 1.0f
     ): Bitmap {
-        val cacheKey = "${type.name}_$text"
+        require(scale > 0f) { "marker bitmap scale must be positive" }
+        val cacheKey = "${type.name}_$text|${scale}"
         bitmapCache[cacheKey]?.let {
             if (!it.isRecycled) return it
         }
 
         val density = context.resources.displayMetrics.density
-        val width = (32 * density).toInt().coerceAtLeast(1)
-        val height = (44 * density).toInt().coerceAtLeast(1)
+        val width = (32 * density * scale).toInt().coerceAtLeast(1)
+        val height = (44 * density * scale).toInt().coerceAtLeast(1)
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
