@@ -185,8 +185,11 @@ class VoiceNoteRepository(private val context: Context) {
     /** 清理超过 30 天的旧录音（释放磁盘空间），commit 保证落盘后可见，避免后续 getAll 读到过期空列表 */
     fun clearExpired() {
         val now = System.currentTimeMillis()
-        val keeping = getAll().filter { now - it.recordTime <= 30 * 24 * 60 * 60 * 1000 }
-        Log.d("VoiceNoteRepository", "clearExpired total=${getAll().size} kept=${keeping.size}")
+        // 注意：必须用 Long 字面量（30L），否则 Int 运算 30*24*60*60*1000 溢出为负数，导致刚录制的备注被误删
+        val ttlMillis = 30L * 24 * 60 * 60 * 1000
+        val all = getAll()
+        val keeping = all.filter { now - it.recordTime <= ttlMillis }
+        Log.d("VoiceNoteRepository", "clearExpired total=${all.size} kept=${keeping.size} ttl=$ttlMillis")
         val committed = prefs.edit().putString("notes", Json.Default.encodeToString(keeping)).commit()
         Log.d("VoiceNoteRepository", "clearExpired committed=$committed kept=${keeping.size}")
     }
