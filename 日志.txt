@@ -1,0 +1,417 @@
+1793937933.184 10363 29253 29253 E locationspoofe: Not starting debugger since process cannot load the jdwp agent.
+1793937933.186 10363 29253 29253 D ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+1793937933.254 10363 29253 29253 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10363; state: ENABLED
+1793937933.272 10363 29253 29273 D AppScoutStateMachine: 29253-ScoutStateMachinecreated
+1793937933.344 10363 29253 29253 V GraphicsEnvironment: ANGLE Developer option for 'com.vincenthzr.locationspoofer' set to: 'default'
+1793937933.345 10363 29253 29253 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+1793937933.348 10363 29253 29253 I ForceDarkHelperStubImpl: initialize for com.vincenthzr.locationspoofer , ForceDarkOrigin
+1793937933.350 10363 29253 29253 D OpenGLRenderer: JNI_OnLoad success
+1793937933.350 10363 29253 29253 I MiuiForceDarkConfig: setConfig density:2.750000, mainRule:0, secondaryRule:0, tertiaryRule:0
+1793937933.353 10363 29253 29253 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+1793937933.354 10363 29253 29253 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+1793937933.376 10363 29253 29253 W ReflectionUtils: java.lang.NoSuchMethodException: android.view.ViewRootImpl#needSurface()#bestmatch
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at miui.util.ReflectionUtils.findMethodBestMatch(Unknown Source:146)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at miui.util.ReflectionUtils.tryFindMethodBestMatch(Unknown Source:0)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.view.ChoreographerInjectorStubImpl.<init>(Unknown Source:18)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at java.lang.reflect.Constructor.newInstance0(Native Method)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at java.lang.reflect.Constructor.newInstance(Constructor.java:343)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.newInstance(Unknown Source:31)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.newInstanceNoThrow(Unknown Source:0)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry$ImplHolder.getInstance(Unknown Source:9)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.doGetInstance(Unknown Source:26)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.get(Unknown Source:3)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at com.miui.base.MiuiStubRegistry.get(Unknown Source:2)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at com.miui.base.MiuiStubUtil.getInstance(Unknown Source:0)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.view.animation.ChoreographerInjectorStub.getInstance(Unknown Source:2)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.view.Choreographer.postCallbackDelayedInternal(Unknown Source:16)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.view.Choreographer.postFrameCallbackDelayed(Unknown Source:8)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.view.Choreographer.postFrameCallback(Unknown Source:2)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at androidx.profileinstaller.ProfileInstallerInitializer.b(r8-map-id-9348dd10a70e7f94c02aff0a94945dcd3f639a5204a7e946d5451f864260e52a:14)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at pj.k(r8-map-id-9348dd10a70e7f94c02aff0a94945dcd3f639a5204a7e946d5451f864260e52a:86)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at pj.j(r8-map-id-9348dd10a70e7f94c02aff0a94945dcd3f639a5204a7e946d5451f864260e52a:86)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at androidx.startup.InitializationProvider.onCreate(r8-map-id-9348dd10a70e7f94c02aff0a94945dcd3f639a5204a7e946d5451f864260e52a:53)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.content.ContentProvider.attachInfo(Unknown Source:102)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.content.ContentProvider.attachInfo(Unknown Source:1)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.app.ActivityThread.installProvider(Unknown Source:264)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.app.ActivityThread.installContentProviders(Unknown Source:28)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.app.ActivityThread.handleBindApplication(Unknown Source:854)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.app.ActivityThread.access$1600(Unknown Source:0)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.app.ActivityThread$H.handleMessage(Unknown Source:774)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.os.Handler.dispatchMessage(Unknown Source:19)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.os.Looper.loopOnce(Unknown Source:176)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.os.Looper.loop(Unknown Source:76)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at android.app.ActivityThread.main(Unknown Source:138)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at java.lang.reflect.Method.invoke(Native Method)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(Unknown Source:11)
+1793937933.376 10363 29253 29253 W ReflectionUtils: 	at com.android.internal.os.ZygoteInit.main(Unknown Source:309)
+1793937933.392 10363 29253 29273 D XposedProvider: binder received: android.os.BinderProxy@a21b273
+1793937933.410 10363 29253 29253 E PermissionCheck: The authManager is: null; the authCallback is: null; the mContext is: null
+1793937933.411 10363 29253 29253 I BaiduApiAuth: BaiduApiAuth SDK Version:1.0.31
+1793937933.449 10363 29253 29253 E PermissionCheck: The authManager is: null; the authCallback is: null; the mContext is: null
+1793937933.461 10363 29253 29295 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+1793937933.461 10363 29253 29295 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+1793937933.461 10363 29253 29295 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+1793937933.505 10363 29253 29253 I [Koin]  : [init] declare Android Context
+1793937933.509 10363 29253 29253 I [Koin]  : Started 21 definitions in 0.425521 ms
+1793937933.513 10363 29253 29329 D CompatibilityChangeReporter: Compat change id reported: 160794467; UID 10363; state: ENABLED
+1793937933.540 10363 29253 29253 D ViewScrollStubImpl: the value of ScrollFrictionRes is: 0.03
+1793937933.554 10363 29253 29253 D IS_CTS_MODE: false
+1793937933.554 10363 29253 29253 D MULTI_WINDOW_SWITCH_ENABLED: false
+1793937933.554 10363 29253 29253 D IS_CTS_MODE: false
+1793937933.554 10363 29253 29253 D MULTI_WINDOW_SWITCH_ENABLED: false
+1793937933.560 10363 29253 29253 D DecorView[]: getWindowModeFromSystem  windowmode is 1
+1793937933.575 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937933.595 10363 29253 29253 D VFUtils : scaleWght : 412
+1793937933.711 10363 29253 29334 D VoiceNoteRepository: getAll entries=2 jsonLen=372
+1793937933.712 10363 29253 29334 D VoiceNoteRepository: clearExpired total=2 kept=2 ttl=2592000000
+1793937933.713 10363 29253 29334 D VoiceNoteRepository: clearExpired committed=true kept=2
+1793937933.714 10363 29253 29334 D VoiceNoteRepository: getAll entries=2 jsonLen=372
+1793937933.715 10363 29253 29334 D MainViewModel: refreshVoiceNoteList notes=2
+1793937933.773 10363 29253 29253 D DecorView[]: getWindowModeFromSystem  windowmode is 1
+1793937933.773 10363 29253 29253 D DecorView[]: updateDecorCaptionStatus displayWindowDecor is false
+1793937933.780 10363 29253 29253 W Looper  : PerfMonitor looperActivity : package=com.vincenthzr.locationspoofer/.MainActivity time=1ms latency=523ms running=0ms  procState=-1  historyMsgCount=2 (msgIndex=1 wall=265ms seq=2 late=4ms h=android.app.ActivityThread$H w=110) (msgIndex=2 wall=263ms seq=3 late=261ms h=android.app.ActivityThread$H w=159)
+1793937933.781 10363 29253 29253 I Choreographer: Skipped 48 frames!  The application may be doing too much work on its main thread.
+1793937933.811 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937933.817 10363 29253 29253 D VFUtils : scaleWght : 631
+1793937933.824 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937933.831 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937933.835 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937933.836 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937933.836 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937933.837 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937933.852 10363 29253 29365 I AdrenoGLES-0: QUALCOMM build                   : 16c8186230, I159ae7f0bb
+1793937933.852 10363 29253 29365 I AdrenoGLES-0: Build Date                       : 04/05/21
+1793937933.852 10363 29253 29365 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.32.02.10
+1793937933.852 10363 29253 29365 I AdrenoGLES-0: Local Branch                     :
+1793937933.852 10363 29253 29365 I AdrenoGLES-0: Remote Branch                    :
+1793937933.852 10363 29253 29365 I AdrenoGLES-0: Remote Branch                    :
+1793937933.852 10363 29253 29365 I AdrenoGLES-0: Reconstruct Branch               :
+1793937933.852 10363 29253 29365 I AdrenoGLES-0: Build Config                     : S P 10.0.7 AArch64
+1793937933.852 10363 29253 29365 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+1793937933.867 10363 29253 29365 I AdrenoGLES-0: PFP: 0x016dd093, ME: 0x00000000
+1793937933.912 10363 29253 29365 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+1793937933.955 10363 29253 29365 E LB      : fail to open file: No such file or directory
+1793937933.961 10363 29253 29253 W Looper  : PerfMonitor doFrame : time=180ms vsyncFrame=0 latency=404ms procState=-1 historyMsgCount=4 (msgIndex=1 wall=265ms seq=2 late=4ms h=android.app.ActivityThread$H w=110) (msgIndex=2 wall=263ms seq=3 late=261ms h=android.app.ActivityThread$H w=159)
+1793937933.965 10363 29253 29253 D MainViewModel: updateVoiceNoteState in
+1793937933.966 10363 29253 29253 D MainViewModel: updateVoiceNoteState voiceNoteCount=2
+1793937934.006 10363 29253 29253 I [Koin]  : [Warning] - No Koin context defined in Compose, fallback to default Koin context.
+1793937934.006 10363 29253 29253 I [Koin]  : Use KoinContext(), KoinAndroidContext() or KoinApplication() to setup or create Koin context with Compose and avoid such message.
+1793937934.065 10363 29253 29253 D VFUtils : scaleWght : 412
+1793937934.072 10363 29253 29253 D VFUtils : scaleWght : 412
+1793937934.076 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.084 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.085 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.091 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.093 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.094 10363 29253 29253 D VFUtils : scaleWght : 412
+1793937934.097 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.099 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.102 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.104 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.139 10363 29253 29464 D DEBUG   : ThreadProc, CVSocketMan::SocketThreadProc start ...
+1793937934.184 10363 29253 29253 D NetworkLogic: onNetWorkChanged-0
+1793937934.188 10363 29253 29465 D NetworkLogic: NetworkDetect
+1793937934.226 10363 29253 29465 D DEBUG   : CNetworkDetectEngine::NetworkDetect Start 1
+1793937934.240 10363 29253 29478 I GLThread: noticed surfaceView surface lost tid=98
+1793937934.240 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937934.241 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937934.241 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937934.242 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937934.251 10363 29253 29253 D VFUtils : scaleWght : 412
+1793937934.252 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937934.252 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937934.252 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937934.279 10363 29253 29253 D GLTextureView: onAttachedToWindow reattach =false
+1793937934.292 10363 29253 29253 D VFUtils : scaleWght : 412
+1793937934.301 10363 29253 29478 I GLThread: noticed surfaceView surface acquired tid=98
+1793937934.301 10363 29253 29478 W EglHelper: start() tid=98
+1793937934.304 10363 29253 29478 W EglHelper: createContext com.google.android.gles_jni.EGLContextImpl@afde2d0b tid=98
+1793937934.304 10363 29253 29478 I GLThread: noticing that we want render notification tid=98
+1793937934.304 10363 29253 29253 I Main thread: onWindowResize waiting for render complete from tid=98
+1793937934.304 10363 29253 29478 W GLThread: egl createSurface
+1793937934.304 10363 29253 29478 W EglHelper: createSurface()  tid=98
+1793937934.305 10363 29253 29478 W GLThreadManager: checkGLESVersion mGLESVersion = 196610 mMultipleGLESContextsAllowed = true
+1793937934.306 10363 29253 29478 W GLThreadManager: checkGLDriver renderer = "Adreno (TM) 620" multipleContextsAllowed = true mLimitedGLESContexts = false
+1793937934.306 10363 29253 29478 W GLThread: onSurfaceCreated
+1793937934.307 10363 29253 29478 W GLThread: onSurfaceChanged(1080, 2400)
+1793937934.311 10363 29253 29253 I Main thread: onWindowResize waiting for render complete from tid=98
+1793937934.313 10363 29253 29478 I GLThread: sending render notification tid=98
+1793937934.313 10363 29253 29478 I GLThread: noticing that we want render notification tid=98
+1793937934.314 10363 29253 29478 W GLThread: egl createSurface
+1793937934.314 10363 29253 29478 W EglHelper: createSurface()  tid=98
+1793937934.314 10363 29253 29478 W GLThread: onSurfaceChanged(1080, 2400)
+1793937934.327 10363 29253 29253 W Looper  : PerfMonitor doFrame : time=327ms vsyncFrame=0 latency=206ms procState=-1 historyMsgCount=15 (msgIndex=1 wall=180ms seq=6 late=404ms h=android.view.Choreographer$FrameHandler c=android.view.Choreographer$FrameDisplayEventReceiver)
+1793937934.331 10363 29253 29253 D DecorView[]: onWindowFocusChanged hasWindowFocus true
+1793937934.343 10363 29253 29253 E HomeMapScreen: mapController is null, skip voice-note marker
+1793937934.344 10363 29253 29253 I Choreographer: Skipped 39 frames!  The application may be doing too much work on its main thread.
+1793937934.357 10363 29253 29253 W Looper  : PerfMonitor doFrame : time=12ms vsyncFrame=0 latency=333ms procState=-1 historyMsgCount=11 (msgIndex=1 wall=327ms seq=21 late=206ms h=android.view.Choreographer$FrameHandler c=android.view.Choreographer$FrameDisplayEventReceiver)
+1793937934.360 10363 29253 29253 D NetworkLogic: onNetWorkChanged-0
+1793937934.361 10363 29253 29465 D NetworkLogic: NetworkDetect
+1793937934.363 10363 29253 29281 W System.err: javax.crypto.BadPaddingException: error:04000089:RSA routines:OPENSSL_internal:PKCS_DECODING_ERROR
+1793937934.365 10363 29253 29281 W System.err: 	at com.android.org.conscrypt.NativeCrypto.RSA_private_decrypt(Native Method)
+1793937934.365 10363 29253 29281 W System.err: 	at com.android.org.conscrypt.OpenSSLCipherRSA$DirectRSA.doCryptoOperation(OpenSSLCipherRSA.java:404)
+1793937934.365 10363 29253 29281 W System.err: 	at com.android.org.conscrypt.OpenSSLCipherRSA.engineDoFinal(OpenSSLCipherRSA.java:316)
+1793937934.365 10363 29253 29281 W System.err: 	at javax.crypto.Cipher.doFinal(Cipher.java:2055)
+1793937934.365 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.r.b(Unknown Source:39)
+1793937934.365 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.LBSAuthManager.a(Unknown Source:334)
+1793937934.365 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.LBSAuthManager.a(Unknown Source:339)
+1793937934.365 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.LBSAuthManager.a(Unknown Source:338)
+1793937934.365 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.m.run(Unknown Source:36)
+1793937934.365 10363 29253 29281 W System.err: 	at android.os.Handler.handleCallback(Unknown Source:2)
+1793937934.365 10363 29253 29281 W System.err: 	at android.os.Handler.dispatchMessage(Unknown Source:4)
+1793937934.365 10363 29253 29281 W System.err: 	at android.os.Looper.loopOnce(Unknown Source:176)
+1793937934.365 10363 29253 29281 W System.err: 	at android.os.Looper.loop(Unknown Source:76)
+1793937934.365 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.p.run(Unknown Source:20)
+1793937934.366 10363 29253 29465 D DEBUG   : CNetworkDetectEngine::NetworkDetect Start 2
+1793937934.368 10363 29253 29253 D NetworkLogic: onNetWorkChanged-1
+1793937934.372 10363 29253 29297 D NetworkLogic: onNetWorkChanged-WIFI
+1793937934.372 10363 29253 29465 D NetworkLogic: NetworkDetect
+1793937934.379 10363 29253 29281 W System.err: javax.crypto.BadPaddingException: error:04000089:RSA routines:OPENSSL_internal:PKCS_DECODING_ERROR
+1793937934.380 10363 29253 29281 W System.err: 	at com.android.org.conscrypt.NativeCrypto.RSA_private_decrypt(Native Method)
+1793937934.380 10363 29253 29281 W System.err: 	at com.android.org.conscrypt.OpenSSLCipherRSA$DirectRSA.doCryptoOperation(OpenSSLCipherRSA.java:404)
+1793937934.380 10363 29253 29281 W System.err: 	at com.android.org.conscrypt.OpenSSLCipherRSA.engineDoFinal(OpenSSLCipherRSA.java:316)
+1793937934.380 10363 29253 29281 W System.err: 	at javax.crypto.Cipher.doFinal(Cipher.java:2055)
+1793937934.380 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.r.b(Unknown Source:39)
+1793937934.380 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.LBSAuthManager.a(Unknown Source:334)
+1793937934.380 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.LBSAuthManager.a(Unknown Source:339)
+1793937934.380 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.LBSAuthManager.a(Unknown Source:338)
+1793937934.380 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.m.run(Unknown Source:69)
+1793937934.380 10363 29253 29281 W System.err: 	at android.os.Handler.handleCallback(Unknown Source:2)
+1793937934.380 10363 29253 29281 W System.err: 	at android.os.Handler.dispatchMessage(Unknown Source:4)
+1793937934.380 10363 29253 29281 W System.err: 	at android.os.Looper.loopOnce(Unknown Source:176)
+1793937934.380 10363 29253 29281 W System.err: 	at android.os.Looper.loop(Unknown Source:76)
+1793937934.380 10363 29253 29281 W System.err: 	at com.baidu.lbsapi.auth.p.run(Unknown Source:20)
+1793937934.401 10363 29253 29253 D VFUtils : scaleWght : 487
+1793937934.407 10363 29253 29253 D VFUtils : scaleWght : 487
+1793937934.411 10363 29253 29253 D HomeMapScreen: voiceNoteList=【2】总计 voiceNoteCount=2
+1793937934.411 10363 29253 29465 D DEBUG   : CNetworkDetectEngine::NetworkDetect Start 3
+1793937934.411 10363 29253 29253 D VFUtils : scaleWght : 487
+1793937934.429 10363 29253 29253 I GLThread: onResume tid=98
+1793937934.526 10363 29253 29478 I GLThread: sending render notification tid=98
+1793937934.581 10363 29253 29253 D VFUtils : scaleWght : 412
+1793937934.582 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.583 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.583 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.584 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.585 10363 29253 29253 D VFUtils : scaleWght : 412
+1793937934.585 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.585 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.586 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.586 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937934.703 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.706 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.710 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.712 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.714 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.716 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.716 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.726 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.726 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.728 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.728 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.728 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.728 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.729 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.730 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.730 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.731 10363 29253 29477 D VFUtils : scaleWght : 487
+1793937934.737 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.757 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.761 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.762 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.765 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.768 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.771 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.774 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.777 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.780 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.783 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.786 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.789 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.792 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.794 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.798 10363 29253 29478 D VFUtils : scaleWght : 315
+1793937934.798 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.798 10363 29253 29478 D VFUtils : scaleWght : 469
+1793937934.806 10363 29253 29478 D VFUtils : scaleWght : 469
+1793937934.807 10363 29253 29478 D VFUtils : scaleWght : 315
+1793937934.807 10363 29253 29478 D VFUtils : scaleWght : 315
+1793937934.807 10363 29253 29478 D VFUtils : scaleWght : 315
+1793937934.807 10363 29253 29478 D VFUtils : scaleWght : 315
+1793937934.808 10363 29253 29478 D VFUtils : scaleWght : 315
+1793937934.808 10363 29253 29478 D VFUtils : scaleWght : 315
+1793937934.808 10363 29253 29478 D VFUtils : scaleWght : 315
+1793937934.808 10363 29253 29478 D VFUtils : scaleWght : 315
+1793937934.810 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.812 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.813 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.816 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.818 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.820 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.821 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.823 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.824 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.825 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.826 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.827 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.828 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.829 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.831 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.832 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.834 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.835 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.836 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.837 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.838 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.840 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.841 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.842 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.843 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.844 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.845 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.846 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.847 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.848 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.850 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.851 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.853 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.854 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.855 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.857 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.858 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.859 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.860 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.861 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.863 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.864 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.866 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.868 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.870 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.871 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.872 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.873 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.874 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.875 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.877 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.878 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.880 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.881 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.882 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.884 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.886 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.887 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.888 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.890 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.891 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.893 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.895 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.896 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.897 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.899 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.900 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.902 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.903 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.904 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.905 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.906 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937934.908 10363 29253 29520 D VFUtils : scaleWght : 464
+1793937936.233 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937936.233 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937936.233 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937936.235 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937936.236 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937936.237 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937936.243 10363 29253 29253 D VoiceRecorder: createNewFile: true path=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793937936243.m4a
+1793937936.319 10363 29253 29253 D VoiceRecorder: started at /data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793937936243.m4a size=3232
+1793937936.325 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937936.325 10363 29253 29253 D VFUtils : scaleWght : 544
+1793937936.331 10363 29253 29253 D VFUtils : scaleWght : 544
+1793937936.331 10363 29253 29253 D VFUtils : scaleWght : 544
+1793937936.333 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937936.334 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937937.356 10363 29253 29253 D VFUtils : scaleWght : 544
+1793937938.370 10363 29253 29253 D VFUtils : scaleWght : 544
+1793937939.334 10363 29253 29787 D ProfileInstaller: Skipping profile installation for com.vincenthzr.locationspoofer
+1793937939.354 10363 29253 29334 D VoiceRecorder: stopRecording: file=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793937936243.m4a exists=true
+1793937939.366 10363 29253 29253 D VoiceRecorder: info: what=268436456
+1793937939.372 10363 29253 29253 D VFUtils : scaleWght : 544
+1793937939.424 10363 29253 29334 D VoiceRecorder: stop() ok
+1793937939.427 10363 29253 29334 D VoiceRecorder: file ready: /data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793937936243.m4a size=7663 ok=true
+1793937939.427 10363 29253 29253 D VoiceNoteInput: stopRecording: file=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793937936243.m4a canSave=true
+1793937939.439 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937939.442 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937939.443 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937939.445 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937939.446 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937939.451 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937939.452 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937939.453 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937940.197 10363 29253 29253 D VoiceNoteInput: save page: path=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793937936243.m4a size=7663 lat=31.563907973753388 lng=120.41517387041439 rec=1793937940197
+1793937940.198 10363 29253 29253 D VoiceNoteRepository: getAll entries=2 jsonLen=372
+1793937940.198 10363 29253 29253 D VoiceNoteRepository: saveNote entries=3 path=/data/user/0/com.vincenthzr.locationspoofer/cache/voice_notes/record_1793937936243.m4a
+1793937940.204 10363 29253 29253 D VoiceNoteRepository: saveNote committed=true
+1793937940.204 10363 29253 29253 D VoiceNoteInput: save called onNoteSaved
+1793937940.205 10363 29253 29332 D VoiceNoteRepository: getAll entries=3 jsonLen=557
+1793937940.205 10363 29253 29332 D VoiceNoteRepository: clearExpired total=3 kept=3 ttl=2592000000
+1793937940.206 10363 29253 29332 D VoiceNoteRepository: clearExpired committed=true kept=3
+1793937940.206 10363 29253 29332 D VoiceNoteRepository: getAll entries=3 jsonLen=557
+1793937940.206 10363 29253 29332 D MainViewModel: refreshVoiceNoteList notes=3
+1793937940.211 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937940.212 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937940.212 10363 29253 29253 D VFUtils : scaleWght : 544
+1793937940.216 10363 29253 29253 D MainViewModel: updateVoiceNoteState in
+1793937940.216 10363 29253 29253 D MainViewModel: updateVoiceNoteState voiceNoteCount=3
+1793937940.235 10363 29253 29253 D HomeMapScreen: voiceNoteList=【3】总计 voiceNoteCount=3
+1793937941.287 10363 29253 29253 D VFUtils : scaleWght : 397
+1793937941.293 10363 29253 29253 D VFUtils : scaleWght : 397
+1793937941.294 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937941.298 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937941.299 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937941.301 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937941.302 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937941.304 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937941.304 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937941.307 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937941.307 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937941.309 10363 29253 29253 D VFUtils : scaleWght : 557
+1793937941.315 10363 29253 29253 D VFUtils : scaleWght : 557
+1793937941.319 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937941.319 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937941.321 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937941.322 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937941.323 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937941.324 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937941.325 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937941.326 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937941.328 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937941.329 10363 29253 29253 D VFUtils : scaleWght : 412
+1793937941.330 10363 29253 29253 D VFUtils : scaleWght : 325
+1793937941.330 10363 29253 29253 D VFUtils : scaleWght : 412
+1793937942.602 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937942.603 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937942.607 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937942.608 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937942.609 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937942.610 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937942.613 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937942.614 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937942.615 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937942.615 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937942.618 10363 29253 29253 D VFUtils : scaleWght : 407
+1793937942.619 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937942.620 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937942.620 10363 29253 29253 D VFUtils : scaleWght : 315
+1793937942.630 10363 29253 29334 D VoiceNoteRepository: getAll entries=3 jsonLen=557
+1793937942.630 10363 29253 29334 D VoiceNoteRepository: clearExpired total=3 kept=3 ttl=2592000000
+1793937942.631 10363 29253 29334 D VoiceNoteRepository: clearExpired committed=true kept=3
+1793937942.631 10363 29253 29334 D VoiceNoteRepository: getAll entries=3 jsonLen=557
+1793937942.631 10363 29253 29334 D MainViewModel: refreshVoiceNoteList notes=3
+1793937942.633 10363 29253 29253 D MainViewModel: updateVoiceNoteState in
+1793937942.633 10363 29253 29253 D MainViewModel: updateVoiceNoteState voiceNoteCount=3
+1793937943.903 10363 29253 29253 I GLThread: onPause tid=98
+1793937943.903 10363 29253 29253 I Main thread: onPause waiting for mPaused.
+1793937943.904 10363 29253 29478 I GLThread: mPaused is now true tid=98
+1793937943.904 10363 29253 29478 I GLThread: releasing EGL surface because paused tid=98
+1793937943.904 10363 29253 29478 W EglHelper: destroySurface()  tid=98
+1793937943.906 10363 29253 29253 D DecorView[]: onWindowFocusChanged hasWindowFocus false
+1793937944.551 10363 29253 29365 D OpenGLRenderer: endAllActiveAnimators on 0xb400007b75a29900 (mf3) with handle 0xb400007b53b07100
