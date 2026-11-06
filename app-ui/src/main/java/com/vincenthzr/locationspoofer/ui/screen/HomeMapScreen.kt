@@ -49,13 +49,64 @@ fun HomeMapScreen(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    /** 已添加到地图的语音备注小绿点（以录音文件路径为键，用于与列表同步） */
+    var noteMarkers by remember { mutableStateOf<Map<String, AppMapMarker>>(emptyMap()) }
     var restoredViewport by remember { mutableStateOf<CameraViewport?>(null) }
     var notePosition by remember { mutableStateOf<Pair<Double, Double>?>(null) }
     var showVoiceNoteInput by remember { mutableStateOf(false) }
     // 长按直达录制标记：长按地图开面板时直接开始录音，而非显示录制入口
     var longPressRecording by remember { mutableStateOf(false) }
-    /** 已添加到地图的语音备注蓝点（以录音文件路径为键，用于与列表同步） */
-    var noteMarkers by remember { mutableStateOf<Map<String, AppMapMarker>>(emptyMap()) }
+
+    /** Home 页视口恢复 / 坐标面板 / 地图类型变更时，Home 页面会执行 mapController.clear()。
+     * 如果标记点的添加独立于 Home 页，清屏后标记点就再也不会出现 —
+     * 因此将 Home 锚点与语音备注的标记点合在同一个效果里，
+     * 随时重挂，保证只要有录音文件就持续显示在绑定的经纬度坐标上。 */
+    LaunchedEffect(
+        mapController,
+        uiState.voiceNoteList,
+        uiState.latitudeInput,
+        uiState.longitudeInput,
+        lastViewport,
+        uiState.mapType
+    ) {
+        if (mapController == null) {
+            Log.e("HomeMapScreen", "mapController is null, skip voice-note marker")
+            return@LaunchedEffect
+        }
+        Log.d("HomeMapScreen", "voiceNoteList=【${uiState.voiceNoteList.size}】总计 voiceNoteCount=${uiState.voiceNoteCount}")
+        // 先清理上一次 Home 页留下的锚点 + 旧标记点（可能已被主框架 clear() 静默删掉），避免重复挂点
+        noteMarkers.values.forEach { it.remove() }
+        noteMarkers = emptyMap()
+        mapController.clear()
+
+        val lat = uiState.latitudeInput.toDoubleOrNull() ?: 39.9042
+        val lng = uiState.longitudeInput.toDoubleOrNull() ?: 116.4074
+        // Home 页首屏优先恢复记住的视口（坐标 + 缩放），没有记录时默认 15 级缩放
+        if (lastViewport != null) {
+            if (lastViewport != restoredViewport) {
+                mapController.moveCamera(lastViewport.lat, lastViewport.lng, lastViewport.zoom)
+                restoredViewport = lastViewport
+            }
+        } else {
+            mapController.moveCamera(lat, lng, 15f)
+            restoredViewport = CameraViewport(lat, lng, 15f)
+        }
+        mapController.addMarker(lastViewport?.lat ?: lat, lastViewport?.lng ?: lng, context.getString(R.string.home_map_title), MarkerType.GREEN)
+
+        // 新增的小绿点：语音备注标记，绑定录制坐标（lat/lng），录音文件存在就一直显示
+        for (record in uiState.voiceNoteList) {
+            val title = if (record.text.isNotBlank()) {
+                record.text
+            } else {
+                context.getString(R.string.home_map_note_marker_title)
+            }
+            try {
+                noteMarkers = noteMarkers + (record.path to mapController.addMarker(record.lat, record.lng, title, MarkerType.GREEN))
+            } catch (e: Exception) {
+                Log.e("HomeMapScreen", "add marker for voice note failed", e)
+            }
+        }
+    }
 
     DisposableEffect(mapController) {
         if (mapController != null) {
@@ -83,64 +134,6 @@ fun HomeMapScreen(
             mapController?.setOnMapClickListener { _, _ -> }
             mapController?.setOnMapLongClickListener { _, _ -> }
             mapController?.setOnMarkerClickListener { _, _, _ -> }
-        }
-    }
-
-    LaunchedEffect(mapController, lastViewport, uiState.latitudeInput, uiState.longitudeInput) {
-        if (mapController == null) return@LaunchedEffect
-        val lat = uiState.latitudeInput.toDoubleOrNull() ?: 39.9042
-        val lng = uiState.longitudeInput.toDoubleOrNull() ?: 116.4074
-        mapController.clear()
-        // Home 页首屏优先恢复记住的视口（坐标 + 缩放）；没有记录时默认 15 级缩放
-        if (lastViewport != null) {
-            if (lastViewport != restoredViewport) {
-                mapController.moveCamera(lastViewport.lat, lastViewport.lng, lastViewport.zoom)
-                restoredViewport = lastViewport
-            }
-            mapController.addMarker(
-                lastViewport.lat,
-                lastViewport.lng,
-                context.getString(R.string.home_map_title),
-                MarkerType.GREEN
-            )
-            return@LaunchedEffect
-        }
-        mapController.moveCamera(lat, lng, 15f)
-        restoredViewport = CameraViewport(lat, lng, 15f)
-        mapController.addMarker(
-            lat,
-            lng,
-            context.getString(R.string.home_map_title),
-            MarkerType.GREEN
-        )
-    }
-
-    // 语音备注蓝点：与绿色标记点隔离，仅凭 voiceNoteList 变化感知，避免重复添加
-    LaunchedEffect(mapController, uiState.voiceNoteList) {
-        if (mapController == null) {
-            Log.e("HomeMapScreen", "mapController is null, skip voice-note marker")
-            return@LaunchedEffect
-        }
-        Log.d("HomeMapScreen", "voiceNoteList=【${uiState.voiceNoteList.size}】总计 voiceNoteCount=${uiState.voiceNoteCount}")
-        val currentNotes = uiState.voiceNoteList.associate { it.path to it }
-        // 取消已不在列表中的旧蓝点（避免删除后标记残留）
-        noteMarkers
-            .filter { !currentNotes.containsKey(it.key) }
-            .forEach { it.value.remove() }
-        noteMarkers = noteMarkers.filter { currentNotes.containsKey(it.key) }
-        // 新增的语音备注：在录制坐标处绘制默认蓝色标记点
-        for (record in uiState.voiceNoteList) {
-            if (noteMarkers.containsKey(record.path)) continue
-            val title = if (record.text.isNotBlank()) {
-                record.text
-            } else {
-                context.getString(R.string.home_map_note_marker_title)
-            }
-            try {
-                noteMarkers = noteMarkers + (record.path to mapController.addMarker(record.lat, record.lng, title, MarkerType.DEFAULT))
-            } catch (e: Exception) {
-                Log.e("HomeMapScreen", "add marker for voice note failed", e)
-            }
         }
     }
 
