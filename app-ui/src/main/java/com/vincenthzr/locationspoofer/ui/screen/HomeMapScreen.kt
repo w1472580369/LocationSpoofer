@@ -57,7 +57,8 @@ fun HomeMapScreen(
     // 长按直达录制标记：长按地图开面板时直接开始录音，而非显示录制入口
     var longPressRecording by remember { mutableStateOf(false) }
 
-    /** Home 锚点图钉位置（模拟位置）：坐标面板中的经纬度即为图钉位置 */
+    /** Home 页默认位置（坐标面板中的经纬度）：长按录音时会把录制坐标固定在这个位置，
+     * 避免录音点与模拟坐标分处不同坐标。 */
     fun notePinPosition(): Pair<Double, Double> {
         val lat = uiState.latitudeInput.toDoubleOrNull() ?: 39.9042
         val lng = uiState.longitudeInput.toDoubleOrNull() ?: 116.4074
@@ -66,11 +67,10 @@ fun HomeMapScreen(
 
     /** Home 页视口恢复 / 坐标面板 / 地图类型变更时，Home 页面会执行 mapController.clear()。
      * 如果标记点的添加独立于 Home 页，清屏后标记点就再也不会出现 —
-     * 因此将 Home 锚点与语音备注的标记点合在同一个效果里，
+     * 因此将默认位置（坐标面板经纬度）与语音备注的标记点合在同一个效果里，
      * 随时重挂，保证只要有录音文件就持续显示在绑定的经纬度坐标上。
      * 注意：
-     *  - Home 锚点图钉使用路线模块起点图钉的样式（MarkerType.ORANGE），固定在模拟位置
-     *  - 长按录音时记录坐标使用 Home 锚点图钉位置（模拟坐标），录音经纬度始终与图钉一致
+     *  - 长按录音时记录坐标使用 Home 页默认位置（模拟坐标），录音经纬度始终与图钉一致
      *  - 语音备注的小绿点只负责标记已录制的备注坐标，与锚点图钉颜色和比例都不同（已隔离）。 */
     LaunchedEffect(
         mapController,
@@ -102,11 +102,7 @@ fun HomeMapScreen(
             mapController.moveCamera(lat, lng, 15f)
             restoredViewport = CameraViewport(lat, lng, 15f)
         }
-        /** Home 锚点图钉：使用路线模块起点图钉样式（橙色标记 + Current Location），
-         * 固定在模拟坐标上，长按录音时记录坐标以图钉位置为准。 */
-        mapController.addMarker(lat, lng, context.getString(R.string.current_location), MarkerType.ORANGE)
-
-        // 语音备注的小绿点：与 Home 锚点颜色不同，且大小为标准标记的一半
+        // 语音备注的小绿点：小尺寸，负责标记已录制的备注坐标
         for (record in uiState.voiceNoteList) {
             val title = if (record.text.isNotBlank()) {
                 record.text
