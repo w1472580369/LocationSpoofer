@@ -273,7 +273,8 @@ fun VoiceNoteListScreen(
                 contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(voiceNotes, key = { it.path }) { record ->
+                // key 必须是路径 + 录制时间，不能只用 path（同一文件可能被重复保存，Compose 拒绝重复 key）
+                items(voiceNotes, key = { "${it.recordTime}:${it.path}" }) { record ->
                     VoiceNoteListItem(
                         record = record,
                         isPlaying = playingId == record.path && isPlaying,

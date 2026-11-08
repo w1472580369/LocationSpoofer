@@ -43,4 +43,51 @@ class VoiceNoteFileNameTest {
             VoiceRecorder.nextRecordingIndex(listOf(file("voice_note_1.m4a"), file("voice_note_10.m4a"), file("voice_note_12.m4a")))
         )
     }
+
+    /** 模拟每次录制收到一个编号：编号必须严格 1、2、3 … 递增，不能重复或回退 */
+    @Test
+    fun `consecutive recordings are numbered 1 2 3 in order without repeating`() {
+        val existing = mutableListOf<File>()
+        repeat(10) { number ->
+            // 下一条录音的编号必须等于已有最大编号 + 1（即第 number + 1 号）
+            assertEquals((number + 1).toLong(), VoiceRecorder.nextRecordingIndex(existing).toLong())
+            existing += file("voice_note_${number + 1}.m4a")
+        }
+    }
+
+    /** 两个连续的编号不能指向同一个文件（并发抢占时的退路：编号已存在就跳过一个编号） */
+    @Test
+    fun `two consecutive recordings must not report the same first number`() {
+        val first = VoiceRecorder.nextRecordingIndex(emptyList())
+        val second = VoiceRecorder.nextRecordingIndex(listOf(file("voice_note_1.m4a")))
+        assert(first != second) { "recording numbers must not repeat" }
+        assertEquals(1, first)
+        assertEquals(2, second)
+    }
+
+    /** 3gp 时代的旧文件会被 4 以上的 m4a 编号追赶，但扩展名匹配时必须算数 */
+    @Test
+    fun `only matching extensions count toward the next number`() {
+        assertEquals(
+            3,
+            VoiceRecorder.nextRecordingIndex(
+                listOf(
+                    file("voice_note_1.3gp"),
+                    file("voice_note_2.3gp"),
+                    file("voice_note_3.mp3")
+                ),
+                "3gp"
+            )
+        )
+        assertEquals(
+            1,
+            VoiceRecorder.nextRecordingIndex(
+                listOf(
+                    file("voice_note_1.m4a"),
+                    file("voice_note_2.txt")
+                ),
+                "3gp"
+            )
+        )
+    }
 }

@@ -110,6 +110,8 @@ data class VoiceNoteRecord(
 3. **删除同步**：录音文件删除后，关联的 Marker 自动从地图移除。
 4. **计数展示**：功能实验室卡片的计数始终等于 `getAll()` 返回的未删除记录数。
 5. **播放有效性**：每条录音文件可在 App 内嵌 `MediaPlayer` 中正常打开和播放；播放失败时提示用户当前格式不被支持。
+6. **列表 Key 唯一**：录音列表的条目 Key 不能只依赖文件路径，`saveNote` 必须对同名路径去重（如果同一文件被保存了两次，除了更新原有记录，不能再追加一条重复记录），避免 Compose `LazyColumn` 报 `Key "/cache/voice_notes/voice_note_1.m4a" was already used` 崩溃。
+7. **编号 1-2-3 顺序递增**：文件编号通过 `nextRecordingIndex` 在磁盘扫描最大编号之上 +1 算出，`getOutputFile` 中编号计算与 `createNewFile` 必须锁在一起；抢占了就换下一个编号，绝不重复使用同一个编号，避免两条备注指向同一个录音文件。
 
 ## Error Handling
 
@@ -122,7 +124,8 @@ data class VoiceNoteRecord(
 ## Test Strategy
 
 1. **单元测试**：
-   - `VoiceNoteRepository`：测试 `saveNote` / `deleteNote` / `getAll` / `clearExpired`（构造 `VoiceNoteRecord` 循环存放，检查返回数据）。
+    - `VoiceNoteRepository`：测试 `saveNote` / `deleteNote` / `getAll` / `clearExpired`（构造 `VoiceNoteRecord` 循环存放，检查返回数据）。
+    - `VoiceRecorder.nextRecordingIndex`：测试录制编号按 1-2-3 严格递增（已有文件 1/2/3 → 下一条 4；有间隔的 1/10/12 → 下一条 13），且两个连续编号不相等。
 2. **UI 测试**（推荐 PMD 风格）：
    - 使用 `composeML` 或 `Espresso` 模拟 `FeaturesTab` 中录音卡片的点击，检查 `VoiceNoteListScreen` 是否被触发，并验证 `LazyColumn` 中第一条录音的文本/时间/时长。
    - 在 `HomeMapScreen` 上，测试"点击地图空白处显示录制面板"、"蓝点 Marker 显示"。

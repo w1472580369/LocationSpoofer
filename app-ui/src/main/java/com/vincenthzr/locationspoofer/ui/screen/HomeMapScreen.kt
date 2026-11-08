@@ -57,11 +57,21 @@ fun HomeMapScreen(
     // 长按直达录制标记：长按地图开面板时直接开始录音，而非显示录制入口
     var longPressRecording by remember { mutableStateOf(false) }
 
+    /** Home 锚点图钉位置（模拟位置）：坐标面板中的经纬度即为图钉位置 */
+    fun notePinPosition(): Pair<Double, Double> {
+        val lat = uiState.latitudeInput.toDoubleOrNull() ?: 39.9042
+        val lng = uiState.longitudeInput.toDoubleOrNull() ?: 116.4074
+        return lat to lng
+    }
+
     /** Home 页视口恢复 / 坐标面板 / 地图类型变更时，Home 页面会执行 mapController.clear()。
      * 如果标记点的添加独立于 Home 页，清屏后标记点就再也不会出现 —
      * 因此将 Home 锚点与语音备注的标记点合在同一个效果里，
      * 随时重挂，保证只要有录音文件就持续显示在绑定的经纬度坐标上。
-     * 注意 Home 锚点用默认蓝色（不随绿点变色/变小），语音备注用 0.5 比例的小绿点，两者视觉隔离。 */
+     * 注意：
+     *  - Home 锚点图钉使用路线模块起点图钉的样式（MarkerType.ORANGE），固定在模拟位置
+     *  - 长按录音时记录坐标使用 Home 锚点图钉位置（模拟坐标），录音经纬度始终与图钉一致
+     *  - 语音备注的小绿点只负责标记已录制的备注坐标，与锚点图钉颜色和比例都不同（已隔离）。 */
     LaunchedEffect(
         mapController,
         uiState.voiceNoteList,
@@ -92,8 +102,9 @@ fun HomeMapScreen(
             mapController.moveCamera(lat, lng, 15f)
             restoredViewport = CameraViewport(lat, lng, 15f)
         }
-        /** Home 锚点标记：用默认蓝色（与语音备注的绿色小点隔离，避免图钉与绿点混在一起分不清）。 */
-        mapController.addMarker(lastViewport?.lat ?: lat, lastViewport?.lng ?: lng, context.getString(R.string.home_map_title), MarkerType.DEFAULT)
+        /** Home 锚点图钉：使用路线模块起点图钉样式（橙色标记 + Current Location），
+         * 固定在模拟坐标上，长按录音时记录坐标以图钉位置为准。 */
+        mapController.addMarker(lat, lng, context.getString(R.string.current_location), MarkerType.ORANGE)
 
         // 语音备注的小绿点：与 Home 锚点颜色不同，且大小为标准标记的一半
         for (record in uiState.voiceNoteList) {
@@ -118,12 +129,14 @@ fun HomeMapScreen(
                 showVoiceNoteInput = true
             }
             mapController.setOnMapLongClickListener { lat, lng ->
-                notePosition = lat to lng
+                /** 长按直达录制：记录坐标不使用点击点，而是 Home 锚点图钉位置（模拟位置）；
+                 * 音频备注的经纬度与图钉永远一致，避免录制点与图钉分处不同坐标。 */
+                notePosition = notePinPosition()
                 longPressRecording = true
                 showVoiceNoteInput = true
             }
             mapController.setOnMarkerClickListener { lat, lng, title ->
-                // 点击蓝点时展示备注详情（录制时间 / 时长 / 文本），不触发录制面板
+                // 点击锚点图钉时展示备注详情（录制时间 / 时长 / 文本），不触发录制面板
                 val record = uiState.voiceNoteList.firstOrNull {
                     it.lat == lat && it.lng == lng
                 }

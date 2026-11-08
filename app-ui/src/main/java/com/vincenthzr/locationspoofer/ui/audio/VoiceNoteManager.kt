@@ -34,8 +34,7 @@ data class VoiceNoteRecord(
 
 /** 语音备注录制器。
  * 使用系统 MediaRecorder 录制麦克风声音（AAC/MP4），录音文件保存到应用私有目录中，
- * 不需要额外的存储空间授权。
- */
+ * 不需要额外的存储空间授权。 */
 class VoiceRecorder(private val context: Context) {
     companion object {
         /** 录音文件命名前缀，按录音时间（先后顺序）用数字顺序生成，如 voice_note_1.m4a */
@@ -57,7 +56,13 @@ class VoiceRecorder(private val context: Context) {
             }
             return index
         }
+
+        /** 文件名编号锁：录音文件的编号与文件创建必须在同一时刻完成，
+         * 避免两个并发（或前后序）的录制器计算出同一个编号，导致 voice_note_1.m4a 重复落盘，
+         * 继而让语音备注列表出现两条完全相同的路径、 Compose 列表 key 冲突崩溃。 */
+        private val nameLock = Any()
     }
+
     enum class State { IDLE, RECORDING }
 
     private var recorder: MediaRecorder? = null
@@ -148,15 +153,27 @@ class VoiceRecorder(private val context: Context) {
         currentState = State.IDLE
     }
 
-    /** 录音文件按录音时间（录音先后顺序）用数字顺序命名：voice_note_1、voice_note_2 ... */
+    /** 录音文件按录音时间（录音先后顺序）用数字顺序命名：voice_note_1、voice_note_2 ...
+     * 编号与落盘创建在同一把锁内完成；如果编号已被别的录制器抢先注册，自动进入下一个编号，
+     * 确保文件名称严格 1、2、3 顺序递增，不会有两个备注指向同一个文件。 */
     private fun getOutputFile(): File {
-        val dir = File(context.cacheDir, "voice_notes").apply { if (!exists()) mkdirs() }
-        // 扩展名必须和输出格式匹配，否则某些机型 prepare/start 会抛 IllegalStateException：
-        // MPEG_4/AAC → .m4a，THREE_GPP/AMR_NB → .3gp
-        val ext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ".m4a" else ".3gp"
-        // 录音文件按录音时间（录音先后顺序）用数字顺序命名：voice_note_1、voice_note_2 ...
-        val existing = dir.listFiles()?.filter { it.extension == ext }?.sortedBy { it.name } ?: emptyList()
-        return File(dir, RECORD_PREFIX + "_" + nextRecordingIndex(existing, ext) + ext)
+        synchronized(nameLock) {
+            val dir = File(context.cacheDir, "voice_notes").apply { if (!exists()) mkdirs() }
+            // 扩展名必须和输出格式匹配，否则某些机型 prepare/start 会抛 IllegalStateException：
+            // MPEG_4/AAC → .m4a，THREE_GPP/AMR_NB → .3gp
+            val ext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ".m4a" else ".3gp"
+            var attempts = 0
+            while (true) {
+                // 录音文件按录音时间（录音先后顺序）用数字顺序命名：voice_note_1、voice_note_2 ...
+                val existing = dir.listFiles()?.filter { it.extension == ext }?.sortedBy { it.name } ?: emptyList()
+                val file = File(dir, RECORD_PREFIX + "_" + nextRecordingIndex(existing, ext) + ext)
+                // 先创建空文件占位（让 MediaRecorder 打开这个 FileDescriptor）；返回 false 说明编号已被抢占，重新编号
+                if (file.createNewFile()) return file
+                if (++attempts > 100) {
+                    throw IllegalStateException("failed to create a unique recording file in voice_notes dir")
+                }
+            }
+        }
     }
 
     private fun hasPermission(): Boolean {
@@ -173,23 +190,32 @@ class VoiceNoteRepository(private val context: Context) {
     private val outputDir: File
         get() = File(context.cacheDir, "voice_notes")
 
-    /** 已录制的语音备注列表（按录制时间倒序排列） */
+    /** 已录制的语音备注列表（按录制时间倒序排列，同名路径只保留最后一条，避免列表 key 冲突） */
     fun getAll(): List<VoiceNoteRecord> {
         val json = prefs.getString("notes", "[]") ?: "[]"
         return try {
             val list = Json.Default.decodeFromString<List<VoiceNoteRecord>>(json)
             Log.d("VoiceNoteRepository", "getAll entries=${list.size} jsonLen=${json.length}")
-            list
+            // 按 path 去重：同一个录音文件可能因为重复保存/重复编号出现两条记录，保留录制时间最新的那条
+            list.groupBy { it.path }
+                .values
+                .map { entries -> entries.maxByOrNull { it.recordTime } ?: entries.first() }
         } catch (e: Exception) {
             Log.e("VoiceNoteRepository", "getAll failed: ${e.message}")
             emptyList()
         }
     }
 
-    /** 添加一条语音备注（commit 同步落盘，保证随后 read getAll() 一定能读到抢救回这份备注） */
+    /** 添加一条语音备注（commit 同步落盘，保证随后 read getAll() 一定能读到抢救回这份备注）
+     * 同名路径不重复添加：如果该文件已经在列表中有记录，更新它而不是再塞一条重复的（重复路径会导致列表 key 冲突崩溃）。 */
     fun saveNote(record: VoiceNoteRecord) {
         val notes = getAll().toMutableList()
-        notes.add(record)
+        val index = notes.indexOfFirst { it.path == record.path }
+        if (index >= 0) {
+            notes[index] = record
+        } else {
+            notes.add(record)
+        }
         Log.d("VoiceNoteRepository", "saveNote entries=${notes.size} path=${record.path}")
         val written = prefs.edit().putString("notes", Json.Default.encodeToString(notes)).commit()
         Log.d("VoiceNoteRepository", "saveNote committed=$written")
@@ -224,9 +250,10 @@ class VoiceNoteRepository(private val context: Context) {
     /** 更新指定录音的时长（秒） */
     fun updateDuration(record: VoiceNoteRecord, seconds: Double) {
         val notes = getAll().toMutableList()
-        notes.forEach { entry ->
+        // 用 forEachIndexed 而不是 forEach，避免 notes.indexOf() 找不到时返回 -1 导致越界
+        notes.forEachIndexed { index, entry ->
             if (entry.path == record.path) {
-                notes[notes.indexOf(record)] = entry.copy(durationSeconds = seconds)
+                notes[index] = entry.copy(durationSeconds = seconds)
             }
         }
         val committed = prefs.edit().putString("notes", Json.Default.encodeToString(notes)).commit()
