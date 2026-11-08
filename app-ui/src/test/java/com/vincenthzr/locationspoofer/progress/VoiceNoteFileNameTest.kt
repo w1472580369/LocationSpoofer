@@ -6,6 +6,7 @@ import org.junit.Test
 import java.io.File
 
 /** 回归测试：录音文件按录音时间（先后顺序）用数字顺序命名，如 voice_note_1、voice_note_2 ... */
+/** 回归测试：录音文件按录音时间（先后顺序）用数字顺序命名，如 voice_note_1、voice_note_2 ... */
 class VoiceNoteFileNameTest {
 
     private fun file(name: String) = File("voice_notes", name)
@@ -89,5 +90,21 @@ class VoiceNoteFileNameTest {
                 "3gp"
             )
         )
+    }
+
+    /**
+     * 根因回归：`File.extension` 不含开头的点，如果扩展名比较时带了点，已经录过的文件就
+     * 永远算不进已编号文件，导致下一条录音永远指向 `voice_note_1.m4a`（编号不递增、重复落盘、
+     * 列表 key 冲突）。这里确认：对比用的扩展名不能带点。
+     */
+    @Test
+    fun `extension matching must not include the leading dot`() {
+        // 不建真实文件也能确认 File.extension 的字符串规则
+        val real = listOf("voice_note_1.m4a", "voice_note_2.m4a", "voice_note_3.m4a").map { File("voice_notes", it) }
+        // File.extension 不含点，所以带点的比较永远对不上（旧版 bug 的根因）
+        assertEquals(0, real.filter { it.extension == ".m4a" }.size)
+        assertEquals(3, real.filter { it.extension == "m4a" }.size)
+        assertEquals(1, VoiceRecorder.nextRecordingIndex(real, ".m4a"))
+        assertEquals(4, VoiceRecorder.nextRecordingIndex(real, "m4a"))
     }
 }

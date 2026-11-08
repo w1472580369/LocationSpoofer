@@ -161,18 +161,22 @@ class VoiceRecorder(private val context: Context) {
             val dir = File(context.cacheDir, "voice_notes").apply { if (!exists()) mkdirs() }
             // 扩展名必须和输出格式匹配，否则某些机型 prepare/start 会抛 IllegalStateException：
             // MPEG_4/AAC → .m4a，THREE_GPP/AMR_NB → .3gp
-            val ext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ".m4a" else ".3gp"
-            var attempts = 0
-            while (true) {
-                // 录音文件按录音时间（录音先后顺序）用数字顺序命名：voice_note_1、voice_note_2 ...
-                val existing = dir.listFiles()?.filter { it.extension == ext }?.sortedBy { it.name } ?: emptyList()
-                val file = File(dir, RECORD_PREFIX + "_" + nextRecordingIndex(existing, ext) + ext)
-                // 先创建空文件占位（让 MediaRecorder 打开这个 FileDescriptor）；返回 false 说明编号已被抢占，重新编号
+            // 注意：MediaRecorder 文件名里写 ".m4a"/".3gp"（带点），但 File.extension 不包含点
+            val formatExt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ".m4a" else ".3gp"
+            val fileExt = formatExt.removePrefix(".")
+            // 只统计与输出格式对应的、以 voice_note 开头的已编号文件
+            val existing = dir.listFiles()?.filter { it.extension == fileExt && it.name.startsWith(RECORD_PREFIX) }
+                ?.sortedBy { it.name } ?: emptyList()
+            var suffix = nextRecordingIndex(existing, fileExt)
+            // 编号已被抢占（或多个并发录制器算出同一个编号）时，编号严格递增地往下试，直到落盘成功
+            // 不能死等同一编号（listFiles 的扩展名没对上时，现有的 voice_note_1.m4a 永远过不了），
+            // 超过上限再抛异常，后续录制才能继续
+            for (attempt in 1..10_000) {
+                val file = File(dir, RECORD_PREFIX + "_" + suffix + formatExt)
                 if (file.createNewFile()) return file
-                if (++attempts > 100) {
-                    throw IllegalStateException("failed to create a unique recording file in voice_notes dir")
-                }
+                suffix++
             }
+            throw IllegalStateException("failed to create a unique recording file in voice_notes dir")
         }
     }
 
