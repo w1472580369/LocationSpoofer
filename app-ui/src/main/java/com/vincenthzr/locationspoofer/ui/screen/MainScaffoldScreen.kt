@@ -117,6 +117,15 @@ fun MainScaffoldScreen(
     // 记住最近一次的地图视口（坐标 + 缩放），返回首页（Home）或下次打开应用时恢复
     var lastViewport by remember { mutableStateOf<CameraViewport?>(null) }
 
+    /** Home 页被切到的次数：切回 Home 页时 +1，驱动 Home 页面重新挂坐标、视口与语音备注的小绿点
+     * 避免切回 Home 页时，已清过的地图上的绿点不复活 */
+    var homePageVersion by remember { mutableIntStateOf(0) }
+    LaunchedEffect(selectedTab) {
+        if (selectedTab == BottomTab.Home.ordinal) {
+            homePageVersion++
+        }
+    }
+
     // 恢复上次保存的地图视口（坐标 + 缩放），在 Home 页首次展示时回到上次的位置
     val lastMapPosition = remember { viewModel.settingsRepository.getLastMapPosition() }
     LaunchedEffect(lastMapPosition) {
@@ -362,6 +371,7 @@ fun MainScaffoldScreen(
                             uiState = uiState,
                             mapController = mapController,
                             lastViewport = lastViewport,
+                            homePageVersion = homePageVersion,
                             tabBarHeight = paddingValues.calculateBottomPadding()
                         )
 

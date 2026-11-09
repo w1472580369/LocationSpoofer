@@ -43,6 +43,8 @@ fun HomeMapScreen(
     uiState: AppState,
     mapController: AppMapController?,
     lastViewport: CameraViewport? = null,
+    /** Home 页激活次数（由 MainScaffold 传进来），切回 Home 页时 +1，驱动绿点重挂 */
+    homePageVersion: Int = 0,
     tabBarHeight: Dp = 90.dp
 ) {
     val context = LocalContext.current
@@ -65,27 +67,25 @@ fun HomeMapScreen(
         return lat to lng
     }
 
-    /** Home 页视口恢复 / 坐标面板 / 地图类型变更时，Home 页面会执行 mapController.clear()。
-     * 如果标记点的添加独立于 Home 页，清屏后标记点就再也不会出现 —
-     * 因此将默认位置（坐标面板经纬度）与语音备注的标记点合在同一个效果里，
-     * 随时重挂，保证只要有录音文件就持续显示在绑定的经纬度坐标上。
-     * 注意：
-     *  - 长按录音时记录坐标使用 Home 页默认位置（模拟坐标），录音经纬度始终与图钉一致
-     *  - 语音备注的小绿点只负责标记已录制的备注坐标，与锚点图钉颜色和比例都不同（已隔离）。 */
+    /** Home 页同步：Home 页一激活就恢复视口 + 清屏 + 重新挂好语音备注的小绿点。
+     * 关键：key 包含 homePageVersion（每切回 Home 页 +1，由 MainScaffold 传进来），
+     * 只有切 Home 页/切坐标面板/切地图类型/切录音列表/相机移动时才重挂 —
+     * 切到 Home 页时，绿点始终跟着清屏后重新挂回来，不丢不重。 */
     LaunchedEffect(
         mapController,
-        uiState.voiceNoteList,
+        homePageVersion,
+        lastViewport,
         uiState.latitudeInput,
         uiState.longitudeInput,
-        lastViewport,
-        uiState.mapType
+        uiState.mapType,
+        uiState.voiceNoteList
     ) {
         if (mapController == null) {
-            Log.e("HomeMapScreen", "mapController is null, skip voice-note marker")
+            Log.e("HomeMapScreen", "mapController is null, skip home page sync")
             return@LaunchedEffect
         }
-        Log.d("HomeMapScreen", "voiceNoteList=【${uiState.voiceNoteList.size}】总计 voiceNoteCount=${uiState.voiceNoteCount}")
-        // 先清理上一次 Home 页留下的锚点 + 旧标记点（可能已被主框架 clear() 静默删掉），避免重复挂点
+        Log.d("HomeMapScreen", "homePageVersion=$homePageVersion: voiceNoteList=【${uiState.voiceNoteList.size}】总计 voiceNoteCount=${uiState.voiceNoteCount}")
+        // 先摘掉上次 Home 页留下的标记点，避免同一条备注被重复挂点
         noteMarkers.values.forEach { it.remove() }
         noteMarkers = emptyMap()
         mapController.clear()

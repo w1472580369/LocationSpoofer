@@ -36,7 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -80,19 +83,63 @@ fun VoiceNoteInput(
     /** 录制时长（秒）：由 Compose 可观察的 State 驱动，确保秒数在录制过程中持续跳动 */
     var elapsedSeconds by remember { mutableStateOf(0.0) }
 
-    /** 用户拒绝录音权限后的引导：系统弹窗不会再出现时提示用户手动开启 */
+    /** 用户拒绝录音权限后的引导：Toast 提示 + 跳转到系统设置页开启录音权限（避免权限不足时闪退）
+     * 不再只给一句 Toast，因为勾选了"不再询问"后系统弹窗永远不会再出现，用户只能去设置页补授权。 */
     fun showPermissionDeniedHint() {
         Toast.makeText(context, context.getString(R.string.voice_note_permission_denied), Toast.LENGTH_LONG).show()
+        openAppPermissionSettings(context)
+    }
+
+    /** 跳转到系统设置中的应用信息页（该页允许用户重新打开被拒绝的录音权限） */
+    fun openAppPermissionSettings(context: Context) {
+        try {
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:${context.packageName}")
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }.also { intent ->
+                context.startActivity(intent)
+            }.also { intent ->
+                context.startActivity(intent)
+            }
+        } catch (e: Exception) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.open_app_info_failed, e.message ?: ""),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     /** 开始录制（权限已成功申请） */
     suspend fun startRecording() {
         try {
-            recorder.startRecording()
-            timer.start()
-            recordingFile = recorder.getCurrentFile()
-            elapsedSeconds = timer.getElapsedSeconds()
-            isRecording = true
+            // 录制器只返回已落盘的文件（没有权限或录制器故障时会返回 null），
+            // return null 时不要标记为"正在录制"，避免面板显示录制中但介质未准备就绪
+            val file = recorder.startRecording()
+            if (file != null) {
+                timer.start()
+                recordingFile = file
+                elapsedSeconds = timer.getElapsedSeconds()
+                isRecording = true
+            } else {
+                recordingFile = null
+                isRecording = false
+                elapsedSeconds = 0.0
+                val hasPermission = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.RECORD_AUDIO
+                ) == PackageManager.PERMISSION_GRANTED
+                val messageRes = if (hasPermission) {
+                    R.string.voice_note_record_failed
+                } else {
+                    R.string.audio_permission_required
+                }
+                Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_LONG).show()
+                if (!hasPermission) {
+                    // 没有录音权限：录制器无法写文件，给用户明确提示并跳设置页
+                    showPermissionDeniedHint()
+                }
+            }
         } catch (e: Exception) {
             recordingFile = null
             isRecording = false
@@ -109,20 +156,21 @@ fun VoiceNoteInput(
             }
             Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_LONG).show()
             if (!hasPermission) {
-                // 没有录音权限：录制器无法写文件，给用户明确提示
+                // 没有录音权限：录制器无法写文件，给用户明确提示并跳设置页
                 showPermissionDeniedHint()
             }
         }
     }
 
     // 通过系统弹窗申请录音权限，未通过时提示用户（避免 MediaRecorder 直接抛出 IllegalStateException）
+    // 当系统弹窗不会再出现时（用户勾选了"不再询问"），直接指向设置页，避免权限不足闪退
     val recordAudioLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (!granted) {
             Toast.makeText(context, context.getString(R.string.audio_permission_required), Toast.LENGTH_LONG).show()
-            // 如果系统弹窗已经不再出现（用户勾选了"不再询问"），直接给出手动开启的引导
-            showPermissionDeniedHint()
+            // 去系统设置中开启录音权限，而不是停留在"未授权"状态下闪退
+            openAppPermissionSettings(context)
         } else if (autoStartRecording) {
             // 系统弹窗授权后补录：直接开始录制
             scope.launch { startRecording() }
@@ -133,10 +181,17 @@ fun VoiceNoteInput(
     suspend fun startRecordingWithPermission() {
         when (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)) {
             PackageManager.PERMISSION_GRANTED -> startRecording()
-            else -> recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            else -> {
+                // 用户勾选过"不再询问"后系统弹窗不会再出现，直接去设置页授权，避免闪退
+                val activity = context as? androidx.activity.ComponentActivity
+                if (activity != null && !activity.shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)) {
+                    openAppPermissionSettings(context)
+                    return
+                }
+                recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
         }
     }
-
     /** 手势取消录制时给用户明确的反馈，避免误操作后静默无文件 */
     fun cancelRecording() {
         recorder.release()

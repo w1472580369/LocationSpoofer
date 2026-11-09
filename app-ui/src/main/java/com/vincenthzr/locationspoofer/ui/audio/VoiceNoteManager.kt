@@ -37,31 +37,62 @@ data class VoiceNoteRecord(
  * 不需要额外的存储空间授权。 */
 class VoiceRecorder(private val context: Context) {
     companion object {
-        /** 录音文件命名前缀，按录音时间（先后顺序）用数字顺序生成，如 voice_note_1.m4a */
-        const val RECORD_PREFIX = "voice_note"
-
-        /** 已有录音文件已编号（按录音时间先后），下一条录音的编号必须在最大编号之上，避免与任何已有文件重名 */
-        fun nextRecordingIndex(existingFiles: List<File>, extension: String = "m4a"): Int {
-            var index = 1
-            for (file in existingFiles) {
-                if (file.extension != extension) continue
-                file.nameWithoutExtension
-                    .removePrefix(RECORD_PREFIX)
-                    .removePrefix("_")
-                    .toLongOrNull()?.let { number ->
-                        if (number >= index.toLong()) {
-                            index = (number + 1).toInt()
-                        }
-                    }
+    /** 录音文件名里不写备注说明，只保留纯阿拉伯数字编号加扩展名（1.m4a / 2.m4a / 3.m4a）；
+     * 编号从 1 开始，严格按录音时间先后递增，后续编号永远在最大编号 +1 之上算出。
+     * 兼容旧版带前缀的 voice_note_1.m4a 文件名（按尾部的数字编号计数，不重复起号）。 */
+    fun nextRecordingIndex(existingFiles: List<File>, extension: String = "m4a"): Int {
+        var index = 1
+        for (file in existingFiles) {
+            if (file.extension != extension) continue
+            file.nameWithoutExtension.recordingFileNumber()?.let { number ->
+                if (number >= index.toLong()) {
+                    index = (number + 1).toInt()
+                }
             }
-            return index
         }
-
-        /** 文件名编号锁：录音文件的编号与文件创建必须在同一时刻完成，
-         * 避免两个并发（或前后序）的录制器计算出同一个编号，导致 voice_note_1.m4a 重复落盘，
-         * 继而让语音备注列表出现两条完全相同的路径、 Compose 列表 key 冲突崩溃。 */
-        private val nameLock = Any()
+        return index
     }
+
+    /** 录音文件名的数字编号（`1` / `voice_note_12`） */
+    private fun String.recordingFileNumber(): Long? {
+        return Regex("^(?:voice_note_)?(\\d+)$").find(this)?.groupValues?.get(1)?.toLongOrNull()
+    }
+
+    /** 文件名编号锁：录音文件的编号与文件创建必须在同一时刻完成，
+     * 避免两个并发（或前后序）的录制器计算出同一个编号，导致重复落盘，
+     * 继而让语音备注列表出现两条完全相同的路径、 Compose 列表 key 冲突崩溃。 */
+    private val nameLock = Any()
+
+    /** 录音文件变为真实落盘的数字文件（1.m4a / 2.m4a / 3.m4a）：
+     * 编号与落盘创建在同一把锁内完成；如果编号已被别的录制器抢先注册，自动进入下一个编号，
+     * 确保文件名称严格 1、2、3 顺序递增，不会有两个备注指向同一个文件。 */
+    private fun getOutputFile(): File {
+        synchronized(nameLock) {
+            val dir = File(context.cacheDir, "voice_notes").apply { if (!exists()) mkdirs() }
+            // 扩展名必须和输出格式匹配，否则某些机型 prepare/start 会抛 IllegalStateException：
+            // MPEG_4/AAC → .m4a，THREE_GPP/AMR_NB → .3gp
+            // 注意：MediaRecorder 文件名里写 ".m4a"/".3gp"（带点），但 File.extension 不包含点
+            val formatExt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ".m4a" else ".3gp"
+            val fileExt = formatExt.removePrefix(".")
+            // 只统计与输出格式对应的数字编号文件（旧版 voice_note_1.m4a 不在编号范围内，数量上兼容）
+            val existing = dir.listFiles()?.filter {
+                it.extension == fileExt && it.nameWithoutExtension.toLongOrNull() != null
+            }?.sortedBy { it.name } ?: emptyList()
+            var suffix = nextRecordingIndex(existing, fileExt)
+            for (attempt in 1..10_000) {
+                val file = File(dir, "$suffix.$fileExt")
+                if (file.createNewFile()) return file
+                suffix++
+            }
+            throw IllegalStateException("failed to create a unique recording file in voice_notes dir")
+        }
+    }
+
+    private fun hasPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+            PackageManager.PERMISSION_GRANTED
+    }
+}
 
     enum class State { IDLE, RECORDING }
 
@@ -76,11 +107,13 @@ class VoiceRecorder(private val context: Context) {
     /** 当前正在录制的音频文件路径 */
     fun getCurrentFile(): File? = recordingFile
 
-    /** 开始录制，完成时不要返回 null；失败时抛出异常 */
+    /** 开始录制，完成时不要返回 null；录制器本身不抛异常结束（权限不足或录制器故障时返回 null，
+     * 由界面层给提示并跳转设置页授权，避免直接闪退）。 */
     suspend fun startRecording(): File? {
         if (currentState == State.RECORDING) release()
         if (!hasPermission()) {
-            throw IllegalStateException("RECORD_AUDIO permission not granted")
+            Log.w("VoiceRecorder", "startRecording aborted: RECORD_AUDIO permission not granted")
+            return null
         }
         try {
             val file = getOutputFile()
